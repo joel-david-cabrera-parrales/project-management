@@ -19,6 +19,8 @@ import { AuthGuard } from '@nestjs/passport';
 import type { Response } from 'express';
 import { createReadStream } from 'fs';
 import * as path from 'path';
+import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { AuthenticatedUserDto } from 'src/auth/dto/authenticated-user.dto';
 
 @Controller('attachment')
 @UseGuards(AuthGuard('jwt'))
@@ -60,11 +62,7 @@ export class AttachmentController {
     },
   })
   @ApiResponse({ status: 201, description: 'File uploaded', type: AttachmentResponse })
-  upload(
-    @Param('taskCode') taskCode: string,
-    @UploadedFile() file: Express.Multer.File,
-    @Req() req: any,
-  ) {
+  upload(@Param('taskCode') taskCode: string, @UploadedFile() file: Express.Multer.File, @Req() req: any) {
     if (!file) throw new BadRequestException('File is required');
     return this.attachmentService.upload(file, taskCode, req.user.id);
   }
@@ -72,14 +70,14 @@ export class AttachmentController {
   @Get('task/:taskCode')
   @ApiOperation({ summary: 'Get all attachments for a task' })
   @ApiResponse({ status: 200, description: 'List of attachments', type: [AttachmentResponse] })
-  findByTask(@Param('taskCode') taskCode: string) {
-    return this.attachmentService.findByTask(taskCode);
+  findByTask(@Param('taskCode') taskCode: string, @GetUser() user: AuthenticatedUserDto) {
+    return this.attachmentService.findByTask(taskCode, user.id);
   }
 
   @Get('file/:code')
   @ApiOperation({ summary: 'Download/serve an attachment file' })
-  async getFile(@Param('code') code: string, @Res() res: Response) {
-    const attachment = await this.attachmentService.getFileInfo(code);
+  async getFile(@Param('code') code: string, @Res() res: Response, @GetUser() user: AuthenticatedUserDto) {
+    const attachment = await this.attachmentService.getFileInfo(code, user.id);
     const filePath = path.join(process.cwd(), 'uploads', 'attachments', attachment.storedName);
     res.setHeader('Content-Type', attachment.mimeType);
     res.setHeader('Content-Disposition', `inline; filename="${attachment.fileName}"`);
@@ -91,7 +89,7 @@ export class AttachmentController {
   @Delete(':code')
   @ApiOperation({ summary: 'Soft delete an attachment' })
   @ApiResponse({ status: 200, description: 'Attachment deleted', type: AttachmentResponse })
-  remove(@Param('code') code: string) {
-    return this.attachmentService.remove(code);
+  remove(@Param('code') code: string, @GetUser() user: AuthenticatedUserDto) {
+    return this.attachmentService.remove(code, user.id);
   }
 }

@@ -1,5 +1,3 @@
-import { WorkspaceInvitation } from '../entities/workspace-invitation.entity';
-
 export interface InvitationItem {
   code: string;
   invitedEmail: string;
@@ -16,5 +14,5 @@ export interface InvitationItem {
 }
 
 export abstract class GetWorkspaceInvitationsUseCase {
-  abstract execute(workspaceCode: string): Promise<InvitationItem[]>;
+  abstract execute(workspaceCode: string, userId: number): Promise<InvitationItem[]>;
 }

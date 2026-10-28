@@ -11,8 +11,8 @@ export class UnassignMemberUseCaseImp implements UnassignMemberUseCase {
     private readonly assignmentRepository: Repository<TaskAssignment>,
   ) {}
 
-  async execute(assignmentId: number): Promise<void> {
-    const assignment = await this.assignmentRepository.findOneBy({ id: assignmentId });
+  async execute(assignmentId: number, taskId: number): Promise<void> {
+    const assignment = await this.assignmentRepository.findOneBy({ id: assignmentId, task: { id: taskId } });
     if (!assignment) throw new NotFoundException('Assignment not found');
     await this.assignmentRepository.remove(assignment);
   }

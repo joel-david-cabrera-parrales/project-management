@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthenticatedUserDto } from 'src/auth/dto/authenticated-user.dto';
 import { EntityType } from 'src/common/enums/entity-type.enum';
@@ -12,6 +12,8 @@ import { SendInvitationToJoinToWorkspaceDto } from './dto/send-invitation-to-joi
 import { GetWorkspaceInvitationsUseCase, InvitationItem } from './classes/get-workspace-invitations.class';
 import { WorkspaceService } from 'src/workspace/workspace.service';
 import { AuthService } from 'src/auth/auth.service';
+import { GetWorkspaceInvitationUseCase } from './classes/get-workspace-invitation.class';
+import { InvalidateWorkspaceInvitationUseCase } from './classes/invalidate-workspace-invitation.class';
 
 @Injectable()
 export class WorkspaceInvitationService {
@@ -27,6 +29,8 @@ export class WorkspaceInvitationService {
 
     private readonly authService: AuthService,
     private readonly workspaceService: WorkspaceService,
+    private readonly getWorkspaceInvitationUseCase: GetWorkspaceInvitationUseCase,
+    private readonly invalidateWorkspaceInvitationUseCase: InvalidateWorkspaceInvitationUseCase,
   ) {}
 
   async sendWorkspaceInvitation(dto: SendInvitationToJoinToWorkspaceDto, user: AuthenticatedUserDto) {
@@ -40,29 +44,18 @@ export class WorkspaceInvitationService {
     return { inviteLink };
   }
 
-  async getInvitation(invitationCode: string) {
-    const invitation = await this.workspaceRepository
-      .createQueryBuilder('workspace')
-      .select(['workspace.code', 'workspaceInvitations'])
-      .leftJoinAndSelect('workspace.workspaceInvitations', 'workspaceInvitations')
-      .where('workspaceInvitations.code = :code', { code: invitationCode })
-      .andWhere('workspaceInvitations.isAvailable = true')
-      .getOne();
-    if (!invitation) throw new NotFoundException('Invitation not found');
-
-    const workspace = await this.findOneWorkspaceUseCase.execute(invitation.code);
+  async getInvitation(invitationCode: string, userId: number) {
+    const invitation = await this.getWorkspaceInvitationUseCase.execute(invitationCode, userId);
+    const workspace = await this.findOneWorkspaceUseCase.execute(invitation.workspace.code);
     return { workspace, invitationCode };
   }
 
-  async getWorkspaceInvitations(workspaceCode: string): Promise<InvitationItem[]> {
-    return this.getWorkspaceInvitationsUseCase.execute(workspaceCode);
+  async getWorkspaceInvitations(workspaceCode: string, userId: number): Promise<InvitationItem[]> {
+    return this.getWorkspaceInvitationsUseCase.execute(workspaceCode, userId);
   }
 
-  async invalidateInvitation(invitationCode: string) {
-    const invitation = await this.invitationRepository.findOneBy({ code: invitationCode });
-    if (!invitation) throw new NotFoundException('Invitation not found');
-    invitation.isAvailable = false;
-    await this.invitationRepository.save(invitation);
+  async invalidateInvitation(invitationCode: string, userId: number) {
+    await this.invalidateWorkspaceInvitationUseCase.execute(invitationCode, userId);
     return { message: 'Invitación invalidada' };
   }
 

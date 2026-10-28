@@ -24,11 +24,14 @@ import { WorkspaceModule } from 'src/workspace/workspace.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { LabelModule } from 'src/label/label.module';
 import { CommonModule } from 'src/common/common.module';
+import { AuthorizeTaskAccessUseCase } from './classes/authorize-task-access.class';
+import { AuthorizeTaskAccessUseCaseImp } from './use-cases/authorize-task-access.use-case';
 
 @Module({
   controllers: [TaskController],
   providers: [
     TaskService,
+    { provide: AuthorizeTaskAccessUseCase, useClass: AuthorizeTaskAccessUseCaseImp },
     {
       provide: UnassignMemberUseCase,
       useClass: UnassignMemberUseCaseImp,

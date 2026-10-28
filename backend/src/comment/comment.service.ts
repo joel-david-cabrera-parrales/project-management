@@ -8,8 +8,14 @@ import { CommentResponse } from 'src/common/responses';
 @Injectable()
 export class CommentService {
   private readonly avatarColors = [
-    '#ef4444', '#6366f1', '#3b82f6', '#10b981',
-    '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6',
+    '#ef4444',
+    '#6366f1',
+    '#3b82f6',
+    '#10b981',
+    '#f59e0b',
+    '#ec4899',
+    '#8b5cf6',
+    '#14b8a6',
   ];
 
   constructor(
@@ -49,7 +55,13 @@ export class CommentService {
     };
   }
 
-  async create(content: string, taskCode: string, userId: number, parentId?: number, mentions?: number[]): Promise<CommentResponse> {
+  async create(
+    content: string,
+    taskCode: string,
+    userId: number,
+    parentId?: number,
+    mentions?: number[],
+  ): Promise<CommentResponse> {
     const comment = await this.createCommentUseCase.execute(content, taskCode, userId, parentId, mentions);
     if (comment.mentions?.length) {
       this.sendMentionedEmailUseCase.execute(comment).catch(() => {});
@@ -57,8 +69,8 @@ export class CommentService {
     return this.mapComment(comment);
   }
 
-  async findByTask(taskCode: string): Promise<CommentResponse[]> {
-    const comments = await this.findCommentsByTaskUseCase.execute(taskCode);
+  async findByTask(taskCode: string, userId: number): Promise<CommentResponse[]> {
+    const comments = await this.findCommentsByTaskUseCase.execute(taskCode, userId);
     const mapped = comments.map((c) => this.mapComment(c));
     const topLevel = mapped.filter((c) => !c.parentId);
     const replies = mapped.filter((c) => c.parentId);

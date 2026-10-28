@@ -10,6 +10,10 @@ import { SendInvitationToJoinToWorkspaceUseCase } from './classes/send-invitatio
 import { GetWorkspaceInvitationsUseCase } from './classes/get-workspace-invitations.class';
 import { GetWorkspaceInvitationsUseCaseImp } from './use-cases/get-workspace-invitations.use-case';
 import { AuthModule } from 'src/auth/auth.module';
+import { GetWorkspaceInvitationUseCase } from './classes/get-workspace-invitation.class';
+import { GetWorkspaceInvitationUseCaseImp } from './use-cases/get-workspace-invitation.use-case';
+import { InvalidateWorkspaceInvitationUseCase } from './classes/invalidate-workspace-invitation.class';
+import { InvalidateWorkspaceInvitationUseCaseImp } from './use-cases/invalidate-workspace-invitation.use-case';
 
 @Module({
   controllers: [WorkspaceInvitationController],
@@ -17,6 +21,8 @@ import { AuthModule } from 'src/auth/auth.module';
     WorkspaceInvitationService,
     { provide: SendInvitationToJoinToWorkspaceUseCase, useClass: SendInvitationToJoinToWorkspaceUseCaseImp },
     { provide: GetWorkspaceInvitationsUseCase, useClass: GetWorkspaceInvitationsUseCaseImp },
+    { provide: GetWorkspaceInvitationUseCase, useClass: GetWorkspaceInvitationUseCaseImp },
+    { provide: InvalidateWorkspaceInvitationUseCase, useClass: InvalidateWorkspaceInvitationUseCaseImp },
   ],
   imports: [TypeOrmModule.forFeature([WorkspaceInvitation]), CommonModule, AuthModule, WorkspaceModule],
   exports: [TypeOrmModule],

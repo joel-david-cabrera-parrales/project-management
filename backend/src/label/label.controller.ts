@@ -7,6 +7,8 @@ import { LabelResponse } from 'src/common/responses';
 import { AuthGuard } from '@nestjs/passport';
 import { WorkspaceRoles } from 'src/auth/decorators/workspace-roles.decorator';
 import { WorkspaceRoleGuard } from 'src/auth/guards/workspace-role.guard';
+import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { AuthenticatedUserDto } from 'src/auth/dto/authenticated-user.dto';
 
 @Controller('label')
 @UseGuards(AuthGuard('jwt'))
@@ -18,15 +20,15 @@ export class LabelController {
   @WorkspaceRoles('owner', 'member')
   @ApiOperation({ summary: 'Crear una etiqueta en el workspace' })
   @ApiResponse({ status: 201, description: 'Etiqueta creada exitosamente', type: LabelResponse })
-  create(@Body() dto: CreateLabelDto) {
-    return this.labelService.create(dto);
+  create(@Body() dto: CreateLabelDto, @GetUser() user: AuthenticatedUserDto) {
+    return this.labelService.create(dto, user.id);
   }
 
   @Get('workspace/:workspaceCode')
   @ApiOperation({ summary: 'Obtener todas las etiquetas de un workspace' })
   @ApiResponse({ status: 200, description: 'Lista de etiquetas', type: [LabelResponse] })
-  findByWorkspace(@Param('workspaceCode') workspaceCode: string) {
-    return this.labelService.findByWorkspace(workspaceCode);
+  findByWorkspace(@Param('workspaceCode') workspaceCode: string, @GetUser() user: AuthenticatedUserDto) {
+    return this.labelService.findByWorkspace(workspaceCode, user.id);
   }
 
   @Patch(':id')
@@ -34,8 +36,8 @@ export class LabelController {
   @WorkspaceRoles('owner', 'member')
   @ApiOperation({ summary: 'Actualizar una etiqueta' })
   @ApiResponse({ status: 200, description: 'Etiqueta actualizada exitosamente', type: LabelResponse })
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateLabelDto) {
-    return this.labelService.update(id, dto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateLabelDto, @GetUser() user: AuthenticatedUserDto) {
+    return this.labelService.update(id, dto, user.id);
   }
 
   @Delete(':id')
@@ -44,7 +46,11 @@ export class LabelController {
   @ApiOperation({ summary: 'Eliminar una etiqueta (soft delete)' })
   @ApiQuery({ name: 'ws', required: true, description: 'Workspace code' })
   @ApiResponse({ status: 200, description: 'Etiqueta eliminada exitosamente', type: LabelResponse })
-  remove(@Query('ws') workspaceCode: string, @Param('id', ParseIntPipe) id: number) {
-    return this.labelService.remove(id);
+  remove(
+    @Query('ws') workspaceCode: string,
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: AuthenticatedUserDto,
+  ) {
+    return this.labelService.remove(id, user.id, workspaceCode);
   }
 }

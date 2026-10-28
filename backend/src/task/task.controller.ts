@@ -34,8 +34,8 @@ export class TaskController {
   @ApiQuery({ name: 'ws', required: true, description: 'Workspace code' })
   @ApiResponse({ status: 200, description: 'Tareas reordenadas exitosamente' })
   @ApiResponse({ status: 401, description: 'No autorizado' })
-  reorder(@Query('ws') workspaceCode: string, @Body() dto: ReorderTasksDto) {
-    return this.taskService.reorder(dto);
+  reorder(@Query('ws') workspaceCode: string, @Body() dto: ReorderTasksDto, @GetUser() user: AuthenticatedUserDto) {
+    return this.taskService.reorder(dto, user.id, workspaceCode);
   }
 
   // @Get()
@@ -50,8 +50,8 @@ export class TaskController {
   @ApiOperation({ summary: 'Obtener una tarea' })
   @ApiResponse({ status: 200, description: 'Tarea encontrada exitosamente', type: TaskResponse })
   @ApiResponse({ status: 401, description: 'No autorizado' })
-  findOne(@Param('id') id: string) {
-    return this.taskService.findOne(+id);
+  findOne(@Param('id') id: string, @GetUser() user: AuthenticatedUserDto) {
+    return this.taskService.findOne(+id, user.id);
   }
 
   @Patch(':id')
@@ -67,7 +67,7 @@ export class TaskController {
     @Body() updateTaskDto: UpdateTaskDto,
     @GetUser() user: AuthenticatedUserDto,
   ) {
-    return this.taskService.update(id, updateTaskDto, user);
+    return this.taskService.update(id, updateTaskDto, user, workspaceCode);
   }
 
   @Delete(':id')
@@ -77,8 +77,8 @@ export class TaskController {
   @ApiQuery({ name: 'ws', required: true, description: 'Workspace code' })
   @ApiResponse({ status: 200, description: 'Tarea eliminada exitosamente', type: TaskResponse })
   @ApiResponse({ status: 401, description: 'No autorizado' })
-  remove(@Query('ws') workspaceCode: string, @Param('id') id: string) {
-    return this.taskService.remove(+id);
+  remove(@Query('ws') workspaceCode: string, @Param('id') id: string, @GetUser() user: AuthenticatedUserDto) {
+    return this.taskService.remove(+id, user.id, workspaceCode);
   }
 
   @Post(':id/labels')
@@ -88,8 +88,13 @@ export class TaskController {
   @ApiQuery({ name: 'ws', required: true, description: 'Workspace code' })
   @ApiResponse({ status: 200, description: 'Etiqueta agregada exitosamente', type: TaskResponse })
   @ApiResponse({ status: 401, description: 'No autorizado' })
-  addLabel(@Query('ws') workspaceCode: string, @Param('id', ParseIntPipe) id: number, @Body() dto: CreateTaskLabelDto) {
-    return this.taskService.addLabel(id, dto);
+  addLabel(
+    @Query('ws') workspaceCode: string,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: CreateTaskLabelDto,
+    @GetUser() user: AuthenticatedUserDto,
+  ) {
+    return this.taskService.addLabel(id, dto, user.id, workspaceCode);
   }
 
   @Delete(':id/labels/:labelId')
@@ -99,8 +104,13 @@ export class TaskController {
   @ApiQuery({ name: 'ws', required: true, description: 'Workspace code' })
   @ApiResponse({ status: 200, description: 'Etiqueta eliminada exitosamente', type: TaskResponse })
   @ApiResponse({ status: 401, description: 'No autorizado' })
-  removeLabel(@Query('ws') workspaceCode: string, @Param('id', ParseIntPipe) id: number, @Param('labelId', ParseIntPipe) labelId: number) {
-    return this.taskService.removeLabel(id, labelId);
+  removeLabel(
+    @Query('ws') workspaceCode: string,
+    @Param('id', ParseIntPipe) id: number,
+    @Param('labelId', ParseIntPipe) labelId: number,
+    @GetUser() user: AuthenticatedUserDto,
+  ) {
+    return this.taskService.removeLabel(id, labelId, user.id, workspaceCode);
   }
 
   @Post(':id/assign')
@@ -110,8 +120,13 @@ export class TaskController {
   @ApiQuery({ name: 'ws', required: true, description: 'Workspace code' })
   @ApiResponse({ status: 200, description: 'Miembro asignado exitosamente', type: TaskResponse })
   @ApiResponse({ status: 401, description: 'No autorizado' })
-  assignMember(@Query('ws') workspaceCode: string, @Param('id', ParseIntPipe) id: number, @Body() dto: AssignMemberDto) {
-    return this.taskService.assignMember(id, dto);
+  assignMember(
+    @Query('ws') workspaceCode: string,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: AssignMemberDto,
+    @GetUser() user: AuthenticatedUserDto,
+  ) {
+    return this.taskService.assignMember(id, dto, user.id, workspaceCode);
   }
 
   @Delete(':id/assign/:assignmentId')
@@ -121,7 +136,12 @@ export class TaskController {
   @ApiQuery({ name: 'ws', required: true, description: 'Workspace code' })
   @ApiResponse({ status: 200, description: 'Miembro desasignado exitosamente', type: TaskResponse })
   @ApiResponse({ status: 401, description: 'No autorizado' })
-  unassignMember(@Query('ws') workspaceCode: string, @Param('id', ParseIntPipe) id: number, @Param('assignmentId', ParseIntPipe) assignmentId: number) {
-    return this.taskService.unassignMember(id, assignmentId);
+  unassignMember(
+    @Query('ws') workspaceCode: string,
+    @Param('id', ParseIntPipe) id: number,
+    @Param('assignmentId', ParseIntPipe) assignmentId: number,
+    @GetUser() user: AuthenticatedUserDto,
+  ) {
+    return this.taskService.unassignMember(id, assignmentId, user.id, workspaceCode);
   }
 }

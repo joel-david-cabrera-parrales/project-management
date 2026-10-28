@@ -19,11 +19,18 @@ export class AssignMemberUseCaseImp implements AssignMemberUseCase {
   ) {}
 
   async execute(taskId: number, dto: AssignMemberDto): Promise<TaskAssignment> {
-    const task = await this.taskRepository.findOneBy({ id: taskId });
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId, isAvailable: true },
+      relations: { taskList: { board: { workspace: true } } },
+    });
     if (!task) throw new NotFoundException('Task not found');
 
     const workspaceMember = await this.workspaceMemberRepository.findOne({
-      where: { id: dto.workspaceMemberId, isAvailable: true },
+      where: {
+        id: dto.workspaceMemberId,
+        isAvailable: true,
+        workspace: { id: task.taskList.board.workspace.id, isAvailable: true },
+      },
     });
     if (!workspaceMember) throw new NotFoundException('Workspace member not found');
 

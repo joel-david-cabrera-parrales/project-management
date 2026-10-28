@@ -18,23 +18,23 @@ export class TaskListService {
     private readonly deleteUseCase: DeleteTaskListUseCase,
   ) {}
 
-  create(createTaskListDto: CreateTaskListDto): Promise<TaskListResponse> {
-    return this.createUseCase.execute(createTaskListDto);
+  create(createTaskListDto: CreateTaskListDto, userId: number): Promise<TaskListResponse> {
+    return this.createUseCase.execute(createTaskListDto, userId);
   }
 
-  findAll(): Promise<TaskListResponse[]> {
-    return this.findAllUseCase.execute();
+  findAll(userId: number): Promise<TaskListResponse[]> {
+    return this.findAllUseCase.execute(userId);
   }
 
-  findOne(id: number): Promise<TaskListResponse> {
-    return this.findOneUseCase.execute(id);
+  findOne(id: number, userId: number): Promise<TaskListResponse> {
+    return this.findOneUseCase.execute(id, userId);
   }
 
-  update(id: number, updateTaskListDto: UpdateTaskListDto): Promise<TaskListResponse> {
-    return this.updateUseCase.execute(id, updateTaskListDto);
+  update(id: number, updateTaskListDto: UpdateTaskListDto, userId: number): Promise<TaskListResponse> {
+    return this.updateUseCase.execute(id, updateTaskListDto, userId);
   }
 
-  remove(id: number): Promise<void> {
-    return this.deleteUseCase.execute(id);
+  remove(id: number, userId: number): Promise<void> {
+    return this.deleteUseCase.execute(id, userId);
   }
 }

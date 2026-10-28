@@ -21,8 +21,8 @@ export class WorkspaceInvitationController {
     type: GetInvitationResponse,
   })
   @ApiResponse({ status: 401, description: 'No autorizado' })
-  getInvitation(@Param('invitationCode', ParseUUIDPipe) invitationCode: string) {
-    return this.workspaceInvitationService.getInvitation(invitationCode);
+  getInvitation(@Param('invitationCode', ParseUUIDPipe) invitationCode: string, @GetUser() user: AuthenticatedUserDto) {
+    return this.workspaceInvitationService.getInvitation(invitationCode, user.id);
   }
 
   // Ruta para enviar una invitación a un workspace
@@ -36,8 +36,8 @@ export class WorkspaceInvitationController {
 
   @Get('workspace/:workspaceCode')
   @ApiOperation({ summary: 'Listar invitaciones de un workspace' })
-  findByWorkspace(@Param('workspaceCode', ParseUUIDPipe) workspaceCode: string) {
-    return this.workspaceInvitationService.getWorkspaceInvitations(workspaceCode);
+  findByWorkspace(@Param('workspaceCode', ParseUUIDPipe) workspaceCode: string, @GetUser() user: AuthenticatedUserDto) {
+    return this.workspaceInvitationService.getWorkspaceInvitations(workspaceCode, user.id);
   }
 
   @Post('resend')
@@ -48,7 +48,10 @@ export class WorkspaceInvitationController {
 
   @Delete(':invitationCode')
   @ApiOperation({ summary: 'Invalidar una invitación' })
-  invalidateInvitation(@Param('invitationCode', ParseUUIDPipe) invitationCode: string) {
-    return this.workspaceInvitationService.invalidateInvitation(invitationCode);
+  invalidateInvitation(
+    @Param('invitationCode', ParseUUIDPipe) invitationCode: string,
+    @GetUser() user: AuthenticatedUserDto,
+  ) {
+    return this.workspaceInvitationService.invalidateInvitation(invitationCode, user.id);
   }
 }

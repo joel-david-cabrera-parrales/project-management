@@ -17,7 +17,13 @@ export class CreateCommentUseCaseImp implements CreateCommentUseCase {
     private readonly workspaceMemberRepository: Repository<WorkspaceMember>,
   ) {}
 
-  async execute(content: string, taskCode: string, userId: number, parentId?: number, mentions?: number[]): Promise<Comment> {
+  async execute(
+    content: string,
+    taskCode: string,
+    userId: number,
+    parentId?: number,
+    mentions?: number[],
+  ): Promise<Comment> {
     const task = await this.taskRepository.findOne({
       where: { code: taskCode, isAvailable: true },
       relations: { taskList: { board: { workspace: true } } },
@@ -32,7 +38,7 @@ export class CreateCommentUseCaseImp implements CreateCommentUseCase {
     if (!member) throw new NotFoundException('You are not a member of this workspace');
 
     if (parentId) {
-      const parent = await this.commentRepository.findOneBy({ id: parentId, isAvailable: true });
+      const parent = await this.commentRepository.findOneBy({ id: parentId, task: { id: task.id }, isAvailable: true });
       if (!parent) throw new NotFoundException('Parent comment not found');
     }
 

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Task } from '../entities/task.entity';
@@ -19,11 +19,19 @@ export class CreateTaskLabelUseCaseImp implements CreateTaskLabelUseCase {
   ) {}
 
   async execute(taskId: number, dto: CreateTaskLabelDto): Promise<TaskLabel> {
-    const task = await this.taskRepository.findOneBy({ id: taskId });
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId, isAvailable: true },
+      relations: { taskList: { board: { workspace: true } } },
+    });
     if (!task) throw new NotFoundException('Task not found');
 
-    const label = await this.labelEntityRepository.findOneBy({ id: dto.labelId });
+    const label = await this.labelEntityRepository.findOne({
+      where: { id: dto.labelId, isAvailable: true },
+      relations: { workspace: true },
+    });
     if (!label) throw new NotFoundException('Label not found');
+    if (label.workspace.id !== task.taskList.board.workspace.id)
+      throw new ForbiddenException('Label belongs to another workspace');
 
     const junction = this.labelRepository.create({ task, label });
     return this.labelRepository.save(junction);

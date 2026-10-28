@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,6 +17,7 @@ import { AssignMemberDto } from './dto/assign-member.dto';
 import { CreateTaskLabelDto } from './dto/create-task-label.dto';
 import { ReorderTasksDto } from './dto/reorder-tasks.dto';
 import { AuthenticatedUserDto } from 'src/auth/dto/authenticated-user.dto';
+import { AuthorizeTaskAccessUseCase } from './classes/authorize-task-access.class';
 
 @Injectable()
 export class TaskService {
@@ -32,6 +33,7 @@ export class TaskService {
     private readonly reorderTasksUseCase: ReorderTasksUseCase,
     private readonly sendTaskAssignedEmailUseCase: SendTaskAssignedEmailUseCase,
     private readonly sendTaskCompletedEmailUseCase: SendTaskCompletedEmailUseCase,
+    private readonly authorizeTaskAccess: AuthorizeTaskAccessUseCase,
   ) {}
 
   async create(createTaskDto: CreateTaskDto) {
@@ -46,7 +48,10 @@ export class TaskService {
     });
     if (!taskList) throw new NotFoundException('Task list no encontrado');
 
-    const { taskListId: _, workspaceCode, boardCode, ...task } = createTaskDto;
+    const { taskListId, workspaceCode, boardCode, ...task } = createTaskDto;
+    void taskListId;
+    void workspaceCode;
+    void boardCode;
     const $task = this.taskRepository.create({ taskList, ...task });
     const newTask = await this.taskRepository.save($task);
     return this.findOne(newTask.id);
@@ -56,7 +61,8 @@ export class TaskService {
     return `This action returns all tasks`;
   }
 
-  async findOne(id: number): Promise<ITask> {
+  async findOne(id: number, userId?: number): Promise<ITask> {
+    if (userId !== undefined) await this.authorizeTaskAccess.execute(id, userId);
     const task = await this.taskRepository
       .createQueryBuilder('task')
       .leftJoinAndSelect('task.labels', 'taskLabel')
@@ -110,27 +116,38 @@ export class TaskService {
     };
   }
 
-  async update(id: number, updateTaskDto: UpdateTaskDto, user?: AuthenticatedUserDto) {
+  async update(id: number, updateTaskDto: UpdateTaskDto, user: AuthenticatedUserDto, workspaceCode: string) {
+    const authorizedTask = await this.authorizeTaskAccess.execute(id, user.id, ['owner', 'member'], workspaceCode);
     const entity = await this.taskRepository.findOneBy({ id });
     if (!entity) throw new NotFoundException('Tarea no encontrada');
     if (!entity.isAvailable) throw new NotFoundException('Tarea no disponible');
 
     if (updateTaskDto.taskListId !== undefined) {
+      const targetList = await this.taskListRepository.findOne({
+        where: { id: updateTaskDto.taskListId, isAvailable: true },
+        relations: { board: { workspace: true } },
+      });
+      if (!targetList) throw new NotFoundException('Task list not found');
+      if (targetList.board.workspace.code !== authorizedTask.taskList.board.workspace.code) {
+        throw new ForbiddenException('A task cannot be moved to another workspace');
+      }
       entity.taskList = { id: updateTaskDto.taskListId } as TaskList;
     }
 
-    const { taskListId, ...rest } = updateTaskDto;
+    const rest = { ...updateTaskDto };
+    delete rest.taskListId;
     this.taskRepository.merge(entity, rest);
     await this.taskRepository.save(entity);
 
-    if (!entity.completed && updateTaskDto.completed && user) {
+    if (!entity.completed && updateTaskDto.completed) {
       this.sendTaskCompletedEmailUseCase.execute(id, user.code).catch(() => {});
     }
 
     return this.findOne(id);
   }
 
-  async remove(id: number) {
+  async remove(id: number, userId: number, workspaceCode: string) {
+    await this.authorizeTaskAccess.execute(id, userId, ['owner'], workspaceCode);
     const entity = await this.taskRepository.findOneBy({ id });
     if (!entity) throw new NotFoundException('Tarea no encontrada');
     if (!entity.isAvailable) throw new NotFoundException('Tarea no disponible');
@@ -138,28 +155,32 @@ export class TaskService {
     return this.taskRepository.save(entity);
   }
 
-  async addLabel(taskId: number, dto: CreateTaskLabelDto) {
+  async addLabel(taskId: number, dto: CreateTaskLabelDto, userId: number, workspaceCode: string) {
+    await this.authorizeTaskAccess.execute(taskId, userId, ['owner', 'member'], workspaceCode);
     await this.createTaskLabelUseCase.execute(taskId, dto);
     return this.findOne(taskId);
   }
 
-  async removeLabel(taskId: number, labelId: number) {
+  async removeLabel(taskId: number, labelId: number, userId: number, workspaceCode: string) {
+    await this.authorizeTaskAccess.execute(taskId, userId, ['owner'], workspaceCode);
     await this.deleteTaskLabelUseCase.execute(taskId, labelId);
     return this.findOne(taskId);
   }
 
-  async assignMember(taskId: number, dto: AssignMemberDto) {
+  async assignMember(taskId: number, dto: AssignMemberDto, userId: number, workspaceCode: string) {
+    await this.authorizeTaskAccess.execute(taskId, userId, ['owner', 'member'], workspaceCode);
     await this.assignMemberUseCase.execute(taskId, dto);
     this.sendTaskAssignedEmailUseCase.execute(dto.workspaceMemberId, taskId).catch(() => {});
     return this.findOne(taskId);
   }
 
-  async unassignMember(taskId: number, assignmentId: number) {
-    await this.unassignMemberUseCase.execute(assignmentId);
+  async unassignMember(taskId: number, assignmentId: number, userId: number, workspaceCode: string) {
+    await this.authorizeTaskAccess.execute(taskId, userId, ['owner'], workspaceCode);
+    await this.unassignMemberUseCase.execute(assignmentId, taskId);
     return this.findOne(taskId);
   }
 
-  async reorder(dto: ReorderTasksDto): Promise<void> {
-    await this.reorderTasksUseCase.execute(dto);
+  async reorder(dto: ReorderTasksDto, userId: number, workspaceCode: string): Promise<void> {
+    await this.reorderTasksUseCase.execute(dto, userId, workspaceCode);
   }
 }

@@ -17,6 +17,7 @@ import { FindOneTaskListUseCaseImp } from './use-cases/find-one-task-list.use-ca
 import { UpdateTaskListUseCaseImp } from './use-cases/update-task-list.use-case';
 import { DeleteTaskListUseCaseImp } from './use-cases/delete-task-list.use-case';
 import { TaskListMapper } from './mappers/task-list.mapper';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   controllers: [TaskListController],
@@ -29,7 +30,7 @@ import { TaskListMapper } from './mappers/task-list.mapper';
     { provide: UpdateTaskListUseCase, useClass: UpdateTaskListUseCaseImp },
     { provide: DeleteTaskListUseCase, useClass: DeleteTaskListUseCaseImp },
   ],
-  imports: [TypeOrmModule.forFeature([TaskList, Board]), AuthModule, TaskModule],
+  imports: [TypeOrmModule.forFeature([TaskList, Board]), AuthModule, TaskModule, CommonModule],
   exports: [
     TypeOrmModule,
     CreateTaskListUseCase,

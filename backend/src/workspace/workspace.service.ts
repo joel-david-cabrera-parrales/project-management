@@ -135,11 +135,12 @@ export class WorkspaceService {
   async toggleBoardStar(boardCode: string, workspaceCode: string, user: AuthenticatedUserDto) {
     // Validacion de datos
     await this.authService.isValidUser(user.code);
-    await this.findOneBySearchTerm(workspaceCode, user);
+    const workspace = await this.findOneBySearchTerm(workspaceCode, user);
 
     // Proceso de actualización
     const board = await this.boardRepository.findOne({ where: { code: boardCode } });
     if (!board) throw new NotFoundException('Board not found');
+    if (board.workspace.id !== workspace.id) throw new NotFoundException('Board not found in this workspace');
     board.starred = !board.starred;
     await this.boardRepository.save(board);
     return { starred: board.starred };

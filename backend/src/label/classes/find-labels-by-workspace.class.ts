@@ -1,5 +1,5 @@
 import { Label } from '../entities/label.entity';
 
 export abstract class FindLabelsByWorkspaceUseCase {
-  abstract execute(workspaceCode: string): Promise<Label[]>;
+  abstract execute(workspaceCode: string, userId: number): Promise<Label[]>;
 }

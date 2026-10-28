@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { WorkspaceInvitation } from '../entities/workspace-invitation.entity';
 import { GetWorkspaceInvitationsUseCase, InvitationItem } from '../classes/get-workspace-invitations.class';
+import { AuthorizeWorkspaceMembershipUseCase } from 'src/common/classes/authorize-workspace-membership.class';
 
 const AVATAR_COLORS = ['#ef4444', '#6366f1', '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6'];
 
@@ -20,9 +21,11 @@ export class GetWorkspaceInvitationsUseCaseImp implements GetWorkspaceInvitation
   constructor(
     @InjectRepository(WorkspaceInvitation)
     private readonly invitationRepo: Repository<WorkspaceInvitation>,
+    private readonly authorizeWorkspaceMembership: AuthorizeWorkspaceMembershipUseCase,
   ) {}
 
-  async execute(workspaceCode: string): Promise<InvitationItem[]> {
+  async execute(workspaceCode: string, userId: number): Promise<InvitationItem[]> {
+    await this.authorizeWorkspaceMembership.execute(workspaceCode, userId, ['owner']);
     const invitations = await this.invitationRepo.find({
       where: { workspace: { code: workspaceCode }, accepted: false, isAvailable: true },
       relations: { user: { profile: true } },

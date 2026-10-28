@@ -7,6 +7,7 @@ import { CreateTaskListDto } from '../dto/create-task-list.dto';
 import { TaskListResponse } from 'src/common/responses/task-list.response';
 import { CreateTaskListUseCase } from '../classes/create-task-list.class';
 import { TaskListMapper } from '../mappers/task-list.mapper';
+import { AuthorizeWorkspaceMembershipUseCase } from 'src/common/classes/authorize-workspace-membership.class';
 
 @Injectable()
 export class CreateTaskListUseCaseImp implements CreateTaskListUseCase {
@@ -16,11 +17,16 @@ export class CreateTaskListUseCaseImp implements CreateTaskListUseCase {
     @InjectRepository(Board)
     private readonly boardRepository: Repository<Board>,
     private readonly mapper: TaskListMapper,
+    private readonly authorizeWorkspaceMembership: AuthorizeWorkspaceMembershipUseCase,
   ) {}
 
-  async execute(dto: CreateTaskListDto): Promise<TaskListResponse> {
-    const board = await this.boardRepository.findOneBy({ id: dto.boardId });
+  async execute(dto: CreateTaskListDto, userId: number): Promise<TaskListResponse> {
+    const board = await this.boardRepository.findOne({
+      where: { id: dto.boardId, isAvailable: true },
+      relations: { workspace: true },
+    });
     if (!board) throw new NotFoundException('Board not found');
+    await this.authorizeWorkspaceMembership.execute(board.workspace.code, userId, ['owner', 'member']);
 
     const entity = this.taskListRepository.create({
       title: dto.title,

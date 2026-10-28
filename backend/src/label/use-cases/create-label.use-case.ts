@@ -5,6 +5,7 @@ import { Label } from '../entities/label.entity';
 import { Workspace } from 'src/workspace/entities/workspace.entity';
 import { CreateLabelDto } from '../dto/create-label.dto';
 import { CreateLabelUseCase } from '../classes/create-label.class';
+import { AuthorizeWorkspaceMembershipUseCase } from 'src/common/classes/authorize-workspace-membership.class';
 
 @Injectable()
 export class CreateLabelUseCaseImp implements CreateLabelUseCase {
@@ -13,11 +14,13 @@ export class CreateLabelUseCaseImp implements CreateLabelUseCase {
     private readonly labelRepository: Repository<Label>,
     @InjectRepository(Workspace)
     private readonly workspaceRepository: Repository<Workspace>,
+    private readonly authorizeWorkspaceMembership: AuthorizeWorkspaceMembershipUseCase,
   ) {}
 
-  async execute(dto: CreateLabelDto): Promise<Label> {
+  async execute(dto: CreateLabelDto, userId: number): Promise<Label> {
     const workspace = await this.workspaceRepository.findOneBy({ code: dto.workspaceCode });
     if (!workspace) throw new NotFoundException('Workspace not found');
+    await this.authorizeWorkspaceMembership.execute(workspace.code, userId, ['owner', 'member']);
     const label = this.labelRepository.create({ name: dto.name, color: dto.color, workspace });
     return this.labelRepository.save(label);
   }

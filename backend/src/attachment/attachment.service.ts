@@ -22,9 +22,7 @@ export class AttachmentService {
       fileSize: attachment.fileSize,
       mimeType: attachment.mimeType,
       url: `/api/v1/attachment/file/${attachment.code}`,
-      createdAt: attachment.createdAt instanceof Date
-        ? attachment.createdAt.toISOString()
-        : attachment.createdAt,
+      createdAt: attachment.createdAt instanceof Date ? attachment.createdAt.toISOString() : attachment.createdAt,
     };
   }
 
@@ -33,17 +31,17 @@ export class AttachmentService {
     return this.mapToResponse(attachment);
   }
 
-  async findByTask(taskCode: string): Promise<AttachmentResponse[]> {
-    const attachments = await this.findAttachmentsByTaskUseCase.execute(taskCode);
+  async findByTask(taskCode: string, userId: number): Promise<AttachmentResponse[]> {
+    const attachments = await this.findAttachmentsByTaskUseCase.execute(taskCode, userId);
     return attachments.map((a) => this.mapToResponse(a));
   }
 
-  async getFileInfo(code: string) {
-    return this.findAttachmentByCodeUseCase.execute(code);
+  async getFileInfo(code: string, userId: number) {
+    return this.findAttachmentByCodeUseCase.execute(code, userId);
   }
 
-  async remove(code: string): Promise<AttachmentResponse> {
-    const attachment = await this.deleteAttachmentUseCase.execute(code);
+  async remove(code: string, userId: number): Promise<AttachmentResponse> {
+    const attachment = await this.deleteAttachmentUseCase.execute(code, userId);
     return this.mapToResponse(attachment);
   }
 }

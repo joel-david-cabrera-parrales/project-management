@@ -1,5 +1,5 @@
 import { Label } from '../entities/label.entity';
 
 export abstract class DeleteLabelUseCase {
-  abstract execute(id: number): Promise<Label>;
+  abstract execute(id: number, userId: number, workspaceCode: string): Promise<Label>;
 }

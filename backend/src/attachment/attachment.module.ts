@@ -14,6 +14,7 @@ import { FindAttachmentByCodeUseCase } from './classes/find-attachment-by-code.c
 import { FindAttachmentByCodeUseCaseImp } from './use-cases/find-attachment-by-code.use-case';
 import { DeleteAttachmentUseCase } from './classes/delete-attachment.class';
 import { DeleteAttachmentUseCaseImp } from './use-cases/delete-attachment.use-case';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   controllers: [AttachmentController],
@@ -28,6 +29,7 @@ import { DeleteAttachmentUseCaseImp } from './use-cases/delete-attachment.use-ca
     TypeOrmModule.forFeature([Attachment]),
     forwardRef(() => TaskModule),
     AuthModule,
+    CommonModule,
     forwardRef(() => WorkspaceModule),
   ],
   exports: [TypeOrmModule, AttachmentService],

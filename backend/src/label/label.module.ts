@@ -13,6 +13,7 @@ import { UpdateLabelUseCase } from './classes/update-label.class';
 import { UpdateLabelUseCaseImp } from './use-cases/update-label.use-case';
 import { DeleteLabelUseCase } from './classes/delete-label.class';
 import { DeleteLabelUseCaseImp } from './use-cases/delete-label.use-case';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   controllers: [LabelController],
@@ -23,7 +24,7 @@ import { DeleteLabelUseCaseImp } from './use-cases/delete-label.use-case';
     { provide: UpdateLabelUseCase, useClass: UpdateLabelUseCaseImp },
     { provide: DeleteLabelUseCase, useClass: DeleteLabelUseCaseImp },
   ],
-  imports: [TypeOrmModule.forFeature([Label]), forwardRef(() => WorkspaceModule), AuthModule],
+  imports: [TypeOrmModule.forFeature([Label]), forwardRef(() => WorkspaceModule), AuthModule, CommonModule],
   exports: [TypeOrmModule, LabelService],
 })
 export class LabelModule {}

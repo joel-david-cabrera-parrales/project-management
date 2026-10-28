@@ -7,6 +7,7 @@ import { Workspace } from '../entities/workspace.entity';
 import { WorkspaceMapper } from '../mappers/workspace.mapper';
 import { Attachment } from 'src/attachment/entities/attachment.entity';
 import { Comment } from 'src/comment/entities/comment.entity';
+import { AuthorizeWorkspaceMembershipUseCase } from 'src/common/classes/authorize-workspace-membership.class';
 
 @Injectable()
 export class FindOneWorkspaceUseCaseImp extends FindOneWorkspaceUseCase {
@@ -17,6 +18,7 @@ export class FindOneWorkspaceUseCaseImp extends FindOneWorkspaceUseCase {
     private readonly attachmentRepository: Repository<Attachment>,
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
+    private readonly authorizeWorkspaceMembership: AuthorizeWorkspaceMembershipUseCase,
   ) {
     super();
   }
@@ -45,6 +47,7 @@ export class FindOneWorkspaceUseCaseImp extends FindOneWorkspaceUseCase {
     if (workspaces.length == 0) return null;
 
     const workspace = workspaces[0];
+    if (userId !== undefined) await this.authorizeWorkspaceMembership.execute(workspace.code, userId);
     const taskIds = workspace.boards
       .flatMap((b) => b.taskList)
       .flatMap((tl) => tl.tasks)

@@ -25,9 +25,9 @@ export class AddMemberToWorkspaceUseCaseImp extends AddMemberToWorkspaceUseCase 
     user: AuthenticatedUserDto,
     workspace: Workspace,
   ): Promise<WorkspaceMember> {
-    const userLogged = await this.authService.isValidUser(user.code);
+    await this.authService.isValidUser(user.code);
     const newMember = await this.authService.isValidUser(dto.newMemberCode);
-    const invitation = await this.findInvitation(dto.workspaceInvitationCode);
+    const invitation = await this.findInvitation(dto.workspaceInvitationCode, workspace.id, newMember.id);
     const existingMember = await this.workspaceMemberRepository.findOne({
       where: { user: { id: newMember.id }, workspace: { id: workspace.id } },
     });
@@ -60,11 +60,17 @@ export class AddMemberToWorkspaceUseCaseImp extends AddMemberToWorkspaceUseCase 
     return workspaceMember;
   }
 
-  private async findInvitation(code: string) {
-    const invitation = await this.workspaceInvitacionRepository.findOneBy({ code });
+  private async findInvitation(code: string, workspaceId: number, invitedUserId: number) {
+    const invitation = await this.workspaceInvitacionRepository.findOne({
+      where: { code },
+      relations: { workspace: true, user: true },
+    });
     if (!invitation) throw new BadRequestException(`The invitation code is not valid`);
     if (invitation.accepted) throw new BadRequestException(`The invitation has already been accepted`);
     if (!invitation.isAvailable) throw new BadRequestException(`The invitation is not available`);
+    if (invitation.workspace.id !== workspaceId || invitation.user.id !== invitedUserId) {
+      throw new BadRequestException('Invitation does not match the workspace and invited user');
+    }
     return invitation;
   }
 }
