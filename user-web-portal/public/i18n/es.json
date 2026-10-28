@@ -105,6 +105,23 @@
     "commentDeleted": "Comentario eliminado exitosamente",
     "attachmentDeleted": "Archivo adjunto eliminado exitosamente"
   },
+  "appShell": {
+    "brand": "Task App",
+    "navigation": "Abrir navegación",
+    "appSwitcher": "Abrir aplicaciones",
+    "plans": "Ver los planes",
+    "plansComingSoon": "La información de planes estará disponible próximamente.",
+    "notifications": "Notificaciones",
+    "notificationsComingSoon": "Todavía no tienes notificaciones nuevas.",
+    "activity": "Actividad reciente",
+    "activityComingSoon": "El registro de actividad estará disponible próximamente.",
+    "help": "Ayuda",
+    "helpComingSoon": "El centro de ayuda estará disponible próximamente.",
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "workspaces": "Espacios de trabajo",
+    "logout": "Cerrar sesión"
+  },
   "auth": {
     "brand": {
       "eyebrow": "Gestión de tareas, en equipo",
@@ -230,10 +247,24 @@
       "caption": "Espacios de trabajo",
       "footer": "Organiza tu trabajo con {{appName}}"
     },
+    "topbar": {
+      "darkMode": "Cambiar a modo oscuro",
+      "lightMode": "Cambiar a modo claro"
+    },
     "list": {
       "title": "Mis Espacios de Trabajo",
       "subtitle": "Continúa donde tu equipo dejó el trabajo.",
       "newWorkspace": "Nuevo Espacio",
+      "searchPlaceholder": "Buscar espacios de trabajo...",
+      "searchResults": "Espacios activos coincidentes",
+      "viewOptions": "Opciones de vista",
+      "gridView": "Cuadrícula",
+      "listView": "Lista",
+      "noSearchResults": "No encontramos espacios activos con esa búsqueda",
+      "noSearchResultsDesc": "Prueba con otro nombre o descripción.",
+      "clearSearch": "Limpiar búsqueda",
+      "noClosedWorkspaces": "No hay espacios cerrados.",
+      "noArchivedWorkspaces": "No hay espacios archivados.",
       "noWorkspaces": "Aún no tienes espacios de trabajo",
       "noWorkspacesDesc": "Crea tu primer espacio para empezar",
       "noDescription": "Sin descripción",
@@ -241,6 +272,11 @@
       "retry": "Intentar de nuevo",
       "deleteConfirm": "¿Estás seguro de que deseas eliminar este espacio de trabajo?",
       "deleteConfirmDesc": "Todos los datos se eliminarán permanentemente"
+    },
+    "status": {
+      "active": "Activos",
+      "closed": "Cerrados",
+      "archived": "Archivados"
     },
     "detail": {
       "back": "Volver a mis espacios",
@@ -259,6 +295,10 @@
       "nameLabel": "Nombre",
       "namePlaceholder": "Nombre del espacio",
       "descPlaceholder": "Descripción (opcional)",
+      "nameMinLength": "El nombre debe tener al menos 5 caracteres.",
+      "colorLabel": "Color del espacio",
+      "chooseColor": "Elegir color {{color}}",
+      "createError": "No se pudo crear el espacio. Inténtalo de nuevo.",
       "createButton": "Crear espacio",
       "updateButton": "Actualizar espacio",
       "creating": "Creando...",
@@ -423,6 +463,34 @@
       "logout": "Cerrar sesión",
       "workspaces": "Espacios",
       "switchWorkspace": "Cambiar espacio"
+    }
+  },
+  "profile": {
+    "demo": {
+      "eyebrow": "Cuenta",
+      "title": "Tu perfil",
+      "subtitle": "Información básica de la sesión actual.",
+      "preview": "Vista previa",
+      "active": "Sesión activa",
+      "emailLabel": "Correo electrónico",
+      "nameLabel": "Nombre",
+      "accountLabel": "Cuenta creada"
+    }
+  },
+  "settings": {
+    "demo": {
+      "eyebrow": "Preferencias",
+      "title": "Configuración",
+      "subtitle": "Un espacio inicial para las preferencias de tu cuenta.",
+      "preview": "Vista previa",
+      "languageTitle": "Idioma de la aplicación",
+      "languageDescription": "Cambia el idioma usado en la interfaz.",
+      "changeLanguage": "Cambiar idioma",
+      "appearanceTitle": "Apariencia",
+      "appearanceDescription": "Cambia entre el tema claro y oscuro.",
+      "notificationsTitle": "Notificaciones",
+      "notificationsDescription": "Administra cómo y cuándo recibes avisos.",
+      "comingSoon": "Próximamente"
     }
   }
 }

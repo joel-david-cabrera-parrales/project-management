@@ -5,49 +5,111 @@
       <h1 id="workspace-list-title">{{ 'workspace.list.title' | translate }}</h1>
       <p class="workspace-page-subtitle">{{ 'workspace.list.subtitle' | translate }}</p>
     </div>
+    <button class="workspace-create-page-button" type="button" (click)="store.createModalOpen.set(true)">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v14M3 10h14"/></svg>
+      {{ 'workspace.list.newWorkspace' | translate }}
+    </button>
   </header>
 
-  @if (loading()) {
+  @if (store.loading()) {
     <div class="workspace-state" role="status" aria-live="polite">
       <span class="workspace-spinner" aria-hidden="true"></span>
       <span>{{ 'common.loading' | translate }}</span>
     </div>
-  } @else if (loadError()) {
+  } @else if (store.loadError()) {
     <div class="workspace-state workspace-state-error" role="alert">
       <p>{{ 'workspace.list.loadError' | translate }}</p>
-      <button class="workspace-retry-button" type="button" (click)="loadWorkspaces()">
+      <button class="workspace-retry-button" type="button" (click)="store.load()">
         {{ 'workspace.list.retry' | translate }}
       </button>
     </div>
-  } @else if (workspaces().length === 0) {
-    <div class="workspace-empty-state">
-      <span class="workspace-empty-icon" aria-hidden="true">▦</span>
-      <h2>{{ 'workspace.list.noWorkspaces' | translate }}</h2>
-      <p>{{ 'workspace.list.noWorkspacesDesc' | translate }}</p>
-    </div>
   } @else {
-    <div class="workspace-grid">
-      @for (workspace of workspaces(); track workspace.code) {
-        <a class="workspace-card" [routerLink]="['/workspace', workspace.code]">
-          <div class="workspace-card-topline">
-            <span class="workspace-avatar" [style.background-color]="workspace.color" aria-hidden="true">
-              {{ workspace.initials || 'W' }}
-            </span>
-            <span class="workspace-card-arrow" aria-hidden="true">↗</span>
-          </div>
+    <section class="workspace-section" aria-labelledby="active-workspaces-title">
+      <div class="workspace-section-heading">
+        <div class="workspace-section-title-group">
+          <span class="workspace-section-marker workspace-section-marker-active" aria-hidden="true"></span>
+          <h2 id="active-workspaces-title">{{ 'workspace.status.active' | translate }}</h2>
+          <span class="workspace-section-count">{{ store.activeWorkspaces().length }}</span>
+        </div>
+        <div class="workspace-view-toggle" role="group" [attr.aria-label]="'workspace.list.viewOptions' | translate">
+          <button type="button" [class.selected]="store.viewMode() === 'grid'"
+            [attr.aria-pressed]="store.viewMode() === 'grid'" [attr.aria-label]="'workspace.list.gridView' | translate"
+            (click)="store.viewMode.set('grid')">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="2.5" width="6" height="6" rx="1"/><rect x="11.5" y="2.5" width="6" height="6" rx="1"/><rect x="2.5" y="11.5" width="6" height="6" rx="1"/><rect x="11.5" y="11.5" width="6" height="6" rx="1"/></svg>
+            <span>{{ 'workspace.list.gridView' | translate }}</span>
+          </button>
+          <button type="button" [class.selected]="store.viewMode() === 'list'"
+            [attr.aria-pressed]="store.viewMode() === 'list'" [attr.aria-label]="'workspace.list.listView' | translate"
+            (click)="store.viewMode.set('list')">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7.5 4h10M7.5 10h10M7.5 16h10"/><circle cx="3.5" cy="4" r=".7"/><circle cx="3.5" cy="10" r=".7"/><circle cx="3.5" cy="16" r=".7"/></svg>
+            <span>{{ 'workspace.list.listView' | translate }}</span>
+          </button>
+        </div>
+      </div>
 
-          <div class="workspace-card-copy">
-            <h2>{{ workspace.name }}</h2>
-            <p>{{ workspace.description || ('workspace.list.noDescription' | translate) }}</p>
-          </div>
-
-          <div class="workspace-card-meta">
-            <span>{{ 'workspace.card.boards' | translate: { count: workspace.boardCount } }}</span>
-            <span class="workspace-meta-dot" aria-hidden="true"></span>
-            <span>{{ 'workspace.card.members' | translate: { count: workspace.memberCount } }}</span>
-          </div>
-        </a>
+      @if (store.activeWorkspaces().length === 0) {
+        <div class="workspace-empty-state">
+          <span class="workspace-empty-icon" aria-hidden="true">▦</span>
+          <h3>{{ 'workspace.list.noWorkspaces' | translate }}</h3>
+          <p>{{ 'workspace.list.noWorkspacesDesc' | translate }}</p>
+        </div>
+      } @else if (store.filteredActiveWorkspaces().length === 0) {
+        <div class="workspace-empty-state workspace-search-empty">
+          <h3>{{ 'workspace.list.noSearchResults' | translate }}</h3>
+          <p>{{ 'workspace.list.noSearchResultsDesc' | translate }}</p>
+          <button type="button" class="workspace-clear-search" (click)="store.searchQuery.set('')">
+            {{ 'workspace.list.clearSearch' | translate }}
+          </button>
+        </div>
+      } @else {
+        <div class="workspace-collection" [class.workspace-collection-list]="store.viewMode() === 'list'">
+          @for (workspace of store.filteredActiveWorkspaces(); track workspace.code) {
+            <app-workspace-card [workspace]="workspace" [viewMode]="store.viewMode()" />
+          }
+        </div>
       }
-    </div>
+    </section>
+
+    <section class="workspace-section workspace-secondary-section" aria-labelledby="closed-workspaces-title">
+      <button class="workspace-collapsible-heading" type="button" [attr.aria-expanded]="store.showClosed()"
+        aria-controls="closed-workspaces-content" (click)="store.showClosed.update((visible) => !visible)">
+        <span class="workspace-section-title-group">
+          <span class="workspace-section-marker workspace-section-marker-closed" aria-hidden="true"></span>
+          <span id="closed-workspaces-title">{{ 'workspace.status.closed' | translate }}</span>
+          <span class="workspace-section-count">{{ store.closedWorkspaces().length }}</span>
+        </span>
+        <svg class="workspace-chevron" [class.expanded]="store.showClosed()" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 7.5 5 5 5-5"/></svg>
+      </button>
+      @if (store.showClosed()) {
+        <div id="closed-workspaces-content" class="workspace-collection" [class.workspace-collection-list]="store.viewMode() === 'list'">
+          @for (workspace of store.closedWorkspaces(); track workspace.code) {
+            <app-workspace-card [workspace]="workspace" [viewMode]="store.viewMode()" />
+          } @empty {
+            <p class="workspace-section-empty">{{ 'workspace.list.noClosedWorkspaces' | translate }}</p>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="workspace-section workspace-secondary-section" aria-labelledby="archived-workspaces-title">
+      <button class="workspace-collapsible-heading" type="button" [attr.aria-expanded]="store.showArchived()"
+        aria-controls="archived-workspaces-content" (click)="store.showArchived.update((visible) => !visible)">
+        <span class="workspace-section-title-group">
+          <span class="workspace-section-marker workspace-section-marker-archived" aria-hidden="true"></span>
+          <span id="archived-workspaces-title">{{ 'workspace.status.archived' | translate }}</span>
+          <span class="workspace-section-count">{{ store.archivedWorkspaces().length }}</span>
+        </span>
+        <svg class="workspace-chevron" [class.expanded]="store.showArchived()" viewBox="0 0 20 20" aria-hidden="true"><path d="m5 7.5 5 5 5-5"/></svg>
+      </button>
+      @if (store.showArchived()) {
+        <div id="archived-workspaces-content" class="workspace-collection" [class.workspace-collection-list]="store.viewMode() === 'list'">
+          @for (workspace of store.archivedWorkspaces(); track workspace.code) {
+            <app-workspace-card [workspace]="workspace" [viewMode]="store.viewMode()" />
+          } @empty {
+            <p class="workspace-section-empty">{{ 'workspace.list.noArchivedWorkspaces' | translate }}</p>
+          }
+        </div>
+      }
+    </section>
   }
 </section>

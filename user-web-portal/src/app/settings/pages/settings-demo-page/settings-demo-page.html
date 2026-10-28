@@ -1,0 +1,44 @@
+<section class="demo-page" aria-labelledby="settings-demo-title">
+  <header class="demo-page-heading">
+    <div>
+      <p class="demo-eyebrow">{{ 'settings.demo.eyebrow' | translate }}</p>
+      <h1 id="settings-demo-title">{{ 'settings.demo.title' | translate }}</h1>
+      <p>{{ 'settings.demo.subtitle' | translate }}</p>
+    </div>
+    <span class="demo-badge">{{ 'settings.demo.preview' | translate }}</span>
+  </header>
+
+  <div class="settings-demo-grid">
+    <article class="settings-demo-card">
+      <span class="settings-demo-icon" aria-hidden="true">◉</span>
+      <div>
+        <h2>{{ 'settings.demo.languageTitle' | translate }}</h2>
+        <p>{{ 'settings.demo.languageDescription' | translate }}</p>
+      </div>
+      <button type="button" class="settings-demo-action" (click)="toggleLanguage()"
+        [attr.aria-label]="'settings.demo.changeLanguage' | translate">
+        {{ translation.currentLang() | uppercase }}
+      </button>
+    </article>
+    <article class="settings-demo-card">
+      <span class="settings-demo-icon" aria-hidden="true">◐</span>
+      <div>
+        <h2>{{ 'settings.demo.appearanceTitle' | translate }}</h2>
+        <p>{{ 'settings.demo.appearanceDescription' | translate }}</p>
+      </div>
+      <button type="button" class="settings-demo-action" (click)="toggleTheme()"
+        [attr.aria-label]="(theme.isDark() ? 'workspace.topbar.lightMode' : 'workspace.topbar.darkMode') | translate"
+        [attr.aria-pressed]="theme.isDark()">
+        {{ (theme.isDark() ? 'workspace.topbar.lightMode' : 'workspace.topbar.darkMode') | translate }}
+      </button>
+    </article>
+    <article class="settings-demo-card settings-demo-upcoming">
+      <span class="settings-demo-icon" aria-hidden="true">♧</span>
+      <div>
+        <h2>{{ 'settings.demo.notificationsTitle' | translate }}</h2>
+        <p>{{ 'settings.demo.notificationsDescription' | translate }}</p>
+      </div>
+      <span class="settings-demo-soon">{{ 'settings.demo.comingSoon' | translate }}</span>
+    </article>
+  </div>
+</section>

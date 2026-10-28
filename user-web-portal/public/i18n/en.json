@@ -105,6 +105,23 @@
     "commentDeleted": "Comment deleted successfully",
     "attachmentDeleted": "Attachment deleted successfully"
   },
+  "appShell": {
+    "brand": "Task App",
+    "navigation": "Open navigation",
+    "appSwitcher": "Open app switcher",
+    "plans": "View plans",
+    "plansComingSoon": "Plan information will be available soon.",
+    "notifications": "Notifications",
+    "notificationsComingSoon": "You have no new notifications yet.",
+    "activity": "Recent activity",
+    "activityComingSoon": "The activity feed will be available soon.",
+    "help": "Help",
+    "helpComingSoon": "The help center will be available soon.",
+    "settings": "Settings",
+    "profile": "Profile",
+    "workspaces": "Workspaces",
+    "logout": "Sign out"
+  },
   "auth": {
     "brand": {
       "eyebrow": "Team task management",
@@ -230,10 +247,24 @@
       "caption": "Workspaces",
       "footer": "Organize your work with {{appName}}"
     },
+    "topbar": {
+      "darkMode": "Switch to dark mode",
+      "lightMode": "Switch to light mode"
+    },
     "list": {
       "title": "My Workspaces",
       "subtitle": "Pick up where your team left off.",
       "newWorkspace": "New Workspace",
+      "searchPlaceholder": "Search workspaces...",
+      "searchResults": "Matching active workspaces",
+      "viewOptions": "View options",
+      "gridView": "Grid",
+      "listView": "List",
+      "noSearchResults": "No active workspaces match that search",
+      "noSearchResultsDesc": "Try another name or description.",
+      "clearSearch": "Clear search",
+      "noClosedWorkspaces": "There are no closed workspaces.",
+      "noArchivedWorkspaces": "There are no archived workspaces.",
       "noWorkspaces": "No workspaces yet",
       "noWorkspacesDesc": "Create your first workspace to get started",
       "noDescription": "No description",
@@ -241,6 +272,11 @@
       "retry": "Try again",
       "deleteConfirm": "Are you sure you want to delete this workspace?",
       "deleteConfirmDesc": "All data will be permanently deleted"
+    },
+    "status": {
+      "active": "Active",
+      "closed": "Closed",
+      "archived": "Archived"
     },
     "detail": {
       "back": "Back to my workspaces",
@@ -259,6 +295,10 @@
       "nameLabel": "Name",
       "namePlaceholder": "Workspace name",
       "descPlaceholder": "Description (optional)",
+      "nameMinLength": "The name must be at least 5 characters.",
+      "colorLabel": "Workspace color",
+      "chooseColor": "Choose color {{color}}",
+      "createError": "The workspace could not be created. Please try again.",
       "createButton": "Create workspace",
       "updateButton": "Update workspace",
       "creating": "Creating...",
@@ -423,6 +463,34 @@
       "logout": "Logout",
       "workspaces": "Workspaces",
       "switchWorkspace": "Switch workspace"
+    }
+  },
+  "profile": {
+    "demo": {
+      "eyebrow": "Account",
+      "title": "Your profile",
+      "subtitle": "Basic information for the current session.",
+      "preview": "Preview",
+      "active": "Active session",
+      "emailLabel": "Email address",
+      "nameLabel": "Name",
+      "accountLabel": "Account created"
+    }
+  },
+  "settings": {
+    "demo": {
+      "eyebrow": "Preferences",
+      "title": "Settings",
+      "subtitle": "An initial home for your account preferences.",
+      "preview": "Preview",
+      "languageTitle": "Application language",
+      "languageDescription": "Change the language used in the interface.",
+      "changeLanguage": "Change language",
+      "appearanceTitle": "Appearance",
+      "appearanceDescription": "Switch between the light and dark themes.",
+      "notificationsTitle": "Notifications",
+      "notificationsDescription": "Manage how and when you receive updates.",
+      "comingSoon": "Coming soon"
     }
   }
 }

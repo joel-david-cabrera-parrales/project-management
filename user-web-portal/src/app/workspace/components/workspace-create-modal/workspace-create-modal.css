@@ -1,0 +1,82 @@
+.workspace-create-form { display: grid; gap: 1.15rem; }
+
+.create-field { display: grid; gap: 0.45rem; }
+
+.create-field label,
+.create-color-field legend {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.create-field input,
+.create-field textarea {
+  width: 100%;
+  border: 1px solid var(--border-default);
+  border-radius: 0.65rem;
+  background: var(--bg-base);
+  padding: 0.7rem 0.8rem;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.create-field textarea { resize: vertical; }
+
+.create-field input:focus,
+.create-field textarea:focus {
+  border-color: var(--accent);
+  outline: 3px solid var(--accent-alpha);
+}
+
+.create-color-field { min-width: 0; border: 0; padding: 0; }
+.create-color-field legend { margin-bottom: 0.55rem; }
+.create-color-options { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+
+.create-color-option {
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 2px solid var(--bg-raised);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px var(--border-default);
+}
+
+.create-color-option.selected { outline: 2px solid var(--text-primary); outline-offset: 2px; }
+.create-color-option:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.field-error, .create-error { color: var(--danger); font-size: 0.75rem; }
+
+.create-actions { display: flex; justify-content: flex-end; gap: 0.65rem; padding-top: 0.25rem; }
+
+.create-cancel,
+.create-submit {
+  min-height: 2.5rem;
+  border: 1px solid var(--border-default);
+  border-radius: 0.65rem;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.create-cancel { background: var(--bg-raised); color: var(--text-secondary); }
+.create-submit { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; border-color: var(--accent); background: var(--accent); color: white; }
+.create-submit:disabled { cursor: not-allowed; opacity: 0.6; }
+.create-cancel:hover { background: var(--bg-hover); }
+.create-submit:not(:disabled):hover { background: var(--accent-hover); }
+
+.create-button-spinner {
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 2px solid rgb(255 255 255 / 40%);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: workspace-create-spin 700ms linear infinite;
+}
+
+@keyframes workspace-create-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}

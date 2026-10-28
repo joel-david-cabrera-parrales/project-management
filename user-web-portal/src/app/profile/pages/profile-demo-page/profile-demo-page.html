@@ -1,0 +1,38 @@
+<section class="demo-page" aria-labelledby="profile-demo-title">
+  <header class="demo-page-heading">
+    <div>
+      <p class="demo-eyebrow">{{ 'profile.demo.eyebrow' | translate }}</p>
+      <h1 id="profile-demo-title">{{ 'profile.demo.title' | translate }}</h1>
+      <p>{{ 'profile.demo.subtitle' | translate }}</p>
+    </div>
+    <span class="demo-badge">{{ 'profile.demo.preview' | translate }}</span>
+  </header>
+
+  <div class="profile-demo-card">
+    @if (profile()?.photo) {
+      <img class="profile-demo-avatar" [src]="profile()?.photo" [alt]="displayName()" />
+    } @else {
+      <span class="profile-demo-avatar profile-demo-initials" aria-hidden="true">{{ initials() }}</span>
+    }
+    <div class="profile-demo-identity">
+      <h2>{{ displayName() }}</h2>
+      <p>{{ profile()?.email }}</p>
+    </div>
+    <span class="profile-demo-status"><span aria-hidden="true"></span>{{ 'profile.demo.active' | translate }}</span>
+  </div>
+
+  <div class="profile-demo-grid">
+    <article class="profile-demo-detail">
+      <span>{{ 'profile.demo.emailLabel' | translate }}</span>
+      <strong>{{ profile()?.email || '—' }}</strong>
+    </article>
+    <article class="profile-demo-detail">
+      <span>{{ 'profile.demo.nameLabel' | translate }}</span>
+      <strong>{{ displayName() || '—' }}</strong>
+    </article>
+    <article class="profile-demo-detail">
+      <span>{{ 'profile.demo.accountLabel' | translate }}</span>
+      <strong>{{ profile()?.createdAt || '—' }}</strong>
+    </article>
+  </div>
+</section>

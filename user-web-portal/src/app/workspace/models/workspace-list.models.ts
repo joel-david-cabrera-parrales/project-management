@@ -11,13 +11,21 @@ export interface WorkspaceListApiResponse {
   boards?: Array<{ boardId: number }>;
 }
 
+export type WorkspaceStatus = 1 | 2 | 3;
+
+export interface CreateWorkspacePayload {
+  title: string;
+  description?: string;
+  color: string;
+}
+
 export interface WorkspaceListItem {
   code: string;
   name: string;
   initials: string;
   description: string;
   color: string;
-  status: number;
+  status: WorkspaceStatus;
   boardCount: number;
   memberCount: number;
   createdAt: Date;

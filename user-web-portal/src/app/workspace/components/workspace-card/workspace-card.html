@@ -1,0 +1,28 @@
+<a class="workspace-card" [class.workspace-card-list]="viewMode() === 'list'"
+  [class.workspace-card-closed]="workspace().status === 2"
+  [class.workspace-card-archived]="workspace().status === 3"
+  [routerLink]="['/workspace', workspace().code]">
+  <span class="workspace-avatar" [style.background-color]="workspace().color" aria-hidden="true">
+    {{ workspace().initials || 'W' }}
+  </span>
+
+  <span class="workspace-card-copy">
+    <span class="workspace-card-title-row">
+      <span class="workspace-card-title">{{ workspace().name }}</span>
+      <span class="workspace-status" [class.status-active]="workspace().status === 1"
+        [class.status-closed]="workspace().status === 2" [class.status-archived]="workspace().status === 3">
+        {{ statusKey() | translate }}
+      </span>
+    </span>
+    <span class="workspace-card-description">
+      {{ workspace().description || ('workspace.list.noDescription' | translate) }}
+    </span>
+  </span>
+
+  <span class="workspace-card-meta">
+    <span>{{ 'workspace.card.boards' | translate: { count: workspace().boardCount } }}</span>
+    <span class="workspace-meta-dot" aria-hidden="true"></span>
+    <span>{{ 'workspace.card.members' | translate: { count: workspace().memberCount } }}</span>
+  </span>
+  <svg class="workspace-card-arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 15 15 5M6 5h9v9"/></svg>
+</a>

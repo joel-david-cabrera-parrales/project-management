@@ -1,4 +1,4 @@
-import { WorkspaceListApiResponse, WorkspaceListItem } from './workspace-list.models';
+import { WorkspaceListApiResponse, WorkspaceListItem, WorkspaceStatus } from './workspace-list.models';
 
 export class WorkspaceListMapper {
   static toWorkspaceListItem(response: WorkspaceListApiResponse): WorkspaceListItem {
@@ -15,7 +15,7 @@ export class WorkspaceListMapper {
         .join(''),
       description: response.description ?? '',
       color: response.color || '#2563eb',
-      status: response.status,
+      status: response.status as WorkspaceStatus,
       boardCount: response.boards?.length ?? 0,
       memberCount: response.workspaceMembers?.length ?? 0,
       createdAt: new Date(response.createdAt),

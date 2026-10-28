@@ -1,0 +1,51 @@
+<shared-modal [open]="open()" [title]="'workspace.form.createTitle' | translate" (close)="close.emit()" [size]="'md'">
+  <form modal-body class="workspace-create-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="create-field">
+      <label for="workspace-create-title">{{ 'workspace.form.nameLabel' | translate }}</label>
+      <input id="workspace-create-title" type="text" formControlName="title" maxlength="100" autofocus
+        [placeholder]="'workspace.form.namePlaceholder' | translate"
+        [attr.aria-invalid]="form.controls.title.invalid && form.controls.title.touched" />
+      @if (form.controls.title.touched && form.controls.title.hasError('minlength')) {
+        <small class="field-error">{{ 'workspace.form.nameMinLength' | translate }}</small>
+      } @else if (form.controls.title.touched && form.controls.title.hasError('required')) {
+        <small class="field-error">{{ 'auth.validation.required' | translate }}</small>
+      }
+    </div>
+
+    <div class="create-field">
+      <label for="workspace-create-description">{{ 'common.description' | translate }}</label>
+      <textarea id="workspace-create-description" formControlName="description" rows="3" maxlength="500"
+        [placeholder]="'workspace.form.descPlaceholder' | translate"></textarea>
+    </div>
+
+    <fieldset class="create-field create-color-field">
+      <legend>{{ 'workspace.form.colorLabel' | translate }}</legend>
+      <div class="create-color-options">
+        @for (color of colors; track color) {
+          <button class="create-color-option" type="button" [style.background-color]="color"
+            [class.selected]="form.controls.color.value === color" [attr.aria-pressed]="form.controls.color.value === color"
+            [attr.aria-label]="'workspace.form.chooseColor' | translate: { color: color }"
+            (click)="selectColor(color)"></button>
+        }
+      </div>
+    </fieldset>
+
+    @if (error()) {
+      <p class="create-error" role="alert">{{ 'workspace.form.createError' | translate }}</p>
+    }
+
+    <div class="create-actions">
+      <button class="create-cancel" type="button" (click)="close.emit()">
+        {{ 'common.cancel' | translate }}
+      </button>
+      <button class="create-submit" type="submit" [disabled]="saving() || form.invalid">
+        @if (saving()) {
+          <span class="create-button-spinner" aria-hidden="true"></span>
+          {{ 'workspace.form.creating' | translate }}
+        } @else {
+          {{ 'workspace.form.createButton' | translate }}
+        }
+      </button>
+    </div>
+  </form>
+</shared-modal>

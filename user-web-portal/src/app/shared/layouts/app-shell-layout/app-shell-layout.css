@@ -1,0 +1,14 @@
+:host { display: block; min-height: 100svh; }
+
+.app-shell {
+  min-height: 100svh;
+  background: var(--bg-base);
+  color: var(--text-primary);
+}
+
+.app-shell-content {
+  width: min(100%, 88rem);
+  min-height: calc(100svh - 3.65rem);
+  margin-inline: auto;
+  padding: clamp(1.35rem, 3vw, 2.75rem) clamp(1rem, 3vw, 2.5rem);
+}

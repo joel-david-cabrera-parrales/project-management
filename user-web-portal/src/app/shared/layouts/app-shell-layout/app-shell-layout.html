@@ -1,0 +1,8 @@
+<div class="app-shell">
+  <app-workspace-topbar />
+  <main class="app-shell-content">
+    <router-outlet />
+  </main>
+  <app-workspace-create-modal [open]="workspaceStore.createModalOpen()"
+    (close)="workspaceStore.createModalOpen.set(false)" (created)="onWorkspaceCreated()" />
+</div>
