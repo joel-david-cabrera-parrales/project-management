@@ -320,6 +320,10 @@
       "updating": "Actualizando..."
     },
     "board": {
+      "pageSubtitle": "{{count}} columnas en este tablero.",
+      "noBoards": "Este espacio todavía no tiene tableros.",
+      "boardNotFound": "No se encontró el tablero solicitado.",
+      "noTasksInColumn": "No hay tarjetas en esta columna.",
       "newColumn": "Nueva Columna",
       "editTask": "Editar Tarea",
       "createTask": "Crear Tarea",
@@ -332,11 +336,26 @@
     },
     "task": {
       "viewDetail": "Ver detalle",
+      "statusDone": "Completada",
+      "statusOpen": "Pendiente",
+      "editNamed": "Editar tarjeta {{name}}",
+      "deleteNamed": "Eliminar tarjeta {{name}}",
+      "deleteError": "No se pudo eliminar la tarjeta.",
+      "taskDeleted": "Tarjeta eliminada",
       "markComplete": "Marcar como completada",
       "markIncomplete": "Marcar como pendiente",
       "delete": "Eliminar tarea",
       "deleteConfirm": "¿Eliminar tarea?",
       "deleteConfirmDesc": "Esta acción no se puede deshacer"
+    },
+    "taskDrawer": {
+      "addLabel": "Añadir etiqueta",
+      "removeLabel": "Quitar etiqueta",
+      "allLabelsSelected": "Ya están seleccionadas todas las etiquetas.",
+      "labelsLoadError": "No se pudieron cargar las etiquetas.",
+      "noLabels": "Este workspace todavía no tiene etiquetas.",
+      "noMembers": "Este workspace todavía no tiene miembros.",
+      "ownerRequiredToRemove": "Solo el propietario puede quitar etiquetas o encargados existentes."
     },
     "taskList": {
       "rename": "Renombrar",
@@ -347,6 +366,9 @@
     "taskForm": {
       "createTitle": "Crear Tarea",
       "updateTitle": "Actualizar Tarea",
+      "titleMinLength": "El título debe tener al menos 5 caracteres.",
+      "descriptionMinLength": "La descripción debe tener al menos 5 caracteres o quedar vacía.",
+      "saveError": "No se pudo guardar la tarjeta. Inténtalo nuevamente.",
       "titleLabel": "Título",
       "titlePlaceholder": "Título de la tarea",
       "descPlaceholder": "Descripción (opcional)",
@@ -378,7 +400,8 @@
       "taskTitlePlaceholder": "Título de la tarea",
       "noLabels": "Sin etiquetas",
       "noAssignees": "Sin asignados",
-      "noAttachments": "Sin archivos adjuntos"
+      "noAttachments": "Sin archivos adjuntos",
+      "activityError": "No se pudo cargar o actualizar la actividad de esta tarjeta."
     },
     "comment": {
       "reply": "Responder",
@@ -390,6 +413,8 @@
       "deleteConfirm": "¿Eliminar comentario?"
     },
     "attachment": {
+      "add": "Añadir archivos",
+      "uploading": "Subiendo archivos...",
       "download": "Descargar",
       "delete": "Eliminar",
       "deleteConfirm": "¿Eliminar archivo adjunto?"
@@ -438,6 +463,11 @@
       "memberRole": "Miembro",
       "ownerRole": "Propietario",
       "viewerRole": "Visor",
+      "editRole": "Editar rol de miembro",
+      "editRoleFor": "Editar rol de {{name}}",
+      "changeRoleDescription": "Selecciona el rol para {{name}}.",
+      "roleUpdateError": "No se pudo actualizar el rol del miembro.",
+      "saveRole": "Guardar rol",
       "memberDesc": "Puede crear y editar",
       "viewerDesc": "Solo lectura",
       "sendInvitation": "Enviar invitación",

@@ -1,0 +1,28 @@
+<section class="workspace-board-column" [attr.aria-label]="list().title">
+  <header class="board-column-header">
+    <div class="board-column-title">
+      <span aria-hidden="true"></span>
+      <h2>{{ list().title }}</h2>
+      <span class="board-column-count">{{ list().tasks.length }}</span>
+    </div>
+    @if (canManage()) {
+      <button class="board-column-add" type="button" [attr.aria-label]="'workspace.taskList.addTask' | translate"
+        [title]="'workspace.taskList.addTask' | translate" (click)="createTask.emit(list())">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v14M3 10h14"/></svg>
+      </button>
+    }
+  </header>
+  <div class="board-column-tasks">
+    @for (task of list().tasks; track task.taskId) {
+      <app-workspace-task-card [task]="task" [canEdit]="canManage()" [canDelete]="canDelete()"
+        (edit)="editTask.emit({ task, list: list() })" (delete)="deleteTask.emit($event)" />
+    } @empty {
+      <div class="board-column-empty">
+        <span>{{ 'workspace.board.noTasksInColumn' | translate }}</span>
+        @if (canManage()) {
+          <button type="button" (click)="createTask.emit(list())">{{ 'workspace.taskList.addTask' | translate }}</button>
+        }
+      </div>
+    }
+  </div>
+</section>

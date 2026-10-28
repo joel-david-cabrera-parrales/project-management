@@ -1,0 +1,40 @@
+.task-drawer-form { display: grid; gap: 1rem; }
+.task-drawer-field { display: grid; gap: 0.45rem; }
+.task-drawer-field label { color: var(--text-secondary); font-size: 0.73rem; font-weight: 700; }
+.task-drawer-field input, .task-drawer-field textarea { width: 100%; min-height: 2.4rem; border: 1px solid var(--border-default); border-radius: 0.55rem; background: var(--bg-base); padding: 0.6rem 0.7rem; color: var(--text-primary); font: inherit; font-size: 0.75rem; }
+.task-drawer-field textarea { min-height: 6rem; resize: vertical; }
+.task-drawer-field input:focus, .task-drawer-field textarea:focus { border-color: var(--accent); outline: 2px solid var(--accent-alpha); }
+.task-drawer-dates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; }
+.task-drawer-error { color: var(--danger); font-size: 0.7rem; }
+.task-drawer-cancel, .task-drawer-submit { min-height: 2.35rem; border: 1px solid var(--border-default); border-radius: 0.55rem; padding: 0.5rem 0.8rem; cursor: pointer; font: inherit; font-size: 0.73rem; font-weight: 700; }
+.task-drawer-cancel { background: var(--bg-raised); color: var(--text-secondary); }
+.task-drawer-submit { border-color: var(--accent); background: var(--accent); color: white; }
+.task-drawer-submit:disabled, .task-drawer-cancel:disabled { cursor: wait; opacity: 0.55; }
+.task-association-section { display: grid; gap: 0.55rem; border-top: 1px solid var(--border-subtle); padding-top: 1rem; }
+.task-association-section > header { display: flex; align-items: center; gap: 0.45rem; }
+.task-association-heading { justify-content: space-between; }
+.task-association-heading > div { display: flex; align-items: center; gap: 0.45rem; }
+.task-add-option { display: inline-flex; min-height: 1.8rem; align-items: center; gap: 0.3rem; border: 1px dashed var(--border-default); border-radius: 0.45rem; background: transparent; padding: 0.3rem 0.5rem; color: var(--text-secondary); cursor: pointer; font: inherit; font-size: 0.64rem; font-weight: 700; }
+.task-add-option:hover { border-color: var(--accent); color: var(--accent); }
+.task-add-option svg { width: 0.8rem; height: 0.8rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.7; }
+.task-association-section h3 { color: var(--text-secondary); font-size: 0.72rem; font-weight: 750; }
+.task-association-section > header small { display: inline-grid; min-width: 1.25rem; height: 1.25rem; place-items: center; border: 1px solid var(--border-subtle); border-radius: 99px; color: var(--text-tertiary); font-size: 0.6rem; }
+.task-association-options { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.task-association-option { display: inline-flex; min-height: 2rem; align-items: center; gap: 0.4rem; border: 1px solid var(--border-default); border-radius: 0.55rem; background: var(--bg-raised); padding: 0.35rem 0.5rem; color: var(--text-secondary); cursor: pointer; font: inherit; font-size: 0.68rem; }
+.task-association-option:hover:not(:disabled) { border-color: var(--accent); }
+.task-association-option.selected { border-color: var(--accent); background: var(--accent-alpha); color: var(--text-primary); }
+.task-association-option:disabled { cursor: not-allowed; opacity: 0.7; }
+.association-color { width: 0.55rem; height: 0.55rem; flex: 0 0 auto; border-radius: 50%; }
+.task-selected-labels { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.task-selected-label { display: inline-flex; align-items: center; gap: 0.35rem; border: 1px solid color-mix(in srgb, var(--label-color) 30%, transparent); border-radius: 0.45rem; background: color-mix(in srgb, var(--label-color) 8%, transparent); padding: 0.3rem 0.45rem; color: var(--label-color); font-size: 0.64rem; font-weight: 700; }
+.task-selected-label .association-color { background: var(--label-color); }
+.task-selected-label button { margin-left: 0.1rem; border: 0; background: transparent; color: inherit; cursor: pointer; font: inherit; font-size: 0.85rem; line-height: 1; }
+.task-association-option > svg { width: 0.85rem; height: 0.85rem; fill: none; stroke: var(--accent); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
+.task-member-option { max-width: 100%; }
+.task-member-copy { display: grid; min-width: 0; gap: 0.08rem; text-align: left; }
+.task-member-copy strong, .task-member-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.task-member-copy strong { color: var(--text-primary); font-size: 0.66rem; }
+.task-member-copy small { color: var(--text-tertiary); font-size: 0.58rem; }
+.task-member-option .association-check { margin-left: 0.1rem; }
+.task-options-empty, .task-association-note { color: var(--text-tertiary); font-size: 0.65rem; }
+.task-association-note { border-radius: 0.45rem; background: var(--bg-base); padding: 0.45rem 0.55rem; }

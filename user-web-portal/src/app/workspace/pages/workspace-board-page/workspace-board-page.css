@@ -1,10 +1,12 @@
-.detail-page { max-width: 72rem; margin-inline: auto; }
+.detail-page { width: 100%; }
 .detail-page-heading { margin-bottom: 1.5rem; }
 .detail-page-heading h1 { margin-top: 0.35rem; color: var(--text-primary); font-size: clamp(1.45rem, 3vw, 2rem); font-weight: 800; letter-spacing: -0.035em; }
 .detail-page-heading p:last-child { margin-top: 0.35rem; color: var(--text-tertiary); font-size: 0.75rem; }
-.board-coming-soon { display: flex; min-height: 23rem; align-items: center; justify-content: center; flex-direction: column; gap: 0.75rem; border: 1px dashed var(--border-default); border-radius: 0.9rem; background: var(--bg-raised); padding: 2rem; text-align: center; }
-.board-coming-icon { display: grid; width: 3.1rem; height: 3.1rem; place-items: center; border-radius: 0.9rem; background: var(--accent-alpha); color: var(--accent); font-size: 1.5rem; }
-.board-coming-soon h2 { color: var(--text-primary); font-size: 1rem; font-weight: 750; }
-.board-coming-soon p { max-width: 27rem; color: var(--text-tertiary); font-size: 0.82rem; line-height: 1.5; }
-.board-shortcuts { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 0.5rem; }
-.board-shortcuts a { border: 1px solid var(--border-subtle); border-radius: 0.5rem; background: var(--bg-base); padding: 0.45rem 0.65rem; color: var(--accent); font-size: 0.72rem; font-weight: 700; text-decoration: none; }
+.workspace-board-columns { display: flex; min-height: 32rem; align-items: stretch; gap: 0.85rem; overflow-x: auto; padding-bottom: 0.75rem; }
+.board-empty-state { display: flex; min-height: 18rem; align-items: center; justify-content: center; flex-direction: column; gap: 0.6rem; border: 1px dashed var(--border-default); border-radius: 0.8rem; background: var(--bg-raised); padding: 2rem; color: var(--text-tertiary); text-align: center; }
+.board-empty-state > span { display: grid; width: 2.7rem; height: 2.7rem; place-items: center; border-radius: 0.8rem; background: var(--accent-alpha); color: var(--accent); font-size: 1.4rem; }
+.board-empty-state h2 { color: var(--text-primary); font-size: 0.9rem; font-weight: 750; }
+.board-empty-state p, .board-empty-state a { color: var(--text-tertiary); font-size: 0.75rem; }
+.board-empty-state a { color: var(--accent); font-weight: 700; text-decoration: none; }
+.board-error { margin-bottom: 0.7rem; color: var(--danger); font-size: 0.75rem; }
+@media (max-width: 680px) { .workspace-board-columns { min-height: 26rem; } }

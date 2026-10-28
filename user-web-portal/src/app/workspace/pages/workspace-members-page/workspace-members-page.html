@@ -97,18 +97,16 @@
 </section>
 
 <app-workspace-drawer [open]="inviteOpen()" titleKey="workspace.members.addMember" [busy]="inviteSaving()" (close)="closeInvite()">
-  @if (invitationLink()) {
-    <div drawer-body class="invite-result">
+  <div drawer-body>
+    @if (invitationLink()) {
+      <div class="invite-result">
       <span class="invite-success-mark" aria-hidden="true">✓</span>
       <h2>{{ 'workspace.members.invitationSent' | translate }}</h2>
       <p>{{ 'workspace.members.invitationLinkDescription' | translate }}</p>
       <div class="invite-link-box"><code>{{ invitationLink() }}</code><button type="button" (click)="copyInvitationLink()">{{ 'workspace.members.copyLink' | translate }}</button></div>
-    </div>
-    <div drawer-footer>
-      <button class="detail-primary-button" type="button" (click)="closeInvite()">{{ 'common.done' | translate }}</button>
-    </div>
-  } @else {
-    <form drawer-body id="workspace-invitation-form" class="invite-form" [formGroup]="inviteForm" (ngSubmit)="sendInvitation()">
+      </div>
+    } @else {
+      <form id="workspace-invitation-form" class="invite-form" [formGroup]="inviteForm" (ngSubmit)="sendInvitation()">
       <label for="member-email">{{ 'workspace.members.emailLabel' | translate }}</label>
       <input id="member-email" type="email" formControlName="email" autocomplete="email"
         [placeholder]="'workspace.members.emailPlaceholder' | translate" />
@@ -122,14 +120,19 @@
         </button>
       </div>
       @if (inviteError()) { <p class="detail-inline-error" role="alert">{{ 'workspace.members.inviteError' | translate }}</p> }
-    </form>
-    <div drawer-footer>
+      </form>
+    }
+  </div>
+  <div drawer-footer>
+    @if (invitationLink()) {
+      <button class="detail-primary-button" type="button" (click)="closeInvite()">{{ 'common.done' | translate }}</button>
+    } @else {
       <button type="button" class="detail-secondary-button" [disabled]="inviteSaving()" (click)="closeInvite()">{{ 'common.cancel' | translate }}</button>
       <button type="submit" form="workspace-invitation-form" class="detail-primary-button" [disabled]="inviteForm.invalid || inviteSaving()">
         {{ (inviteSaving() ? 'workspace.members.sending' : 'workspace.members.sendInvitation') | translate }}
       </button>
-    </div>
-  }
+    }
+  </div>
 </app-workspace-drawer>
 
 <app-workspace-drawer [open]="!!roleEditTarget()" titleKey="workspace.members.editRole" [busy]="roleEditSaving()" (close)="closeRoleEditor()">

@@ -1,0 +1,120 @@
+<section class="task-activity">
+  <section class="activity-section" aria-labelledby="task-attachments-title">
+    <header class="activity-section-heading">
+      <div><h3 id="task-attachments-title">{{ 'workspace.taskDetail.attachments' | translate }}</h3><span>{{ attachments().length }}</span></div>
+      @if (canManageAttachments()) {
+        <label class="activity-add-button" [class.activity-busy]="uploading()">
+          <input #fileInput type="file" hidden multiple accept=".pdf,.png,.jpg,.jpeg,.gif,.webp,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+            [disabled]="uploading()" (change)="onFilesSelected($event)" />
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v14M3 10h14"/></svg>
+          {{ (uploading() ? 'workspace.attachment.uploading' : 'workspace.attachment.add') | translate }}
+        </label>
+      }
+    </header>
+
+    @if (loadingAttachments()) {
+      <p class="activity-empty" role="status">{{ 'common.loading' | translate }}</p>
+    } @else if (attachments().length || uploads().length) {
+      <div class="attachment-list">
+        @for (upload of uploads(); track upload.id) {
+          <article class="attachment-row attachment-upload-row">
+            <span class="attachment-type-icon" aria-hidden="true">↑</span>
+            <div class="attachment-copy">
+              <strong>{{ upload.name }}</strong>
+              <div class="upload-progress-track" role="progressbar" [attr.aria-valuenow]="upload.progress" aria-valuemin="0" aria-valuemax="100">
+                <span [style.width.%]="upload.progress"></span>
+              </div>
+            </div>
+            <span class="upload-progress-value">{{ upload.progress | number:'1.0-2' }}%</span>
+          </article>
+        }
+        @for (attachment of attachments(); track attachment.code) {
+          <article class="attachment-row">
+            <span class="attachment-type-icon" aria-hidden="true">↧</span>
+            <div class="attachment-copy"><strong>{{ attachment.fileName }}</strong><small>{{ formatSize(attachment.fileSize) }}</small></div>
+            <button class="activity-icon-button" type="button" [attr.aria-label]="'workspace.attachment.download' | translate"
+              [title]="'workspace.attachment.download' | translate" (click)="download(attachment)">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5v10m-4-4 4 4 4-4M3 14v3h14v-3"/></svg>
+            </button>
+            @if (canManageAttachments()) {
+              <button class="activity-icon-button activity-delete-button" type="button"
+                [attr.aria-label]="'workspace.taskDetail.deleteAttachment' | translate" (click)="confirmAttachmentDelete(attachment)">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M7 5V3.5h6V5m-8 0 1 12h8l1-12M8 8v6m4-6v6"/></svg>
+              </button>
+            }
+          </article>
+        }
+      </div>
+    } @else {
+      <p class="activity-empty">{{ 'workspace.taskDetail.noAttachments' | translate }}</p>
+    }
+  </section>
+
+  <section class="activity-section" aria-labelledby="task-comments-title">
+    <header class="activity-section-heading">
+      <div><h3 id="task-comments-title">{{ 'workspace.taskDetail.comments' | translate }}</h3><span>{{ commentCount() }}</span></div>
+    </header>
+
+    @if (canComment()) {
+      <form class="comment-compose" (ngSubmit)="submitComment()">
+        <textarea rows="2" [value]="commentText()" (input)="commentText.set($any($event.target).value)"
+          [placeholder]="'workspace.taskDetail.writeComment' | translate" aria-label="{{ 'workspace.taskDetail.writeComment' | translate }}"></textarea>
+        <button type="submit" class="activity-send-button" [disabled]="!commentText().trim() || sendingComment()">
+          {{ (sendingComment() ? 'common.sending' : 'workspace.taskDetail.send') | translate }}
+        </button>
+      </form>
+    }
+
+    @if (loadingComments()) {
+      <p class="activity-empty" role="status">{{ 'common.loading' | translate }}</p>
+    } @else if (comments().length) {
+      <div class="comment-list">
+        @for (comment of comments(); track comment.code) {
+          <article class="comment-row">
+            <app-workspace-avatar [name]="comment.author.fullname" [photo]="comment.author.photo"
+              [initials]="comment.author.initials" [color]="comment.author.avatarColor" size="sm" />
+            <div class="comment-content">
+              <header><strong>{{ comment.author.fullname }}</strong><time>{{ comment.createdAt | date:'mediumDate' }}</time></header>
+              <p>{{ comment.content }}</p>
+              <div class="comment-actions">
+                @if (canComment()) { <button type="button" (click)="replyTo.set(replyTo() === comment.id ? null : comment.id)">{{ 'workspace.comment.reply' | translate }}</button> }
+                @if (canDeleteComment(comment)) { <button type="button" class="comment-delete" (click)="commentToDelete.set(comment)">{{ 'workspace.comment.delete' | translate }}</button> }
+              </div>
+              @if (replyTo() === comment.id) {
+                <form class="comment-reply-form" (ngSubmit)="submitComment(comment.id)">
+                  <textarea rows="2" [value]="replyText()" (input)="replyText.set($any($event.target).value)"
+                    [placeholder]="'workspace.comment.writeReply' | translate"></textarea>
+                  <div><button type="button" (click)="cancelReply()">{{ 'common.cancel' | translate }}</button>
+                    <button type="submit" [disabled]="!replyText().trim() || sendingComment()">{{ 'workspace.comment.send' | translate }}</button></div>
+                </form>
+              }
+              @if (comment.replies?.length) {
+                <div class="comment-replies">
+                  @for (reply of comment.replies; track reply.code) {
+                    <div class="comment-reply-row">
+                      <app-workspace-avatar [name]="reply.author.fullname" [photo]="reply.author.photo"
+                        [initials]="reply.author.initials" [color]="reply.author.avatarColor" size="sm" />
+                      <div class="comment-content"><header><strong>{{ reply.author.fullname }}</strong><time>{{ reply.createdAt | date:'mediumDate' }}</time></header><p>{{ reply.content }}</p></div>
+                      @if (canDeleteComment(reply)) { <button class="comment-delete" type="button" (click)="commentToDelete.set(reply)">{{ 'workspace.comment.delete' | translate }}</button> }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <p class="activity-empty">{{ 'workspace.taskDetail.noComments' | translate }}</p>
+    }
+  </section>
+
+  @if (error()) { <p class="activity-error" role="alert">{{ 'workspace.taskDetail.activityError' | translate }}</p> }
+</section>
+
+<app-workspace-confirm-dialog [open]="!!attachmentToDelete()" titleKey="workspace.taskDetail.deleteAttachment"
+  descriptionKey="workspace.taskDetail.deleteAttachmentConfirm" confirmKey="common.delete" [pending]="deleting()"
+  (close)="attachmentToDelete.set(null)" (confirm)="deleteAttachment()" />
+<app-workspace-confirm-dialog [open]="!!commentToDelete()" titleKey="workspace.taskDetail.deleteComment"
+  descriptionKey="workspace.taskDetail.deleteCommentConfirm" confirmKey="common.delete" [pending]="deleting()"
+  (close)="commentToDelete.set(null)" (confirm)="deleteComment()" />

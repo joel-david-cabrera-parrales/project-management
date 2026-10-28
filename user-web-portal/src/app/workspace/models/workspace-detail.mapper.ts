@@ -11,6 +11,7 @@ export class WorkspaceDetailMapper {
       status: response.status,
       createdAt: new Date(response.createdAt),
       members: response.workspaceMembers ?? [],
+      workspaceMemberId: response.userRelation?.workspaceMemberId ?? null,
       roleMember: response.userRelation?.roleMember ?? null,
       boards: response.boards ?? [],
     };

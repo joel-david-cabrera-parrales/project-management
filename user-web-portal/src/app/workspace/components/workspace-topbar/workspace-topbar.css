@@ -5,7 +5,7 @@
 .topbar-brand { display: inline-flex; align-items: center; gap: 0.5rem; margin-left: 0.1rem; color: var(--text-primary); font-size: 0.9rem; font-weight: 750; text-decoration: none; }
 .topbar-brand-mark { display: grid; width: 1.7rem; height: 1.7rem; place-items: center; border-radius: 0.42rem; background: #2563eb; color: white; }
 .topbar-brand-mark svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.5; }
-.topbar-icon-button { display: inline-flex; width: 2.2rem; height: 2.2rem; flex: 0 0 auto; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 0.55rem; background: transparent; color: var(--text-secondary); cursor: pointer; text-decoration: none; transition: background 120ms ease, color 120ms ease; }
+.topbar-icon-button { display: inline-flex; width: 2.2rem; height: 2.2rem; flex: 0 0 auto; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 0.55rem; background: transparent; color: var(--text-secondary); cursor: pointer; text-decoration: none; }
 .topbar-icon-button:hover, .topbar-icon-button[aria-expanded='true'] { background: var(--bg-base); color: var(--text-primary); }
 .topbar-icon-button:focus-visible, .topbar-profile-button:focus-visible, .topbar-language-button:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
 .topbar-icon-button svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.45; }
@@ -19,7 +19,6 @@
 .topbar-search input::-webkit-search-cancel-button { display: none; }
 .topbar-clear-search { display: grid; width: 1.35rem; height: 1.35rem; flex: 0 0 auto; place-items: center; border: 0; border-radius: 50%; background: var(--bg-base); color: var(--text-tertiary); cursor: pointer; }
 .topbar-clear-search svg { width: 0.8rem; height: 0.8rem; fill: none; stroke: currentColor; stroke-width: 1.7; }
-.topbar-search-spacer { max-width: 49rem; flex: 1 1 20rem; }
 .topbar-language-button { min-width: 2.35rem; height: 2rem; border: 1px solid var(--border-default); border-radius: 0.5rem; background: var(--bg-raised); color: var(--text-secondary); cursor: pointer; font: inherit; font-size: 0.7rem; font-weight: 750; }
 .topbar-language-button:hover { background: var(--bg-base); color: var(--text-primary); }
 .topbar-divider { width: 1px; height: 1.4rem; margin-inline: 0.2rem; background: var(--border-default); }

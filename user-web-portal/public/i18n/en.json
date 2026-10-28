@@ -320,6 +320,10 @@
       "updating": "Updating..."
     },
     "board": {
+      "pageSubtitle": "{{count}} columns on this board.",
+      "noBoards": "This workspace does not have any boards yet.",
+      "boardNotFound": "The requested board could not be found.",
+      "noTasksInColumn": "There are no cards in this column.",
       "newColumn": "New Column",
       "editTask": "Edit Task",
       "createTask": "Create Task",
@@ -332,11 +336,26 @@
     },
     "task": {
       "viewDetail": "View details",
+      "statusDone": "Completed",
+      "statusOpen": "To do",
+      "editNamed": "Edit card {{name}}",
+      "deleteNamed": "Delete card {{name}}",
+      "deleteError": "The card could not be deleted.",
+      "taskDeleted": "Card deleted",
       "markComplete": "Mark as complete",
       "markIncomplete": "Mark as incomplete",
       "delete": "Delete task",
       "deleteConfirm": "Delete task?",
       "deleteConfirmDesc": "This action cannot be undone"
+    },
+    "taskDrawer": {
+      "addLabel": "Add label",
+      "removeLabel": "Remove label",
+      "allLabelsSelected": "All labels are already selected.",
+      "labelsLoadError": "Labels could not be loaded.",
+      "noLabels": "This workspace does not have any labels yet.",
+      "noMembers": "This workspace does not have any members yet.",
+      "ownerRequiredToRemove": "Only the owner can remove existing labels or assignees."
     },
     "taskList": {
       "rename": "Rename",
@@ -347,6 +366,9 @@
     "taskForm": {
       "createTitle": "Create Task",
       "updateTitle": "Update Task",
+      "titleMinLength": "The title must be at least 5 characters.",
+      "descriptionMinLength": "The description must be at least 5 characters or left empty.",
+      "saveError": "The card could not be saved. Please try again.",
       "titleLabel": "Title",
       "titlePlaceholder": "Task title",
       "descPlaceholder": "Description (optional)",
@@ -378,7 +400,8 @@
       "taskTitlePlaceholder": "Task title",
       "noLabels": "No labels",
       "noAssignees": "No assignees",
-      "noAttachments": "No attachments"
+      "noAttachments": "No attachments",
+      "activityError": "The card activity could not be loaded or updated."
     },
     "comment": {
       "reply": "Reply",
@@ -390,6 +413,8 @@
       "deleteConfirm": "Delete comment?"
     },
     "attachment": {
+      "add": "Add files",
+      "uploading": "Uploading files...",
       "download": "Download",
       "delete": "Delete",
       "deleteConfirm": "Delete attachment?"
@@ -438,6 +463,11 @@
       "memberRole": "Member",
       "ownerRole": "Owner",
       "viewerRole": "Viewer",
+      "editRole": "Edit member role",
+      "editRoleFor": "Edit {{name}}'s role",
+      "changeRoleDescription": "Choose a role for {{name}}.",
+      "roleUpdateError": "The member role could not be updated.",
+      "saveRole": "Save role",
       "memberDesc": "Can create and edit",
       "viewerDesc": "Read-only access",
       "sendInvitation": "Send invitation",

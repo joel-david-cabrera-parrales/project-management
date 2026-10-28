@@ -1,0 +1,62 @@
+<article class="workspace-task-card" [class.workspace-task-completed]="task().completed">
+  <header class="task-card-header">
+    <span class="task-state" [class.task-state-done]="task().completed">
+      <span aria-hidden="true"></span>{{ (task().completed ? 'workspace.task.statusDone' : 'workspace.task.statusOpen') | translate }}
+    </span>
+    <div class="task-card-actions">
+      @if (canEdit()) {
+        <button type="button" class="task-icon-action" [attr.aria-label]="'workspace.task.editNamed' | translate: { name: task().title }"
+          [title]="'common.edit' | translate" (click)="edit.emit(task())">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.8 3.2 16.8 7.2M3 17l3.8-.8L16.4 6.6a2.1 2.1 0 0 0-3-3L3.8 13.2 3 17Z"/></svg>
+        </button>
+      }
+      @if (canDelete()) {
+        <button type="button" class="task-icon-action task-delete-action" [attr.aria-label]="'workspace.task.deleteNamed' | translate: { name: task().title }"
+          [title]="'common.delete' | translate" (click)="delete.emit(task())">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M7 5V3.5h6V5m-8 0 1 12h8l1-12M8 8v6m4-6v6"/></svg>
+        </button>
+      }
+    </div>
+  </header>
+
+  <h3>{{ task().title }}</h3>
+  @if (task().description) { <p class="task-card-description">{{ task().description }}</p> }
+
+  @if (task().labels.length) {
+    <div class="task-card-labels">
+      @for (label of task().labels.slice(0, 4); track label.id) {
+        <span class="task-label-chip" [style.--task-label-color]="label.color">
+          <span aria-hidden="true"></span>{{ label.name }}
+        </span>
+      }
+      @if (task().labels.length > 4) { <span class="task-more-labels">+{{ task().labels.length - 4 }}</span> }
+    </div>
+  }
+
+  <footer class="task-card-footer">
+    <div class="task-assignees">
+      @for (assignee of task().assignees.slice(0, 3); track assignee.workspaceMemberId) {
+        <app-workspace-avatar [name]="assignee.fullname" [photo]="assignee.photo" [initials]="assignee.initials" [color]="assignee.avatarColor" size="sm" />
+      }
+      @if (task().assignees.length > 3) { <span class="task-assignee-overflow">+{{ task().assignees.length - 3 }}</span> }
+    </div>
+    <div class="task-card-metadata">
+      @if (task().dateEnd) {
+        <span class="task-date" [class.task-date-overdue]="!task().completed && task().dateEnd! < (today | date:'yyyy-MM-dd')!">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="4" width="15" height="13" rx="2"/><path d="M6 2.5v3M14 2.5v3M2.5 8h15"/></svg>
+          {{ task().dateEnd | date:'MMM d' }}
+        </span>
+      }
+      @if (task().commentsCount) {
+        <span class="task-count" [attr.aria-label]="'workspace.taskDetail.comments' | translate">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M17 9.5a6.5 6.5 0 0 1-6.5 6.5 7 7 0 0 1-3-.7L3 17l1.5-3.6a6.5 6.5 0 1 1 12.5-3.9Z"/></svg>{{ task().commentsCount }}
+        </span>
+      }
+      @if (task().attachmentsCount) {
+        <span class="task-count" [attr.aria-label]="'workspace.taskDetail.attachments' | translate">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 10.5 5.7-5.7a2.1 2.1 0 0 1 3 3l-7.8 7.8a4 4 0 0 1-5.7-5.7l7.8-7.8"/></svg>{{ task().attachmentsCount }}
+        </span>
+      }
+    </div>
+  </footer>
+</article>
