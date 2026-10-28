@@ -226,13 +226,26 @@
     }
   },
   "workspace": {
+    "layout": {
+      "caption": "Espacios de trabajo",
+      "footer": "Organiza tu trabajo con {{appName}}"
+    },
     "list": {
       "title": "Mis Espacios de Trabajo",
+      "subtitle": "Continúa donde tu equipo dejó el trabajo.",
       "newWorkspace": "Nuevo Espacio",
       "noWorkspaces": "Aún no tienes espacios de trabajo",
       "noWorkspacesDesc": "Crea tu primer espacio para empezar",
+      "noDescription": "Sin descripción",
+      "loadError": "No se pudieron cargar tus espacios de trabajo.",
+      "retry": "Intentar de nuevo",
       "deleteConfirm": "¿Estás seguro de que deseas eliminar este espacio de trabajo?",
       "deleteConfirmDesc": "Todos los datos se eliminarán permanentemente"
+    },
+    "detail": {
+      "back": "Volver a mis espacios",
+      "title": "Detalle del espacio de trabajo",
+      "description": "La ruta está lista. El tablero y las herramientas del espacio se implementarán en la siguiente etapa."
     },
     "card": {
       "edit": "Editar espacio",

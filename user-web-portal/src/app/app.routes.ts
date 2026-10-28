@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { NotFound } from './shared/pages/not-found/not-found';
-import { WorkspacePage } from './workspace/workspace-page/workspace-page';
+import { authGuard } from './shared/guards/auth-guard';
 
 export const routes: Routes = [
   {
@@ -14,8 +14,9 @@ export const routes: Routes = [
     loadChildren: () => import('./authentication/authentication.routes'),
   },
   {
-    path: "workspace",
-    component: WorkspacePage
+    path: 'workspace',
+    canActivate: [authGuard],
+    loadChildren: () => import('./workspace/workspace.routes'),
   },
   {
     path: '**',

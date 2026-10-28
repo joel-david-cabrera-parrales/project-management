@@ -226,13 +226,26 @@
     }
   },
   "workspace": {
+    "layout": {
+      "caption": "Workspaces",
+      "footer": "Organize your work with {{appName}}"
+    },
     "list": {
       "title": "My Workspaces",
+      "subtitle": "Pick up where your team left off.",
       "newWorkspace": "New Workspace",
       "noWorkspaces": "No workspaces yet",
       "noWorkspacesDesc": "Create your first workspace to get started",
+      "noDescription": "No description",
+      "loadError": "Your workspaces could not be loaded.",
+      "retry": "Try again",
       "deleteConfirm": "Are you sure you want to delete this workspace?",
       "deleteConfirmDesc": "All data will be permanently deleted"
+    },
+    "detail": {
+      "back": "Back to my workspaces",
+      "title": "Workspace details",
+      "description": "The route is ready. The board and workspace tools will be implemented in the next stage."
     },
     "card": {
       "edit": "Edit workspace",

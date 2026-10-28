@@ -1,0 +1,53 @@
+<section class="workspace-list-page" aria-labelledby="workspace-list-title">
+  <header class="workspace-page-heading">
+    <div>
+      <p class="workspace-eyebrow">{{ 'workspace.layout.caption' | translate }}</p>
+      <h1 id="workspace-list-title">{{ 'workspace.list.title' | translate }}</h1>
+      <p class="workspace-page-subtitle">{{ 'workspace.list.subtitle' | translate }}</p>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="workspace-state" role="status" aria-live="polite">
+      <span class="workspace-spinner" aria-hidden="true"></span>
+      <span>{{ 'common.loading' | translate }}</span>
+    </div>
+  } @else if (loadError()) {
+    <div class="workspace-state workspace-state-error" role="alert">
+      <p>{{ 'workspace.list.loadError' | translate }}</p>
+      <button class="workspace-retry-button" type="button" (click)="loadWorkspaces()">
+        {{ 'workspace.list.retry' | translate }}
+      </button>
+    </div>
+  } @else if (workspaces().length === 0) {
+    <div class="workspace-empty-state">
+      <span class="workspace-empty-icon" aria-hidden="true">▦</span>
+      <h2>{{ 'workspace.list.noWorkspaces' | translate }}</h2>
+      <p>{{ 'workspace.list.noWorkspacesDesc' | translate }}</p>
+    </div>
+  } @else {
+    <div class="workspace-grid">
+      @for (workspace of workspaces(); track workspace.code) {
+        <a class="workspace-card" [routerLink]="['/workspace', workspace.code]">
+          <div class="workspace-card-topline">
+            <span class="workspace-avatar" [style.background-color]="workspace.color" aria-hidden="true">
+              {{ workspace.initials || 'W' }}
+            </span>
+            <span class="workspace-card-arrow" aria-hidden="true">↗</span>
+          </div>
+
+          <div class="workspace-card-copy">
+            <h2>{{ workspace.name }}</h2>
+            <p>{{ workspace.description || ('workspace.list.noDescription' | translate) }}</p>
+          </div>
+
+          <div class="workspace-card-meta">
+            <span>{{ 'workspace.card.boards' | translate: { count: workspace.boardCount } }}</span>
+            <span class="workspace-meta-dot" aria-hidden="true"></span>
+            <span>{{ 'workspace.card.members' | translate: { count: workspace.memberCount } }}</span>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</section>
