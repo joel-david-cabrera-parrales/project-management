@@ -1,0 +1,18 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copiar archivos de dependencias
+COPY package*.json ./
+
+# Instalar dependencias dentro del contenedor
+RUN npm install
+
+# Copiar el resto del código fuente
+COPY . .
+
+# Exponer el puerto por defecto de NestJS (3000)
+EXPOSE 3000
+
+# Comando para iniciar NestJS en modo desarrollo con recarga en caliente
+CMD ["npm", "run", "start:dev"]

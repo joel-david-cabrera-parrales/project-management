@@ -50,14 +50,25 @@ export class AuthenticateWithMicrosoftUseCaseImp extends AuthenticateWithMicroso
       return existingProviderUser;
     }
 
-    // An email match alone is not sufficient proof to link identities.
     const email = microsoftProfile.email.trim().toLowerCase();
     const existingEmailUser = await this.users
       .createQueryBuilder('user')
+      .leftJoinAndSelect('user.profile', 'profile')
       .where('LOWER(user.username) = :email', { email })
       .getOne();
     if (existingEmailUser) {
-      throw new ConflictException('An account with this email already exists. Sign in first to link Microsoft.');
+      if (existingEmailUser.microsoftId && existingEmailUser.microsoftId !== microsoftProfile.microsoftId) {
+        throw new ConflictException('A different Microsoft account is already linked to this email.');
+      }
+
+      existingEmailUser.microsoftId = microsoftProfile.microsoftId;
+      existingEmailUser.isMicrosoftAccount = true;
+      existingEmailUser.username = email;
+      if (existingEmailUser.profile.email !== email) {
+        existingEmailUser.profile.email = email;
+        await this.profiles.save(existingEmailUser.profile);
+      }
+      return this.users.save(existingEmailUser);
     }
 
     const profile = await this.profiles.save(

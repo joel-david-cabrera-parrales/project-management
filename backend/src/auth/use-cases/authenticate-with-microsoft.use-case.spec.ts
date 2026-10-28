@@ -8,6 +8,7 @@ import { AuthenticateWithMicrosoftUseCaseImp } from './authenticate-with-microso
 
 describe('AuthenticateWithMicrosoftUseCaseImp', () => {
   const queryBuilder = {
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),
     getOne: jest.fn(),
   };
@@ -76,28 +77,105 @@ describe('AuthenticateWithMicrosoftUseCaseImp', () => {
     expect(users.save).not.toHaveBeenCalled();
   });
 
-  it('creates a new account using a normalized email address', async () => {
-    const profile = { email: 'joel@example.com', createdAt: new Date() } as Profile;
+  it('automatically links Microsoft to an existing account by normalized email', async () => {
+    const user = {
+      id: 12,
+      username: 'Joel@Example.com',
+      microsoftId: undefined,
+      isMicrosoftAccount: false,
+      profile: { email: 'old-email@example.com' },
+    } as UserProfile;
+    users.findOne.mockResolvedValue(null);
+    queryBuilder.getOne.mockResolvedValue(user);
+
+    await expect(
+      useCase.execute({
+        microsoftId: 'microsoft-id',
+        email: 'joel@example.com',
+      }),
+    ).resolves.toBe(user);
+
+    expect(user.microsoftId).toBe('microsoft-id');
+    expect(user.isMicrosoftAccount).toBe(true);
+    expect(user.username).toBe('joel@example.com');
+    expect(user.profile.email).toBe('joel@example.com');
+    expect(profiles.save).toHaveBeenCalledWith(user.profile);
+    expect(users.save).toHaveBeenCalledWith(user);
+  });
+
+  it('does not replace a different Microsoft identity already linked to the matching email', async () => {
+    const emailOwner = {
+      id: 12,
+      username: 'user@example.com',
+      microsoftId: 'first-microsoft-id',
+      isMicrosoftAccount: true,
+      profile: { email: 'user@example.com' },
+    } as UserProfile;
+    users.findOne.mockResolvedValue(null);
+    queryBuilder.getOne.mockResolvedValue(emailOwner);
+
+    await expect(useCase.execute({
+        microsoftId: 'second-microsoft-id',
+        email: 'user@example.com',
+      }),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(users.save).not.toHaveBeenCalled();
+  });
+
+  it('creates an account when the Microsoft email is not registered', async () => {
+    const profile = { email: 'new@example.com', createdAt: new Date() } as Profile;
     users.findOne.mockResolvedValue(null);
     queryBuilder.getOne.mockResolvedValue(null);
     profiles.save.mockResolvedValue(profile);
 
     const createdUser = {
-      username: 'joel@example.com',
+      username: 'new@example.com',
       microsoftId: 'microsoft-id',
       profile,
     } as UserProfile;
     users.save.mockResolvedValue(createdUser);
 
     await expect(
-      useCase.execute({ microsoftId: 'microsoft-id', email: 'Joel@Example.com' }),
+      useCase.execute({ microsoftId: 'microsoft-id', email: 'New@Example.com' }),
     ).resolves.toBe(createdUser);
 
-    expect(profiles.create).toHaveBeenCalledWith(expect.objectContaining({ email: 'joel@example.com' }));
+    expect(profiles.create).toHaveBeenCalledWith(expect.objectContaining({ email: 'new@example.com' }));
     expect(users.create).toHaveBeenCalledWith(expect.objectContaining({
-      username: 'joel@example.com',
+      username: 'new@example.com',
       microsoftId: 'microsoft-id',
       isMicrosoftAccount: true,
     }));
   });
+
+  it('continues to use the provider ID on subsequent logins', async () => {
+    const user = {
+      id: 12,
+      microsoftId: 'microsoft-id',
+      username: 'user@example.com',
+      profile: { email: 'user@example.com' },
+    } as UserProfile;
+    users.findOne.mockResolvedValue(user);
+
+    await expect(useCase.execute({
+      microsoftId: 'microsoft-id',
+      email: 'user@example.com',
+    })).resolves.toBe(user);
+
+    expect(queryBuilder.getOne).not.toHaveBeenCalled();
+  });
+
+  it('rejects email linking when the email is already associated with another Microsoft ID', async () => {
+    const emailOwner = { id: 12, microsoftId: 'first-microsoft-id' } as UserProfile;
+    users.findOne.mockResolvedValue(null);
+    queryBuilder.getOne.mockResolvedValue(emailOwner);
+
+    await expect(
+      useCase.execute({
+        microsoftId: 'microsoft-id',
+        email: 'owner@example.com',
+      }),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(users.save).not.toHaveBeenCalled();
+  });
+
 });

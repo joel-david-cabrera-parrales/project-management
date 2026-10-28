@@ -13,8 +13,8 @@ la inicialización de usuario mediante un caso de uso y emite el JWT propio de T
 3. En **Supported account types**, selecciona **Accounts in any organizational
    directory and personal Microsoft accounts**. Esta selección permite ambos tipos.
 4. En **Redirect URI**, selecciona **Web** y agrega la URL de callback del backend:
-   - Desarrollo: `http://localhost:3000/api/v1/auth/microsoft/callback`
-   - Producción: `https://<dominio-api>/api/v1/auth/microsoft/callback`
+- Desarrollo: `http://localhost:3000/api/v1/auth/microsoft/callback`
+- Producción: `https://<dominio-api>/api/v1/auth/microsoft/callback`
 5. Al crear el registro, copia el **Application (client) ID**.
 6. En **Certificates & secrets**, crea un **Client secret** y guarda su valor. Microsoft
    solo muestra el valor completo al crearlo; no lo publiques ni lo incluyas en el
@@ -39,6 +39,8 @@ SESSION_SECRET=replace-with-a-long-random-session-secret
 Microsoft está habilitado: Passport guarda y valida el parámetro OAuth `state` en una
 sesión para proteger el callback contra CSRF. En producción, usa HTTPS y no compartas
 este secreto entre entornos.
+
+Registra la URI de callback indicada en el registro de Entra.
 
 ## 3. Dependencias y sesión OAuth
 
@@ -108,10 +110,11 @@ La implementación se divide entre:
 - `backend/src/auth/auth.service.ts`: delega la operación al caso de uso y añade el
   indicador Microsoft al JWT social.
 
-No se enlaza automáticamente un usuario existente por coincidencia de email. El correo
-por sí solo no se trata como prueba suficiente para unir identidades: si ya hay una
-cuenta con ese email, el caso de uso rechaza la operación. Para permitir esa situación
-habría que añadir un flujo de vinculación iniciado por el usuario tras autenticarse.
+El comportamiento es equivalente al inicio con Google: después de buscar por ID Microsoft,
+si no se encuentra la identidad, el caso de uso busca una cuenta por email normalizado.
+Si existe y todavía no tiene un ID Microsoft asociado, se vincula automáticamente. Si no
+existe, se crea el usuario; en inicios posteriores se encuentra por `microsoftId`. Se
+rechaza el enlace si ese email ya tiene otra identidad Microsoft asociada.
 
 ## 7. Rutas y callback en el backend
 
@@ -139,7 +142,8 @@ En el portal Angular se añadieron botones a:
 Ambos navegan al endpoint del backend `/auth/microsoft`. El callback existente en
 `user-web-portal/src/app/auth/pages/google-callback/google-callback.ts` procesa el JWT
 de la misma manera para Google y Microsoft, así que no se necesita una ruta adicional
-del frontend.
+del frontend. Si Microsoft devuelve un email coincidente con una cuenta existente, el
+backend asocia esa identidad en el callback sin pedir pasos manuales al usuario.
 
 ## 9. Probar la integración
 
@@ -155,8 +159,11 @@ del frontend.
    el JWT de Task App.
 8. Repite el login con la misma identidad: debe recuperar el usuario existente, no crear
    otro.
-9. Prueba una identidad Microsoft cuyo email ya pertenezca a un usuario registrado por
-   otro método: debe rechazarse el auto-enlace.
+9. Comprueba que una identidad Microsoft con el mismo email normalizado se vincule a la
+   cuenta existente, sin crear un perfil duplicado.
+10. Cierra sesión e inicia sesión otra vez con la misma identidad Microsoft; debe entrar
+    a la cuenta asociada por `microsoftId`.
+11. Intenta usar un email ya enlazado a otra identidad Microsoft; debe rechazarse.
 
 Para desarrollo local, una respuesta correcta termina redirigiendo aproximadamente a:
 
@@ -174,3 +181,7 @@ Backend -> caso de uso: encuentra o crea usuario Microsoft
 Backend -> emite JWT propio y redirige a /auth/callback?token=...
 Angular -> guarda JWT, carga perfil y navega al workspace
 ```
+
+Cuando se crea un usuario nuevo, Microsoft se identifica en adelante mediante el `id` de
+Microsoft Graph. Si ya existe una cuenta con el mismo email, se asocia ese ID al registro
+existente, siempre que aún no tenga otra cuenta Microsoft vinculada.

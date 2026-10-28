@@ -1,0 +1,18 @@
+FROM node:alpine
+
+WORKDIR /app
+
+# Copiar archivos de dependencias
+COPY package*.json ./
+
+# Instalar dependencias dentro del contenedor
+RUN npm install
+
+# Copiar el resto del código fuente
+COPY . .
+
+# Exponer el puerto por defecto de Angular (4200)
+EXPOSE 4200
+
+# Comando para iniciar el servidor de desarrollo y permitir conexiones externas (host 0.0.0.0)
+CMD ["npm", "run", "start", "--", "--host", "0.0.0.0", "--poll", "2000"]

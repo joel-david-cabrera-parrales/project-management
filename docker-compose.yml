@@ -1,0 +1,79 @@
+name: app-task
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: app-task-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - '5434:5432'
+    volumes:
+      - ./backend/db/postgres_data:/var/lib/postgresql/data
+    networks:
+      - postgres_net
+    restart: always
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: app-task-pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PG_ADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - '8083:80'
+    networks:
+      - postgres_net
+    restart: always
+    volumes:
+      - ./backend/db/pgadmin_data:/var/lib/pgadmin
+
+  backend:
+    depends_on:
+      - postgres
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: app-task-backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      - WATCHPACK_POLLING=true
+    command: npm run start:dev
+    networks:
+      - postgres_net
+    restart: always
+
+  frontend:
+    depends_on:
+      - postgres
+      - backend
+    build: 
+      context: ./user-web-portal
+      dockerfile: Dockerfile.dev
+    container_name: app-task-frontend
+    ports:
+      - '4200:4200'
+    networks:
+      - postgres_net
+    restart: always
+    volumes:
+      - ./user-web-portal:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    command: npm run start -- --host 0.0.0.0 --poll 2000
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+
+networks:
+  postgres_net:
+    driver: bridge
+    enable_ipv6: true
