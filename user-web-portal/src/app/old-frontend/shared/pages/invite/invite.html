@@ -1,0 +1,172 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800/50 flex items-center justify-center p-4">
+
+  <!-- Loading state -->
+  @if (loading()) {
+  <div class="w-full max-w-lg animate-fade-in">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700/50 shadow-sm dark:shadow-none dark:border dark:border-slate-700/50 p-8">
+      <div class="flex flex-col items-center text-center">
+        <div class="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-700/50 animate-pulse mb-5"></div>
+        <div class="w-48 h-5 bg-slate-100 dark:bg-slate-700/50 rounded-lg animate-pulse mb-3"></div>
+        <div class="w-64 h-4 bg-slate-100 dark:bg-slate-700/50 rounded-lg animate-pulse mb-6"></div>
+        <div class="flex gap-2 mb-6">
+          <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700/50 animate-pulse"></div>
+          <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700/50 animate-pulse"></div>
+          <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700/50 animate-pulse"></div>
+        </div>
+        <div class="w-full h-11 bg-slate-100 dark:bg-slate-700/50 rounded-xl animate-pulse"></div>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Error state -->
+  @if (error() && !loading()) {
+  <div class="w-full max-w-lg animate-fade-in">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700/50 shadow-sm dark:shadow-none dark:border dark:border-slate-700/50 p-8 md:p-10 text-center">
+      <div class="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex items-center justify-center mx-auto mb-5">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round" class="text-amber-500">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+      </div>
+      <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">Invitation not found</h2>
+      <p class="text-sm text-slate-400 dark:text-slate-500 mb-6 max-w-xs mx-auto">This invitation link has expired or is no longer valid. Ask the workspace owner to send a new one.</p>
+      <a [routerLink]="['/workspace']"
+        class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 text-white text-sm font-semibold rounded-xl transition-all active:scale-[0.97]">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5" /><polyline points="12 19 5 12 12 5" />
+        </svg>
+        Go to dashboard
+      </a>
+    </div>
+  </div>
+  }
+
+  <!-- Invitation card -->
+  @if (workspace() && !loading() && !error()) {
+  <div class="w-full max-w-lg animate-scale-in">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700/50 shadow-sm dark:shadow-none dark:border dark:border-slate-700/50 overflow-hidden">
+
+      <!-- Top accent bar with workspace color -->
+      <div class="h-1.5" [style.background]="workspace()?.color || '#3b82f6'"></div>
+
+      <div class="p-8 md:p-10">
+
+        <!-- Header -->
+        <div class="flex items-start gap-4 mb-6">
+          <div class="flex flex-col gap-0.5 pt-0.5 shrink-0">
+            <div class="w-[3px] h-7 rounded-full bg-[#ef4444]"></div>
+            <div class="w-[3px] h-4 rounded-full bg-[#ef4444]/60"></div>
+            <div class="w-[3px] h-2 rounded-full bg-[#ef4444]/30"></div>
+          </div>
+          <div>
+            <p class="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">You've been invited</p>
+            <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">{{ workspace()?.name }}</h1>
+            @if (workspace()?.description) {
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">{{ workspace()?.description }}</p>
+            }
+          </div>
+        </div>
+
+        <!-- Stats row -->
+        <div class="flex items-center gap-6 mb-6 py-4 px-5 bg-slate-50/70 dark:bg-slate-950/70 border border-slate-100 dark:border-slate-700/50 rounded-xl">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round" class="text-slate-500 dark:text-slate-400">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-lg font-bold text-slate-800 dark:text-slate-100 leading-none">{{ memberCount }}</p>
+              <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Member{{ memberCount !== 1 ? 's' : '' }}</p>
+            </div>
+          </div>
+          <div class="w-px h-10 bg-slate-200 dark:bg-slate-700"></div>
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800/50 flex items-center justify-center">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round" class="text-slate-500 dark:text-slate-400">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-lg font-bold text-slate-800 dark:text-slate-100 leading-none">{{ workspace()?.boards?.length || 0 }}</p>
+              <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Board{{ (workspace()?.boards?.length || 0) !== 1 ? 's' : '' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Existing members -->
+        @if (visibleMembers.length > 0) {
+        <div class="mb-6">
+          <p class="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">Current members</p>
+          <div class="flex items-center gap-1">
+            @for (member of visibleMembers; track member.id) {
+            @if (member.photo) {
+            <img [src]="member.photo" [alt]="member.name" [title]="member.name"
+              class="w-9 h-9 rounded-full object-cover shadow-sm dark:shadow-none ring-2 ring-white dark:ring-2 dark:ring-slate-900" />
+            } @else {
+            <div
+              class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm dark:shadow-none dark:border dark:border-slate-700/50 ring-2 ring-white dark:ring-2 dark:ring-slate-900"
+              [style.background]="member.avatarColor"
+              [title]="member.name">
+              {{ member.initials }}
+            </div>
+            }
+            }
+            @if (extraMemberCount > 0) {
+            <div
+              class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-700 shadow-sm dark:shadow-none dark:border dark:border-slate-700/50 ring-2 ring-white dark:ring-2 dark:ring-slate-900">
+              +{{ extraMemberCount }}
+            </div>
+            }
+          </div>
+        </div>
+        }
+
+        <!-- Action -->
+        @if (!accepted()) {
+        <button (click)="accept()" [disabled]="accepting()"
+          class="w-full flex items-center justify-center gap-2.5 px-5 py-3.5 bg-[#ef4444] hover:bg-[#dc2626] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl shadow-lg shadow-red-500/25 transition-all active:scale-[0.97]">
+          @if (accepting()) {
+          <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4 31.4" stroke-linecap="round" opacity="0.3" />
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4 31.4" stroke-linecap="round" stroke-dashoffset="20" />
+          </svg>
+          Joining workspace...
+          } @else {
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M19 8v6" /><path d="M22 11h-6" />
+          </svg>
+          Accept invitation
+          }
+        </button>
+        } @else {
+        <div class="w-full flex items-center justify-center gap-2.5 px-5 py-3.5 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-sm font-semibold rounded-xl animate-fade-in">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round" class="text-emerald-500">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          You're in! Redirecting to workspace...
+        </div>
+        }
+
+      </div>
+    </div>
+  </div>
+  }
+
+</div>

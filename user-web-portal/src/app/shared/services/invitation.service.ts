@@ -2,9 +2,9 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { catchError, map, Observable, of, tap } from 'rxjs';
-import { WorkspaceResponse } from '../../workspace/interfaces/workspace-response.interface';
-import { WorkspaceMapper } from '../../workspace/mappers/workspace.mapper';
-import { Workspace } from '../../workspace/models/workspace.models';
+import { WorkspaceResponse } from '../../old-frontend/workspace/interfaces/workspace-response.interface';
+import { WorkspaceMapper } from '../../old-frontend/workspace/mappers/workspace.mapper';
+import { Workspace } from '../../old-frontend/workspace/models/workspace.models';
 import { NotificationService } from './notification.service';
 
 export interface GetInvitationResponse {

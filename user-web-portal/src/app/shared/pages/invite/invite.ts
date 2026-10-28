@@ -1,8 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { InvitationService } from '../../services/invitation.service';
-import { AuthService } from '../../../auth/services/auth.service';
-import { Workspace } from '../../../workspace/models/workspace.models';
+import { AuthService } from '../../../old-frontend/auth/services/auth.service';
+import { Workspace } from '../../../old-frontend/workspace/models/workspace.models';
 
 @Component({
   selector: 'app-invite',

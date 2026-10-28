@@ -2,9 +2,9 @@ import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { StorageService } from '../../services/storage-service';
-import { WorkspaceStateService } from '../../../workspace/services/workspace-state-service';
-import { AuthService } from '../../../auth/services/auth.service';
-import { ProfileService } from '../../../profile/services/profile.service';
+import { WorkspaceStateService } from '../../../old-frontend/workspace/services/workspace-state-service';
+import { AuthService } from '../../../old-frontend/auth/services/auth.service';
+import { ProfileService } from '../../../old-frontend/profile/services/profile.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({

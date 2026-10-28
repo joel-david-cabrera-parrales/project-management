@@ -4,9 +4,9 @@ import { filter, map, startWith } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AsyncPipe } from '@angular/common';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { WorkspaceService } from '../../../workspace/services/workspace-service';
-import { WorkspaceStateService } from '../../../workspace/services/workspace-state-service';
-import { AuthService } from '../../../auth/services/auth.service';
+import { WorkspaceService } from '../../../old-frontend/workspace/services/workspace-service';
+import { WorkspaceStateService } from '../../../old-frontend/workspace/services/workspace-state-service';
+import { AuthService } from '../../../old-frontend/auth/services/auth.service';
 
 interface WorkspaceOption {
   id: string;

@@ -3,8 +3,8 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { jwtInterceptor } from './auth/interceptors/jwt-interceptor';
-import { authErrorInterceptor } from './auth/interceptors/auth-error-interceptor';
+import { jwtInterceptor } from './old-frontend/auth/interceptors/jwt-interceptor';
+import { authErrorInterceptor } from './old-frontend/auth/interceptors/auth-error-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [provideBrowserGlobalErrorListeners(), provideRouter(routes), provideHttpClient(withInterceptors([jwtInterceptor, authErrorInterceptor]))],
