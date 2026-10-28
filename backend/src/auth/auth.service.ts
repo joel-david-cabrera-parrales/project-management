@@ -26,6 +26,7 @@ import { AuthenticatedUserDto } from './dto/authenticated-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
 import * as fs from 'fs';
+import { AuthenticateWithMicrosoftUseCase } from './classes/authenticate-with-microsoft.class';
 
 interface GoogleProfile {
   googleId: string;
@@ -55,6 +56,7 @@ export class AuthService {
     private readonly changePasswordUseCase: ChangePasswordUseCase,
     private readonly mailerService: MailerService,
     private readonly bcrypt: HashService,
+    private readonly authenticateWithMicrosoftUseCase: AuthenticateWithMicrosoftUseCase,
   ) {}
 
   async registerProfile(profile: CreateProfileDto) {
@@ -288,6 +290,10 @@ export class AuthService {
     return createdUser;
   }
 
+  async authenticateWithMicrosoft(profile: { microsoftId: string; email: string; firstName?: string; lastName?: string }) {
+    return this.authenticateWithMicrosoftUseCase.execute(profile);
+  }
+
   private async downloadAndStoreGooglePhoto(pictureUrl: string): Promise<string | null> {
     try {
       const response = await fetch(pictureUrl);
@@ -324,6 +330,7 @@ export class AuthService {
       userCode: user.code,
       email: user.username,
       isGoogleAccount: user.isGoogleAccount,
+      isMicrosoftAccount: user.isMicrosoftAccount,
     };
     return this.jwtService.sign(payload);
   }

@@ -63,6 +63,21 @@ export class AuthController {
     return res.redirect(`${frontendUrl}/auth/callback?token=${jwt}`);
   }
 
+  @Get('microsoft')
+  @UseGuards(AuthGuard('microsoft'))
+  @ApiOperation({ summary: 'Iniciar autenticación con Microsoft' })
+  async microsoftAuth() {}
+
+  @Get('microsoft/callback')
+  @UseGuards(AuthGuard('microsoft'))
+  @ApiOperation({ summary: 'Callback de Microsoft OAuth' })
+  async microsoftCallback(@Req() req: any, @Res() res: any) {
+    const user = await this.authService.authenticateWithMicrosoft(req.user);
+    const jwt = this.authService.generateJwt(user);
+    const frontendUrl = this.configService.get('HOST_FRONTEND') || 'http://localhost:4200';
+    return res.redirect(`${frontendUrl}/auth/callback?token=${encodeURIComponent(jwt)}`);
+  }
+
   @Post('forgot-password')
   @Throttle({ default: { ttl: 60000, limit: 3 } })
   @ApiOperation({ summary: 'Enviar código de restablecimiento de contraseña' })

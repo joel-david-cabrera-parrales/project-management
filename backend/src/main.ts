@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import session from 'express-session';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 
 async function bootstrap() {
@@ -10,6 +11,24 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api/v1');
+
+  if (process.env.MICROSOFT_CLIENT_ID) {
+    if (!process.env.SESSION_SECRET) {
+      throw new Error('SESSION_SECRET is required when Microsoft authentication is enabled');
+    }
+    app.use(
+      session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+          httpOnly: true,
+          sameSite: 'lax',
+          secure: process.env.NODE_ENV === 'production',
+        },
+      }),
+    );
+  }
 
   const trustProxy = process.env.TRUST_PROXY || 'loopback';
   app.getHttpAdapter().getInstance().set('trust proxy', trustProxy);

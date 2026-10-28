@@ -44,6 +44,12 @@ export class UserProfile {
   @Column('boolean', { default: false })
   isGoogleAccount: boolean;
 
+  @Column('text', { nullable: true, unique: true })
+  microsoftId?: string;
+
+  @Column('boolean', { default: false })
+  isMicrosoftAccount: boolean;
+
   @Column('boolean', { default: false })
   isLoginLocked: boolean;
 

@@ -13,6 +13,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { MicrosoftStrategy } from './strategies/microsoft.strategy';
 import { AuthenticateUserUseCase } from './classes/authenticate-user.class';
 import { AuthenticateUserUseCaseImp } from './use-cases/authenticate-user.use-case';
 import { RegisterProfileUseCase } from './classes/register-profile.class';
@@ -20,6 +21,8 @@ import { RegisterProfileUseCaseImp } from './use-cases/register-profile.use-case
 import { ChangePasswordUseCase } from './classes/change-password.class';
 import { ChangePasswordUseCaseImp } from './use-cases/change-password.use-case';
 import { WorkspaceRoleGuard } from './guards/workspace-role.guard';
+import { AuthenticateWithMicrosoftUseCase } from './classes/authenticate-with-microsoft.class';
+import { AuthenticateWithMicrosoftUseCaseImp } from './use-cases/authenticate-with-microsoft.use-case';
 
 @Module({
   controllers: [AuthController],
@@ -27,6 +30,7 @@ import { WorkspaceRoleGuard } from './guards/workspace-role.guard';
     AuthService,
     JwtStrategy,
     GoogleStrategy,
+    MicrosoftStrategy,
     WorkspaceRoleGuard,
     {
       provide: AuthenticateUserUseCase,
@@ -39,6 +43,10 @@ import { WorkspaceRoleGuard } from './guards/workspace-role.guard';
     {
       provide: ChangePasswordUseCase,
       useClass: ChangePasswordUseCaseImp,
+    },
+    {
+      provide: AuthenticateWithMicrosoftUseCase,
+      useClass: AuthenticateWithMicrosoftUseCaseImp,
     },
   ],
   imports: [

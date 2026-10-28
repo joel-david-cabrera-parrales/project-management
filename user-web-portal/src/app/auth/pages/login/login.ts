@@ -51,4 +51,8 @@ export class Login {
   public googleLogin() {
     window.location.href = `${environment.apiUrl}/auth/google`;
   }
+
+  public microsoftLogin() {
+    window.location.href = `${environment.apiUrl}/auth/microsoft`;
+  }
 }

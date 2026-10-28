@@ -81,4 +81,8 @@ export class Signup {
   public googleRegister() {
     window.location.href = `${environment.apiUrl}/auth/google`;
   }
+
+  public microsoftRegister() {
+    window.location.href = `${environment.apiUrl}/auth/microsoft`;
+  }
 }
