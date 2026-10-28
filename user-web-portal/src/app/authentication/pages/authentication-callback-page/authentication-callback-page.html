@@ -1,0 +1,16 @@
+<main class="oauth-callback">
+  @if (error()) {
+    <section class="oauth-card" role="alert">
+      <span class="oauth-error-icon" aria-hidden="true">!</span>
+      <h1>No pudimos completar el inicio de sesión</h1>
+      <p>Inténtalo de nuevo o vuelve a la página de acceso.</p>
+      <a routerLink="/auth/signin">Volver a iniciar sesión</a>
+    </section>
+  } @else {
+    <section class="oauth-card" role="status" aria-live="polite">
+      <span class="oauth-spinner" aria-hidden="true"></span>
+      <h1>Verificando tu cuenta</h1>
+      <p>Un momento mientras preparamos tu espacio de trabajo.</p>
+    </section>
+  }
+</main>

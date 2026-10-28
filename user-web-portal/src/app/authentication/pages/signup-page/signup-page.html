@@ -1,0 +1,156 @@
+<div class="auth-page-heading">
+  <p class="auth-page-eyebrow">{{ 'auth.signup.badge' | translate }}</p>
+  <h2>{{ 'auth.signup.title' | translate }}</h2>
+  <p class="auth-page-subtitle">{{ 'auth.signup.subtitle' | translate: { appName: appName } }}</p>
+</div>
+
+<form class="auth-form signup-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+  <div class="signup-grid">
+    <div class="auth-form-field">
+      <label for="signup-first-name">{{ 'auth.signup.firstNameLabel' | translate }}</label>
+      <input id="signup-first-name" type="text" formControlName="firstName" autocomplete="given-name"
+        [placeholder]="'auth.signup.firstNamePlaceholder' | translate"
+        [class.auth-input-invalid]="fieldErrorKey('firstName') !== null" />
+      @if (fieldErrorKey('firstName'); as errorKey) {
+        <p class="auth-field-error" role="alert">{{ errorKey | translate }}</p>
+      }
+    </div>
+    <div class="auth-form-field">
+      <label for="signup-second-name">{{ 'auth.signup.secondNameLabel' | translate }}</label>
+      <input id="signup-second-name" type="text" formControlName="secondName" autocomplete="additional-name"
+        [placeholder]="'auth.signup.secondNamePlaceholder' | translate" />
+      @if (fieldErrorKey('secondName'); as errorKey) {
+        <p class="auth-field-error" role="alert">{{ errorKey | translate }}</p>
+      }
+    </div>
+    <div class="auth-form-field">
+      <label for="signup-first-surname">{{ 'auth.signup.firstSurnameLabel' | translate }}</label>
+      <input id="signup-first-surname" type="text" formControlName="firstSurname" autocomplete="family-name"
+        [placeholder]="'auth.signup.firstSurnamePlaceholder' | translate"
+        [class.auth-input-invalid]="fieldErrorKey('firstSurname') !== null" />
+      @if (fieldErrorKey('firstSurname'); as errorKey) {
+        <p class="auth-field-error" role="alert">{{ errorKey | translate }}</p>
+      }
+    </div>
+    <div class="auth-form-field">
+      <label for="signup-second-surname">{{ 'auth.signup.secondSurnameLabel' | translate }}</label>
+      <input id="signup-second-surname" type="text" formControlName="secondSurname"
+        [placeholder]="'auth.signup.secondSurnamePlaceholder' | translate" />
+      @if (fieldErrorKey('secondSurname'); as errorKey) {
+        <p class="auth-field-error" role="alert">{{ errorKey | translate }}</p>
+      }
+    </div>
+  </div>
+
+  <div class="auth-form-field">
+    <label for="signup-email">{{ 'auth.signup.emailLabel' | translate }}</label>
+    <input id="signup-email" type="email" formControlName="email" autocomplete="email"
+      [placeholder]="'auth.signup.emailPlaceholder' | translate"
+      [class.auth-input-invalid]="fieldErrorKey('email') !== null" />
+    @if (fieldErrorKey('email'); as errorKey) {
+      <p class="auth-field-error" role="alert">{{ errorKey | translate }}</p>
+    }
+  </div>
+
+  <div class="signup-grid">
+    <div class="auth-form-field">
+      <label for="signup-phone">{{ 'auth.signup.phoneLabel' | translate }}</label>
+      <input id="signup-phone" type="tel" formControlName="phone" autocomplete="tel"
+        [placeholder]="'auth.signup.phonePlaceholder' | translate"
+        [class.auth-input-invalid]="fieldErrorKey('phone') !== null" />
+      @if (fieldErrorKey('phone'); as errorKey) {
+        <p class="auth-field-error" role="alert">{{ errorKey | translate }}</p>
+      }
+    </div>
+    <div class="auth-form-field">
+      <label for="signup-date-birth">{{ 'auth.signup.dateBirthLabel' | translate }}</label>
+      <input id="signup-date-birth" type="date" formControlName="dateBirth" [max]="today"
+        [attr.aria-label]="'auth.signup.dateBirthPlaceholder' | translate"
+        [class.auth-input-invalid]="fieldErrorKey('dateBirth') !== null" />
+      @if (fieldErrorKey('dateBirth'); as errorKey) {
+        <p class="auth-field-error" role="alert">{{ errorKey | translate }}</p>
+      }
+    </div>
+  </div>
+
+  <div class="signup-grid">
+    <div class="auth-form-field">
+      <label for="signup-password">{{ 'auth.signup.passwordLabel' | translate }}</label>
+      <div class="auth-password-wrapper">
+        <input id="signup-password" [type]="showPassword() ? 'text' : 'password'" formControlName="password"
+          autocomplete="new-password" [placeholder]="'auth.signup.passwordPlaceholder' | translate"
+          [class.auth-input-invalid]="fieldErrorKey('password') !== null" />
+        <button class="auth-password-toggle" type="button" (click)="showPassword.update(value => !value)">
+          {{ (showPassword() ? 'auth.signup.hidePassword' : 'auth.signup.showPassword') | translate }}
+        </button>
+      </div>
+      @if (fieldErrorKey('password'); as errorKey) {
+        <p class="auth-field-error" role="alert">{{ errorKey | translate }}</p>
+      }
+    </div>
+    <div class="auth-form-field">
+      <label for="signup-confirm-password">{{ 'auth.signup.confirmPasswordLabel' | translate }}</label>
+      <div class="auth-password-wrapper">
+        <input id="signup-confirm-password" [type]="showConfirmPassword() ? 'text' : 'password'"
+          formControlName="confirmPassword" autocomplete="new-password"
+          [placeholder]="'auth.signup.confirmPasswordPlaceholder' | translate"
+          [class.auth-input-invalid]="fieldErrorKey('confirmPassword') !== null || passwordMismatch()" />
+        <button class="auth-password-toggle" type="button" (click)="showConfirmPassword.update(value => !value)">
+          {{ (showConfirmPassword() ? 'auth.signup.hidePassword' : 'auth.signup.showPassword') | translate }}
+        </button>
+      </div>
+      @if (fieldErrorKey('confirmPassword'); as errorKey) {
+        <p class="auth-field-error" role="alert">{{ errorKey | translate }}</p>
+      } @else if (passwordMismatch()) {
+        <p class="auth-field-error" role="alert">{{ 'auth.validation.passwordMismatch' | translate }}</p>
+      }
+    </div>
+  </div>
+
+  <label class="auth-checkbox-label auth-terms" for="signup-terms">
+    <input id="signup-terms" type="checkbox" formControlName="acceptTerms" />
+    <span>{{ 'auth.signup.termsText' | translate }}</span>
+  </label>
+  @if (fieldErrorKey('acceptTerms'); as errorKey) {
+    <p class="auth-field-error" role="alert">{{ errorKey | translate }}</p>
+  }
+
+  @if (serverError()) {
+    <p class="auth-server-error" role="alert">{{ serverError() }}</p>
+  }
+
+  <button class="auth-primary-button" type="submit" [disabled]="submitting()">
+    @if (submitting()) {
+      <span class="auth-spinner" aria-hidden="true"></span>
+      {{ 'auth.signup.loadingButton' | translate }}
+    } @else {
+      {{ 'auth.signup.signupButton' | translate }}
+    }
+  </button>
+</form>
+
+<div class="auth-divider" aria-hidden="true"><span>{{ 'auth.signup.or' | translate }}</span></div>
+
+<button class="auth-social-button" type="button" (click)="googleSignUp()">
+  <svg aria-hidden="true" viewBox="0 0 48 48" width="20" height="20">
+    <path fill="#FFC107" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5h6.7c3.9-3.6 6-8.8 6-14.9Z" />
+    <path fill="#FF3D00" d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.7-5c-1.8 1.2-4 1.9-6.8 1.9-5.2 0-9.6-3.5-11.2-8.2H5.9v5.2A20 20 0 0 0 24 44Z" />
+    <path fill="#4CAF50" d="M12.8 27.9a12 12 0 0 1 0-7.8v-5.2H5.9a20 20 0 0 0 0 18.2l6.9-5.2Z" />
+    <path fill="#1976D2" d="M24 11.9c3 0 5.6 1 7.7 3.1l5.8-5.8A19.3 19.3 0 0 0 24 4 20 20 0 0 0 5.9 14.9l6.9 5.2c1.6-4.7 6-8.2 11.2-8.2Z" />
+  </svg>
+  {{ 'auth.signup.googleSignup' | translate }}
+</button>
+<button class="auth-social-button auth-social-button-spaced" type="button" (click)="microsoftSignUp()">
+  <svg aria-hidden="true" viewBox="0 0 24 24" width="19" height="19">
+    <path fill="#f25022" d="M1 1h10v10H1z" />
+    <path fill="#7fba00" d="M13 1h10v10H13z" />
+    <path fill="#00a4ef" d="M1 13h10v10H1z" />
+    <path fill="#ffb900" d="M13 13h10v10H13z" />
+  </svg>
+  {{ 'auth.signup.microsoftSignup' | translate }}
+</button>
+
+<p class="auth-switch-copy">
+  {{ 'auth.signup.hasAccount' | translate }}
+  <a routerLink="/auth/signin">{{ 'auth.signup.loginLink' | translate }}</a>
+</p>

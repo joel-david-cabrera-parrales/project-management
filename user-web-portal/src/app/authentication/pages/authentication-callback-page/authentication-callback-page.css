@@ -1,0 +1,71 @@
+.oauth-callback {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  background: var(--auth-bg);
+  padding: 1.5rem;
+  color: var(--text-primary);
+}
+
+.oauth-card {
+  display: flex;
+  width: min(100%, 28rem);
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid var(--auth-panel-border);
+  border-radius: 1.5rem;
+  background: var(--auth-panel-bg);
+  box-shadow: var(--auth-panel-shadow);
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+
+.oauth-card h1 {
+  margin-top: 1rem;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.oauth-card p {
+  margin-top: 0.45rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.oauth-card a {
+  margin-top: 1.25rem;
+  color: var(--accent);
+  font-size: 0.88rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.oauth-card a:hover {
+  text-decoration: underline;
+}
+
+.oauth-spinner,
+.oauth-error-icon {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.oauth-spinner {
+  border: 3px solid var(--accent-alpha);
+  border-top-color: var(--accent);
+  animation: oauth-spin 700ms linear infinite;
+}
+
+.oauth-error-icon {
+  background: var(--danger-alpha);
+  color: var(--danger);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+@keyframes oauth-spin {
+  to { transform: rotate(360deg); }
+}

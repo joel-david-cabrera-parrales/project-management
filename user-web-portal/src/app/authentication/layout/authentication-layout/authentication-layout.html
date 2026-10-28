@@ -1,0 +1,68 @@
+<main class="auth-layout">
+  <aside class="auth-aside" aria-label="{{ 'auth.brand.title' | translate }}">
+    <div class="auth-brand">
+      <span class="auth-brand-mark" aria-hidden="true">✦</span>
+      <span>{{ appName }}</span>
+    </div>
+
+    <div class="auth-aside-content">
+      <p class="auth-eyebrow">{{ 'auth.brand.eyebrow' | translate }}</p>
+      <h1>{{ 'auth.brand.title' | translate }}</h1>
+      <p class="auth-aside-copy">{{ 'auth.brand.description' | translate }}</p>
+
+      <ul class="auth-highlights">
+        <li>
+          <span class="auth-highlight-icon" aria-hidden="true">↗</span>
+          <span>
+            <strong>{{ 'auth.brand.featureOneTitle' | translate }}</strong>
+            <small>{{ 'auth.brand.featureOneDescription' | translate }}</small>
+          </span>
+        </li>
+        <li>
+          <span class="auth-highlight-icon" aria-hidden="true">◈</span>
+          <span>
+            <strong>{{ 'auth.brand.featureTwoTitle' | translate }}</strong>
+            <small>{{ 'auth.brand.featureTwoDescription' | translate }}</small>
+          </span>
+        </li>
+        <li>
+          <span class="auth-highlight-icon" aria-hidden="true">✓</span>
+          <span>
+            <strong>{{ 'auth.brand.featureThreeTitle' | translate }}</strong>
+            <small>{{ 'auth.brand.featureThreeDescription' | translate }}</small>
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <p class="auth-aside-footer">{{ 'auth.brand.footer' | translate }}</p>
+  </aside>
+
+  <section class="auth-main">
+    <header class="auth-mobile-header">
+      <div class="auth-brand auth-brand-mobile">
+        <span class="auth-brand-mark" aria-hidden="true">✦</span>
+        <span>{{ appName }}</span>
+      </div>
+      <button class="auth-language-button" type="button" (click)="toggleLanguage()"
+        [attr.aria-label]="'auth.brand.toggleLanguage' | translate">
+        {{ translation.currentLang() | uppercase }}
+      </button>
+    </header>
+
+    <div class="auth-content">
+      <div class="auth-language-desktop">
+        <button class="auth-language-button" type="button" (click)="toggleLanguage()"
+          [attr.aria-label]="'auth.brand.toggleLanguage' | translate">
+          {{ translation.currentLang() | uppercase }} <span aria-hidden="true">⌄</span>
+        </button>
+      </div>
+
+      <div class="auth-card">
+        <router-outlet />
+      </div>
+
+      <p class="auth-legal">{{ 'auth.brand.legal' | translate: { appName: appName } }}</p>
+    </div>
+  </section>
+</main>

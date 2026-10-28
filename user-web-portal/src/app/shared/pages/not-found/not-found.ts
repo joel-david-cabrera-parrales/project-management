@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { StorageService } from '../../services/storage-service';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-not-found',

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { StoredUserProfile } from '../../authentication/models/authentication.models';
 
 @Injectable({
   providedIn: 'root',
@@ -24,6 +25,26 @@ export class StorageService {
     localStorage.removeItem('userCode');
   }
 
+  setProfile(profile: StoredUserProfile): void {
+    localStorage.setItem('profile', JSON.stringify(profile));
+  }
+
+  getProfile(): StoredUserProfile | null {
+    const profile = localStorage.getItem('profile');
+    if (!profile) return null;
+
+    try {
+      return JSON.parse(profile) as StoredUserProfile;
+    } catch {
+      localStorage.removeItem('profile');
+      return null;
+    }
+  }
+
+  removeProfile(): void {
+    localStorage.removeItem('profile');
+  }
+
   setRefreshToken(token: string): void {
     localStorage.setItem('refreshToken', token);
   }
@@ -38,6 +59,7 @@ export class StorageService {
     localStorage.removeItem('token');
     localStorage.removeItem('userCode');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('profile');
   }
 
   isTokenExpired(): boolean {
