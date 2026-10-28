@@ -1,0 +1,8 @@
+@if (photo()) {
+  <img class="workspace-avatar" [class.workspace-avatar-sm]="size() === 'sm'" [src]="photo()" [alt]="name()" />
+} @else {
+  <span class="workspace-avatar workspace-avatar-fallback" [class.workspace-avatar-sm]="size() === 'sm'"
+    [style.background-color]="color()" [attr.aria-label]="name()">
+    {{ initials() || name().slice(0, 1).toUpperCase() }}
+  </span>
+}

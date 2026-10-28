@@ -1,0 +1,11 @@
+<shared-modal [open]="open()" [title]="titleKey() | translate" [size]="'sm'" (close)="close.emit()">
+  <div modal-body class="confirm-dialog-body">
+    <p>{{ descriptionKey() | translate: descriptionParams() }}</p>
+    <div class="confirm-dialog-actions">
+      <button class="confirm-cancel" type="button" (click)="close.emit()">{{ 'common.cancel' | translate }}</button>
+      <button class="confirm-submit" type="button" [disabled]="pending()" (click)="confirm.emit()">
+        @if (pending()) { {{ pendingKey() | translate }} } @else { {{ confirmKey() | translate }} }
+      </button>
+    </div>
+  </div>
+</shared-modal>

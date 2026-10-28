@@ -1,0 +1,107 @@
+<section class="workspace-detail-page" aria-labelledby="labels-title">
+  <header class="detail-page-heading">
+    <div>
+      <h1 id="labels-title">{{ 'workspace.labels.title' | translate }}</h1>
+      <p>{{ 'workspace.labels.subtitle' | translate: { count: labels().length } }}</p>
+    </div>
+    @if (canEdit()) {
+      <button class="detail-primary-button" type="button" (click)="openCreate()">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v14M3 10h14"/></svg>
+        {{ 'workspace.labels.addLabel' | translate }}
+      </button>
+    }
+  </header>
+
+  @if (loading()) {
+    <div class="detail-state" role="status"><span class="detail-spinner" aria-hidden="true"></span>{{ 'common.loading' | translate }}</div>
+  } @else if (loadError()) {
+    <div class="detail-empty-state" role="alert">
+      <p>{{ 'workspace.labels.loadError' | translate }}</p>
+      <button class="detail-secondary-button" type="button" (click)="loadLabels()">{{ 'workspace.list.retry' | translate }}</button>
+    </div>
+  } @else {
+    @if (labels().length > 0) {
+      <div class="labels-toolbar">
+        <app-workspace-filter-input inputId="workspace-label-search" [value]="searchQuery()"
+          placeholderKey="workspace.labels.searchPlaceholder" (valueChange)="searchQuery.set($event)" />
+        <div class="labels-view-toggle" role="group" [attr.aria-label]="'workspace.labels.viewOptions' | translate">
+          <button type="button" [class.selected]="viewMode() === 'grid'" [attr.aria-pressed]="viewMode() === 'grid'"
+            [attr.aria-label]="'workspace.list.gridView' | translate" (click)="viewMode.set('grid')">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="2.5" width="6" height="6" rx="1"/><rect x="11.5" y="2.5" width="6" height="6" rx="1"/><rect x="2.5" y="11.5" width="6" height="6" rx="1"/><rect x="11.5" y="11.5" width="6" height="6" rx="1"/></svg>
+          </button>
+          <button type="button" [class.selected]="viewMode() === 'list'" [attr.aria-pressed]="viewMode() === 'list'"
+            [attr.aria-label]="'workspace.list.listView' | translate" (click)="viewMode.set('list')">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7.5 4h10M7.5 10h10M7.5 16h10"/><circle cx="3.5" cy="4" r=".7"/><circle cx="3.5" cy="10" r=".7"/><circle cx="3.5" cy="16" r=".7"/></svg>
+          </button>
+        </div>
+      </div>
+    }
+    @if (filteredLabels().length > 0) {
+      <div class="labels-collection" [class.labels-collection-list]="viewMode() === 'list'">
+        @for (label of filteredLabels(); track label.id) {
+          <article class="label-card" [class.label-card-list]="viewMode() === 'list'">
+            <span class="label-color" [style.background-color]="label.color" aria-hidden="true"></span>
+            <span class="label-name">{{ label.name }}</span>
+            @if (canEdit()) {
+              <button class="label-icon-button label-edit-button" type="button"
+                [attr.aria-label]="'workspace.labels.editNamed' | translate: { name: label.name }"
+                [title]="'common.edit' | translate" (click)="openEdit(label)">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.8 3.2 16.8 7.2M3 17l3.8-.8L16.4 6.6a2.1 2.1 0 0 0-3-3L3.8 13.2 3 17Z"/></svg>
+              </button>
+            }
+            @if (canDelete()) {
+              <button class="label-icon-button label-delete-button" type="button"
+                [attr.aria-label]="'workspace.labels.deleteConfirm' | translate: { name: label.name }"
+                [title]="'common.delete' | translate" (click)="confirmDelete(label)">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M7 5V3.5h6V5m-8 0 1 12h8l1-12M8 8v6m4-6v6"/></svg>
+              </button>
+            }
+          </article>
+        }
+      </div>
+    } @else if (labels().length > 0 && searchQuery().trim()) {
+      <div class="detail-empty-state">
+        <h2>{{ 'workspace.labels.noSearchResults' | translate }}</h2>
+        <button class="detail-secondary-button" type="button" (click)="searchQuery.set('')">{{ 'common.clearSearch' | translate }}</button>
+      </div>
+    } @else {
+    <div class="detail-empty-state">
+      <span class="detail-empty-icon" aria-hidden="true">◇</span>
+      <h2>{{ 'workspace.labels.noLabels' | translate }}</h2>
+      <p>{{ 'workspace.labels.noLabelsDesc' | translate }}</p>
+    </div>
+    }
+  }
+</section>
+
+<app-workspace-drawer [open]="dialogOpen()" [titleKey]="editingLabel() ? 'workspace.labels.editLabel' : 'workspace.labels.addLabel'"
+  [busy]="saving()" (close)="dialogOpen.set(false)">
+  <div drawer-body class="label-form">
+    <label for="workspace-label-name">{{ 'workspace.labels.nameLabel' | translate }}</label>
+    <input id="workspace-label-name" type="text" maxlength="50" [value]="labelName()"
+      (input)="labelName.set($any($event.target).value)" [placeholder]="'workspace.labels.namePlaceholder' | translate" />
+    <fieldset>
+      <legend>{{ 'workspace.labels.colorLabel' | translate }}</legend>
+      <div class="label-color-options">
+        @for (color of colors; track color) {
+          <button type="button" class="label-color-choice" [style.background-color]="color"
+            [class.selected]="labelColor() === color" [attr.aria-pressed]="labelColor() === color"
+            [attr.aria-label]="'workspace.form.chooseColor' | translate: { color: color }"
+            (click)="labelColor.set(color)"></button>
+        }
+      </div>
+    </fieldset>
+    @if (saveError()) { <p class="detail-inline-error" role="alert">{{ 'workspace.labels.actionError' | translate }}</p> }
+  </div>
+  <div drawer-footer>
+    <button type="button" class="detail-secondary-button" [disabled]="saving()" (click)="dialogOpen.set(false)">{{ 'common.cancel' | translate }}</button>
+    <button type="button" class="detail-primary-button" [disabled]="!labelName().trim() || saving()" (click)="saveLabel()">
+      {{ (saving() ? 'workspace.labels.saving' : editingLabel() ? 'workspace.labels.saveButton' : 'workspace.labels.createButton') | translate }}
+    </button>
+  </div>
+</app-workspace-drawer>
+
+<app-workspace-confirm-dialog [open]="!!deletingLabel()" titleKey="workspace.labels.deleteLabel"
+  descriptionKey="workspace.labels.deleteConfirm" [descriptionParams]="{ name: deletingLabel()?.name }"
+  confirmKey="common.delete" pendingKey="workspace.labels.deleting" [pending]="deleting()"
+  (close)="deletingLabel.set(null)" (confirm)="deleteLabel()" />

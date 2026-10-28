@@ -12,3 +12,10 @@
   margin-inline: auto;
   padding: clamp(1.35rem, 3vw, 2.75rem) clamp(1rem, 3vw, 2.5rem);
 }
+
+.app-shell-content-detail {
+  width: 100%;
+  max-width: none;
+  min-height: 100svh;
+  padding: 0;
+}

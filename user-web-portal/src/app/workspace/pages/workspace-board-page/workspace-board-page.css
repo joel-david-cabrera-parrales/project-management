@@ -1,0 +1,10 @@
+.detail-page { max-width: 72rem; margin-inline: auto; }
+.detail-page-heading { margin-bottom: 1.5rem; }
+.detail-page-heading h1 { margin-top: 0.35rem; color: var(--text-primary); font-size: clamp(1.45rem, 3vw, 2rem); font-weight: 800; letter-spacing: -0.035em; }
+.detail-page-heading p:last-child { margin-top: 0.35rem; color: var(--text-tertiary); font-size: 0.75rem; }
+.board-coming-soon { display: flex; min-height: 23rem; align-items: center; justify-content: center; flex-direction: column; gap: 0.75rem; border: 1px dashed var(--border-default); border-radius: 0.9rem; background: var(--bg-raised); padding: 2rem; text-align: center; }
+.board-coming-icon { display: grid; width: 3.1rem; height: 3.1rem; place-items: center; border-radius: 0.9rem; background: var(--accent-alpha); color: var(--accent); font-size: 1.5rem; }
+.board-coming-soon h2 { color: var(--text-primary); font-size: 1rem; font-weight: 750; }
+.board-coming-soon p { max-width: 27rem; color: var(--text-tertiary); font-size: 0.82rem; line-height: 1.5; }
+.board-shortcuts { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 0.5rem; }
+.board-shortcuts a { border: 1px solid var(--border-subtle); border-radius: 0.5rem; background: var(--bg-base); padding: 0.45rem 0.65rem; color: var(--accent); font-size: 0.72rem; font-weight: 700; text-decoration: none; }

@@ -1,0 +1,7 @@
+.confirm-dialog-body { display: grid; gap: 1.1rem; }
+.confirm-dialog-body p { color: var(--text-secondary); font-size: 0.82rem; line-height: 1.5; }
+.confirm-dialog-actions { display: flex; justify-content: flex-end; gap: 0.55rem; }
+.confirm-cancel, .confirm-submit { min-height: 2.35rem; border: 1px solid var(--border-default); border-radius: 0.55rem; padding: 0.5rem 0.8rem; cursor: pointer; font: inherit; font-size: 0.74rem; font-weight: 700; }
+.confirm-cancel { background: var(--bg-raised); color: var(--text-secondary); }
+.confirm-submit { border-color: var(--danger); background: var(--danger); color: white; }
+.confirm-submit:disabled { cursor: wait; opacity: 0.65; }

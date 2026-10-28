@@ -13,6 +13,7 @@ import {
 import { WorkspaceService } from './workspace.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
+import { UpdateWorkspaceMemberRoleDto } from './dto/update-workspace-member-role.dto';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { WorkspaceRoles } from 'src/auth/decorators/workspace-roles.decorator';
 import { WorkspaceRoleGuard } from 'src/auth/guards/workspace-role.guard';
@@ -95,6 +96,18 @@ export class WorkspaceController {
     @GetUser() user: AuthenticatedUserDto,
   ) {
     return this.workspaceService.removeMember(code, memberId, user);
+  }
+
+  @Patch(':code/members/:memberId/role')
+  @UseGuards(WorkspaceRoleGuard)
+  @WorkspaceRoles('owner')
+  @ApiOperation({ summary: 'Actualizar el rol de un miembro del workspace' })
+  updateMemberRole(
+    @Param('code', ParseUUIDPipe) code: string,
+    @Param('memberId', ParseIntPipe) memberId: number,
+    @Body() dto: UpdateWorkspaceMemberRoleDto,
+  ) {
+    return this.workspaceService.updateMemberRole(code, memberId, dto.roleMember);
   }
 
   // Ruta para agregar un miembro a un workspace

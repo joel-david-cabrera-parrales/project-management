@@ -1,0 +1,22 @@
+<section class="detail-page" aria-labelledby="workspace-board-title">
+  <header class="detail-page-heading">
+    <div>
+      <h1 id="workspace-board-title">{{ 'workspace.sidebar.board' | translate }}</h1>
+      @if (boardCode()) { <p>{{ 'workspace.detail.boardCode' | translate: { code: boardCode() } }}</p> }
+    </div>
+  </header>
+  <div class="board-coming-soon">
+    <span class="board-coming-icon" aria-hidden="true">▦</span>
+    <h2>{{ 'workspace.detail.boardPreparedTitle' | translate }}</h2>
+    <p>{{ 'workspace.detail.boardPreparedDescription' | translate }}</p>
+    @if (!boardCode() && store.workspace()?.boards?.length) {
+      <div class="board-shortcuts">
+        @for (board of store.workspace()!.boards; track board.code; let index = $index) {
+          <a [routerLink]="['/workspace', store.workspace()!.code, 'board', board.code]">
+            {{ 'workspace.detail.boardNumber' | translate: { number: index + 1 } }}
+          </a>
+        }
+      </div>
+    }
+  </div>
+</section>

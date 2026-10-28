@@ -1,0 +1,30 @@
+.workspace-detail-page { max-width: 72rem; margin-inline: auto; }
+.detail-page-heading { margin-bottom: 1.35rem; }
+.detail-page-heading h1 { margin-top: 0.35rem; color: var(--text-primary); font-size: clamp(1.45rem, 3vw, 2rem); font-weight: 800; letter-spacing: -0.035em; }
+.detail-page-heading p:last-child { margin-top: 0.35rem; color: var(--text-tertiary); font-size: 0.78rem; }
+.settings-panel { max-width: 48rem; border: 1px solid var(--border-subtle); border-radius: 0.8rem; background: var(--bg-raised); padding: clamp(1rem, 2.5vw, 1.5rem); }
+.settings-panel-heading { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.25rem; }
+.settings-panel-icon { display: grid; width: 2.3rem; height: 2.3rem; place-items: center; border-radius: 0.65rem; background: var(--accent-alpha); color: var(--accent); }
+.settings-panel-heading h2 { color: var(--text-primary); font-size: 0.82rem; font-weight: 750; }
+.settings-panel-heading p { margin-top: 0.15rem; color: var(--text-tertiary); font-size: 0.68rem; }
+.workspace-settings-form { display: grid; gap: 0.55rem; }
+.workspace-settings-form > label, .settings-color-field legend { margin-top: 0.45rem; color: var(--text-secondary); font-size: 0.72rem; font-weight: 700; }
+.workspace-settings-form input, .workspace-settings-form textarea { width: 100%; border: 1px solid var(--border-default); border-radius: 0.55rem; background: var(--bg-base); padding: 0.6rem 0.7rem; color: var(--text-primary); font: inherit; font-size: 0.75rem; }
+.workspace-settings-form textarea { resize: vertical; }
+.workspace-settings-form input:focus, .workspace-settings-form textarea:focus { border-color: var(--accent); outline: 2px solid var(--accent-alpha); }
+.workspace-settings-form input:disabled, .workspace-settings-form textarea:disabled { cursor: not-allowed; opacity: 0.7; }
+.settings-color-field { border: 0; padding: 0.2rem 0 0; }
+.settings-color-field legend { margin-bottom: 0.6rem; }
+.settings-color-options { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+.settings-color-choice { width: 1.65rem; height: 1.65rem; border: 2px solid var(--bg-raised); border-radius: 50%; cursor: pointer; box-shadow: 0 0 0 1px var(--border-default); }
+.settings-color-choice.selected { outline: 2px solid var(--text-primary); outline-offset: 2px; }
+.settings-color-choice:disabled { cursor: not-allowed; opacity: 0.6; }
+.settings-form-actions { display: flex; justify-content: flex-end; margin-top: 0.7rem; }
+.settings-readonly-note, .settings-error, .settings-help-error { color: var(--text-tertiary); font-size: 0.7rem; }
+.settings-error, .settings-help-error { color: var(--danger); }
+.settings-danger-zone { display: flex; max-width: 48rem; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1rem; border: 1px solid rgb(220 38 38 / 18%); border-radius: 0.8rem; background: color-mix(in srgb, var(--danger-alpha) 28%, var(--bg-raised)); padding: 1rem 1.2rem; }
+.settings-danger-zone h2 { color: var(--danger); font-size: 0.8rem; font-weight: 750; }
+.settings-danger-zone p { margin-top: 0.2rem; color: var(--text-tertiary); font-size: 0.68rem; }
+.settings-delete-button { min-height: 2.25rem; flex: 0 0 auto; border: 1px solid var(--danger); border-radius: 0.5rem; background: transparent; padding: 0.45rem 0.7rem; color: var(--danger); cursor: pointer; font: inherit; font-size: 0.68rem; font-weight: 700; }
+.settings-delete-button:hover { background: var(--danger-alpha); }
+@media (max-width: 620px) { .settings-danger-zone { align-items: flex-start; flex-direction: column; } }

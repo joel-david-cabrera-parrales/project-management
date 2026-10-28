@@ -11,10 +11,10 @@
 .topbar-icon-button svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.45; }
 .topbar-apps-trigger svg rect { fill: currentColor; stroke: none; }
 .topbar-search-wrap { position: relative; display: flex; min-width: 6rem; max-width: 49rem; flex: 1 1 20rem; margin-inline: clamp(0.5rem, 3vw, 2.4rem); }
-.topbar-search { display: flex; width: 100%; height: 2.1rem; align-items: center; gap: 0.5rem; border: 1px solid #94a3b8; border-radius: 0.55rem; background: var(--bg-raised); padding: 0 0.6rem; color: var(--text-tertiary); }
-.topbar-search:focus-within { border-color: #2563eb; box-shadow: 0 0 0 1px #2563eb; }
+.topbar-search { display: flex; width: 100%; height: var(--search-control-height); align-items: center; gap: 0.5rem; border: 1px solid var(--border-default); border-radius: var(--search-control-radius); background: var(--bg-raised); padding: 0 var(--search-control-padding); color: var(--text-tertiary); }
+.topbar-search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .topbar-search > svg { width: 1.05rem; height: 1.05rem; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.6; }
-.topbar-search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--text-primary); font: inherit; font-size: 0.82rem; }
+.topbar-search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--text-primary); font: inherit; font-size: var(--search-control-font-size); }
 .topbar-search input::placeholder { color: var(--text-tertiary); }
 .topbar-search input::-webkit-search-cancel-button { display: none; }
 .topbar-clear-search { display: grid; width: 1.35rem; height: 1.35rem; flex: 0 0 auto; place-items: center; border: 0; border-radius: 50%; background: var(--bg-base); color: var(--text-tertiary); cursor: pointer; }

@@ -1,0 +1,164 @@
+<section class="workspace-detail-page" aria-labelledby="members-title">
+  <header class="detail-page-heading">
+    <div>
+      <h1 id="members-title">{{ 'workspace.members.title' | translate }}</h1>
+      <p>{{ 'workspace.members.subtitle' | translate: { count: members().length } }}</p>
+    </div>
+    @if (isOwner()) {
+      <button class="detail-primary-button" type="button" (click)="openInvite()">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v14M3 10h14"/></svg>
+        {{ 'workspace.members.addMember' | translate }}
+      </button>
+    }
+  </header>
+
+  <div class="detail-search-row">
+    <app-workspace-filter-input inputId="workspace-members-search" [value]="searchQuery()"
+      placeholderKey="workspace.members.searchPlaceholder" (valueChange)="searchQuery.set($event)" />
+  </div>
+
+  @if (actionError()) { <p class="detail-inline-error" role="alert">{{ 'workspace.members.actionError' | translate }}</p> }
+
+  <section class="members-section" aria-labelledby="workspace-members-heading">
+    <header class="members-section-heading">
+      <h2 id="workspace-members-heading">{{ 'workspace.members.people' | translate }}</h2>
+      <span>{{ members().length }}</span>
+    </header>
+    @if (filteredMembers().length) {
+      <div class="members-list">
+        @for (member of filteredMembers(); track member.workspaceMemberId) {
+          <article class="member-row">
+            <app-workspace-avatar [name]="member.fullname" [photo]="member.photo" [initials]="member.initials" [color]="member.avatarColor" />
+            <div class="member-identity">
+              <strong>{{ member.fullname }}</strong>
+              <span>{{ member.email }}</span>
+            </div>
+            <span class="member-role" [class.owner-role]="member.roleMember === 'owner'">{{ ('workspace.members.' + member.roleMember + 'Role') | translate }}</span>
+            @if (isOwner() && member.roleMember !== 'owner') {
+              <button class="member-edit-button" type="button" [attr.aria-label]="'workspace.members.editRoleFor' | translate: { name: member.fullname }"
+                [title]="'workspace.members.editRole' | translate" (click)="openRoleEditor(member)">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.8 3.2 16.8 7.2M3 17l3.8-.8L16.4 6.6a2.1 2.1 0 0 0-3-3L3.8 13.2 3 17Z"/></svg>
+              </button>
+              <button class="member-remove-button" type="button" [attr.aria-label]="'workspace.members.removeMemberNamed' | translate: { name: member.fullname }"
+                (click)="confirmRemoveMember(member)">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 5h13M7 5V3.5h6V5m-8 0 1 12h8l1-12M8 8v6m4-6v6"/></svg>
+              </button>
+            }
+          </article>
+        }
+      </div>
+    } @else {
+      <p class="detail-empty-inline">{{ (searchQuery() ? 'workspace.members.noSearchResults' : 'workspace.members.noMembers') | translate }}</p>
+    }
+  </section>
+
+  @if (isOwner()) {
+    <section class="members-section invitations-section" aria-labelledby="invitations-heading">
+      <header class="members-section-heading">
+        <h2 id="invitations-heading">{{ 'workspace.members.pendingInvitations' | translate }}</h2>
+        <span>{{ invitations().length }}</span>
+      </header>
+      @if (invitationsLoading()) {
+        <p class="detail-empty-inline" role="status">{{ 'common.loading' | translate }}</p>
+      } @else if (invitationsError()) {
+        <p class="detail-inline-error" role="alert">{{ 'workspace.members.invitationsError' | translate }}</p>
+      } @else if (filteredInvitations().length) {
+        <div class="members-list">
+          @for (invitation of filteredInvitations(); track invitation.code) {
+            <article class="member-row invitation-row">
+              <app-workspace-avatar [name]="invitation.invitedName" [photo]="invitation.photo" [initials]="invitation.initials" [color]="invitation.avatarColor" />
+              <div class="member-identity">
+                <strong>{{ invitation.invitedName || invitation.invitedEmail }}</strong>
+                <span>{{ invitation.invitedEmail }}</span>
+              </div>
+              <span class="member-role">{{ ('workspace.members.' + invitation.role + 'Role') | translate }}</span>
+              <span class="invitation-status" [class.invitation-accepted]="invitation.accepted">
+                {{ (invitation.accepted ? 'workspace.members.accepted' : 'workspace.members.pending') | translate }}
+              </span>
+              @if (!invitation.accepted) {
+                <button class="member-action-link" type="button" (click)="resendInvitation(invitation)">
+                  {{ 'workspace.members.resend' | translate }}
+                </button>
+              }
+              @if (!invitation.accepted) {
+                <button class="member-remove-button" type="button" [attr.aria-label]="'workspace.members.deleteInvitationFor' | translate: { email: invitation.invitedEmail }"
+                  (click)="confirmInvalidateInvitation(invitation)">
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 5h13M7 5V3.5h6V5m-8 0 1 12h8l1-12M8 8v6m4-6v6"/></svg>
+                </button>
+              }
+            </article>
+          }
+        </div>
+      } @else {
+        <p class="detail-empty-inline">{{ (searchQuery() ? 'workspace.members.noSearchResults' : 'workspace.members.noInvitations') | translate }}</p>
+      }
+    </section>
+  }
+</section>
+
+<app-workspace-drawer [open]="inviteOpen()" titleKey="workspace.members.addMember" [busy]="inviteSaving()" (close)="closeInvite()">
+  @if (invitationLink()) {
+    <div drawer-body class="invite-result">
+      <span class="invite-success-mark" aria-hidden="true">✓</span>
+      <h2>{{ 'workspace.members.invitationSent' | translate }}</h2>
+      <p>{{ 'workspace.members.invitationLinkDescription' | translate }}</p>
+      <div class="invite-link-box"><code>{{ invitationLink() }}</code><button type="button" (click)="copyInvitationLink()">{{ 'workspace.members.copyLink' | translate }}</button></div>
+    </div>
+    <div drawer-footer>
+      <button class="detail-primary-button" type="button" (click)="closeInvite()">{{ 'common.done' | translate }}</button>
+    </div>
+  } @else {
+    <form drawer-body id="workspace-invitation-form" class="invite-form" [formGroup]="inviteForm" (ngSubmit)="sendInvitation()">
+      <label for="member-email">{{ 'workspace.members.emailLabel' | translate }}</label>
+      <input id="member-email" type="email" formControlName="email" autocomplete="email"
+        [placeholder]="'workspace.members.emailPlaceholder' | translate" />
+      <label>{{ 'workspace.members.roleLabel' | translate }}</label>
+      <div class="role-options">
+        <button type="button" [class.selected]="inviteRole() === 'member'" (click)="inviteRole.set('member')">
+          <strong>{{ 'workspace.members.memberRole' | translate }}</strong><small>{{ 'workspace.members.memberDesc' | translate }}</small>
+        </button>
+        <button type="button" [class.selected]="inviteRole() === 'viewer'" (click)="inviteRole.set('viewer')">
+          <strong>{{ 'workspace.members.viewerRole' | translate }}</strong><small>{{ 'workspace.members.viewerDesc' | translate }}</small>
+        </button>
+      </div>
+      @if (inviteError()) { <p class="detail-inline-error" role="alert">{{ 'workspace.members.inviteError' | translate }}</p> }
+    </form>
+    <div drawer-footer>
+      <button type="button" class="detail-secondary-button" [disabled]="inviteSaving()" (click)="closeInvite()">{{ 'common.cancel' | translate }}</button>
+      <button type="submit" form="workspace-invitation-form" class="detail-primary-button" [disabled]="inviteForm.invalid || inviteSaving()">
+        {{ (inviteSaving() ? 'workspace.members.sending' : 'workspace.members.sendInvitation') | translate }}
+      </button>
+    </div>
+  }
+</app-workspace-drawer>
+
+<app-workspace-drawer [open]="!!roleEditTarget()" titleKey="workspace.members.editRole" [busy]="roleEditSaving()" (close)="closeRoleEditor()">
+  <div drawer-body class="member-role-drawer-body">
+    <p>{{ 'workspace.members.changeRoleDescription' | translate: { name: roleEditTarget()?.fullname } }}</p>
+    <div class="role-options">
+      <button type="button" [class.selected]="roleEditValue() === 'member'" (click)="roleEditValue.set('member')">
+        <strong>{{ 'workspace.members.memberRole' | translate }}</strong>
+        <small>{{ 'workspace.members.memberDesc' | translate }}</small>
+      </button>
+      <button type="button" [class.selected]="roleEditValue() === 'viewer'" (click)="roleEditValue.set('viewer')">
+        <strong>{{ 'workspace.members.viewerRole' | translate }}</strong>
+        <small>{{ 'workspace.members.viewerDesc' | translate }}</small>
+      </button>
+    </div>
+    @if (roleEditError()) { <p class="detail-inline-error" role="alert">{{ 'workspace.members.roleUpdateError' | translate }}</p> }
+  </div>
+  <div drawer-footer>
+    <button type="button" class="detail-secondary-button" [disabled]="roleEditSaving()" (click)="closeRoleEditor()">{{ 'common.cancel' | translate }}</button>
+    <button type="button" class="detail-primary-button" [disabled]="roleEditSaving()" (click)="saveMemberRole()">
+      {{ (roleEditSaving() ? 'common.saving' : 'workspace.members.saveRole') | translate }}
+    </button>
+  </div>
+</app-workspace-drawer>
+
+<app-workspace-confirm-dialog [open]="!!deleteTarget()"
+  [titleKey]="deleteTarget()?.kind === 'member' ? 'workspace.members.removeMember' : 'workspace.members.deleteInvitation'"
+  [descriptionKey]="deleteTarget()?.kind === 'member' ? 'workspace.members.removeConfirm' : 'workspace.members.deleteInvConfirm'"
+  [descriptionParams]="deleteDescriptionParams()"
+  [confirmKey]="deleteTarget()?.kind === 'member' ? 'common.remove' : 'common.delete'"
+  [pendingKey]="deleteTarget()?.kind === 'member' ? 'workspace.members.removing' : 'workspace.members.deleting'"
+  [pending]="deleting()" (close)="closeDeleteDialog()" (confirm)="confirmDelete()" />

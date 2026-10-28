@@ -1,0 +1,36 @@
+:host { display: block; height: 100%; }
+.workspace-sidebar { display: flex; width: 17rem; height: 100%; min-height: 0; flex-direction: column; border-right: 1px solid var(--border-subtle); background: var(--bg-raised); color: var(--text-primary); transition: width 160ms ease, transform 160ms ease; }
+.workspace-sidebar-collapsed { width: 4.5rem; }
+.sidebar-workspace-header { display: flex; min-height: 4.2rem; align-items: center; gap: 0.4rem; border-bottom: 1px solid var(--border-subtle); padding: 0.65rem 0.7rem; }
+.sidebar-workspace-home { display: flex; min-width: 0; flex: 1; align-items: center; gap: 0.65rem; color: inherit; text-decoration: none; }
+.sidebar-workspace-mark { display: grid; width: 2.35rem; height: 2.35rem; flex: 0 0 auto; place-items: center; border-radius: 0.7rem; background: var(--workspace-color); color: white; font-size: 0.85rem; font-weight: 800; }
+.sidebar-workspace-copy { display: grid; min-width: 0; gap: 0.1rem; }
+.sidebar-workspace-copy strong { overflow: hidden; font-size: 0.75rem; text-overflow: ellipsis; white-space: nowrap; }
+.sidebar-workspace-copy small { color: var(--text-tertiary); font-size: 0.62rem; }
+.sidebar-collapse-button, .sidebar-mobile-close, .sidebar-expand-button { display: grid; width: 1.85rem; height: 1.85rem; flex: 0 0 auto; place-items: center; border: 0; border-radius: 0.45rem; background: transparent; color: var(--text-tertiary); cursor: pointer; }
+.sidebar-collapse-button:hover, .sidebar-mobile-close:hover, .sidebar-expand-button:hover { background: var(--bg-hover); color: var(--text-primary); }
+.sidebar-collapse-button svg, .sidebar-mobile-close svg, .sidebar-expand-button svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
+.sidebar-mobile-close { display: none; }
+.sidebar-search { display: flex; height: 2.1rem; align-items: center; gap: 0.45rem; margin: 0.85rem 0.75rem; border: 1px solid var(--border-subtle); border-radius: 0.55rem; background: var(--bg-base); padding: 0 0.55rem; color: var(--text-tertiary); }
+.sidebar-search svg { width: 0.9rem; height: 0.9rem; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.sidebar-search input { min-width: 0; border: 0; outline: 0; background: transparent; color: var(--text-primary); font: inherit; font-size: 0.72rem; }
+.sidebar-search input::placeholder { color: var(--text-muted); }
+.sidebar-navigation { flex: 1; overflow-y: auto; padding: 0.35rem 0.6rem; }
+.sidebar-board-header { display: flex; align-items: center; gap: 0.2rem; }
+.sidebar-board-header app-workspace-sidebar-link { flex: 1; }
+.sidebar-expand-button { width: 1.6rem; height: 1.6rem; margin-right: 0.25rem; }
+.sidebar-expand-button svg { transition: transform 140ms ease; }
+.sidebar-expand-button[aria-expanded='true'] svg { transform: rotate(180deg); }
+.sidebar-board-list { position: relative; margin: 0.1rem 0 0.45rem 1.15rem; border-left: 1px solid var(--border-default); padding-left: 0.5rem; }
+.sidebar-no-boards { padding: 0.4rem 0.6rem; color: var(--text-muted); font-size: 0.67rem; }
+.sidebar-footer { display: flex; min-height: 3.2rem; align-items: center; justify-content: space-between; gap: 0.5rem; border-top: 1px solid var(--border-subtle); padding: 0.55rem 0.85rem; }
+.sidebar-role-label { color: var(--text-tertiary); font-size: 0.66rem; }
+.sidebar-role-value { border: 1px solid var(--border-subtle); border-radius: 999px; background: var(--bg-base); padding: 0.2rem 0.5rem; color: var(--text-secondary); font-size: 0.62rem; font-weight: 700; }
+.sidebar-role-dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--accent); }
+@media (max-width: 760px) {
+  .workspace-sidebar { position: fixed; z-index: 60; top: 0; bottom: 0; left: 0; width: min(18rem, calc(100vw - 3.5rem)); height: 100dvh; box-shadow: 0 20px 45px rgb(15 23 42 / 18%); transform: translateX(-105%); }
+  .workspace-sidebar.workspace-sidebar-mobile-open { transform: translateX(0); }
+  .workspace-sidebar-collapsed { width: min(18rem, calc(100vw - 3.5rem)); }
+  .sidebar-collapse-button { display: none; }
+  .sidebar-mobile-close { display: grid; }
+}

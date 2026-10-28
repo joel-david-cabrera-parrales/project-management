@@ -1,0 +1,63 @@
+<section class="workspace-detail-page" aria-labelledby="workspace-settings-title">
+  <header class="detail-page-heading">
+    <div>
+      <h1 id="workspace-settings-title">{{ 'workspace.settings.title' | translate }}</h1>
+      <p>{{ 'workspace.settings.subtitle' | translate }}</p>
+    </div>
+  </header>
+
+  <section class="settings-panel">
+    <div class="settings-panel-heading">
+      <span class="settings-panel-icon" aria-hidden="true">⚙</span>
+      <div><h2>{{ 'workspace.settings.generalTitle' | translate }}</h2><p>{{ 'workspace.settings.generalDescription' | translate }}</p></div>
+    </div>
+    <form class="workspace-settings-form" (ngSubmit)="save()">
+      <label for="workspace-settings-name">{{ 'workspace.settings.nameLabel' | translate }}</label>
+      <input id="workspace-settings-name" type="text" maxlength="100" [value]="title()" [disabled]="!store.isOwner()"
+        (input)="title.set($any($event.target).value)" />
+      @if (title().trim().length > 0 && title().trim().length < 5) {
+        <small class="settings-help-error">{{ 'workspace.form.nameMinLength' | translate }}</small>
+      }
+
+      <label for="workspace-settings-description">{{ 'common.description' | translate }}</label>
+      <textarea id="workspace-settings-description" rows="3" maxlength="500" [value]="description()"
+        [disabled]="!store.isOwner()" (input)="description.set($any($event.target).value)"></textarea>
+
+      <fieldset class="settings-color-field" [disabled]="!store.isOwner()">
+        <legend>{{ 'workspace.settings.colorLabel' | translate }}</legend>
+        <div class="settings-color-options">
+          @for (preset of colors; track preset) {
+            <button class="settings-color-choice" type="button" [style.background-color]="preset"
+              [class.selected]="color() === preset" [attr.aria-pressed]="color() === preset"
+              [attr.aria-label]="'workspace.form.chooseColor' | translate: { color: preset }"
+              (click)="color.set(preset)"></button>
+          }
+        </div>
+      </fieldset>
+
+      @if (saveError()) { <p class="settings-error" role="alert">{{ 'workspace.settings.saveError' | translate }}</p> }
+      @if (store.isOwner()) {
+        <footer class="settings-form-actions">
+          <button class="detail-primary-button" type="submit" [disabled]="saving() || title().trim().length < 5">
+            {{ (saving() ? 'workspace.settings.saving' : 'workspace.settings.saveButton') | translate }}
+          </button>
+        </footer>
+      } @else {
+        <p class="settings-readonly-note">{{ 'workspace.settings.readOnly' | translate }}</p>
+      }
+    </form>
+  </section>
+
+  @if (store.isOwner()) {
+    <section class="settings-danger-zone">
+      <div><h2>{{ 'workspace.settings.dangerZone' | translate }}</h2><p>{{ 'workspace.settings.deleteConfirmDesc' | translate }}</p></div>
+      <button class="settings-delete-button" type="button" (click)="confirmDeleteOpen.set(true)">{{ 'workspace.settings.deleteButton' | translate }}</button>
+    </section>
+  }
+  @if (deleteError()) { <p class="settings-error" role="alert">{{ 'workspace.settings.deleteError' | translate }}</p> }
+</section>
+
+<app-workspace-confirm-dialog [open]="confirmDeleteOpen()" titleKey="workspace.settings.deleteButton"
+  descriptionKey="workspace.settings.deleteConfirmNamed" [descriptionParams]="{ name: store.workspace()?.name }"
+  confirmKey="common.delete" pendingKey="common.deleting" [pending]="deleting()"
+  (close)="confirmDeleteOpen.set(false)" (confirm)="deleteWorkspace()" />

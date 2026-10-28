@@ -24,6 +24,12 @@
   --border-subtle: rgba(0, 0, 0, 0.06);
   --border-default: rgba(0, 0, 0, 0.1);
 
+  /* Shared search controls */
+  --search-control-height: 2.1rem;
+  --search-control-radius: 0.55rem;
+  --search-control-padding: 0.6rem;
+  --search-control-font-size: 0.8rem;
+
   /* Accent */
   --accent: #2563eb;
   --accent-hover: #1d4ed8;

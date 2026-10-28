@@ -1,0 +1,20 @@
+:host { position: relative; z-index: 80; }
+.workspace-drawer-layer { position: fixed; z-index: 80; inset: 0; display: flex; justify-content: flex-end; background: rgb(15 23 42 / 34%); backdrop-filter: blur(2px); animation: workspace-drawer-fade 150ms ease-out; }
+.workspace-drawer { display: flex; width: min(100%, 30rem); height: 100%; min-height: 0; flex-direction: column; border-left: 1px solid var(--border-subtle); background: var(--bg-raised); color: var(--text-primary); box-shadow: -18px 0 42px rgb(15 23 42 / 12%); animation: workspace-drawer-enter 180ms ease-out; }
+.workspace-drawer-header { display: flex; min-height: 4.2rem; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--border-subtle); padding: 0.85rem 1.25rem; }
+.workspace-drawer-heading { display: flex; min-width: 0; align-items: center; gap: 0.85rem; }
+.workspace-drawer-heading h2 { overflow: hidden; color: var(--text-primary); font-size: 0.92rem; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.workspace-drawer-accent { display: flex; flex: 0 0 auto; flex-direction: column; gap: 0.12rem; }
+.workspace-drawer-accent i { display: block; width: 0.18rem; height: 0.55rem; border-radius: 999px; background: var(--accent); }
+.workspace-drawer-accent i:nth-child(2) { opacity: 0.6; }
+.workspace-drawer-accent i:nth-child(3) { height: 0.25rem; opacity: 0.3; }
+.workspace-drawer-close { display: grid; width: 2rem; height: 2rem; flex: 0 0 auto; place-items: center; border: 0; border-radius: 0.5rem; background: transparent; color: var(--text-tertiary); cursor: pointer; }
+.workspace-drawer-close:hover:not(:disabled) { background: var(--bg-hover); color: var(--text-primary); }
+.workspace-drawer-close:disabled { cursor: wait; opacity: 0.5; }
+.workspace-drawer-close svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.6; }
+.workspace-drawer-body { min-height: 0; flex: 1; overflow: auto; padding: 1.25rem; }
+.workspace-drawer-footer { display: flex; flex: 0 0 auto; justify-content: flex-end; gap: 0.55rem; border-top: 1px solid var(--border-subtle); padding: 0.9rem 1.25rem; }
+@keyframes workspace-drawer-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes workspace-drawer-enter { from { transform: translateX(1.5rem); } to { transform: translateX(0); } }
+@media (max-width: 520px) { .workspace-drawer { width: 100%; border-left: 0; } }
+@media (prefers-reduced-motion: reduce) { .workspace-drawer-layer, .workspace-drawer { animation-duration: 0.01ms !important; } }

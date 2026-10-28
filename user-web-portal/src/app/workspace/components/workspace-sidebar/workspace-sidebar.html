@@ -1,0 +1,81 @@
+<aside class="workspace-sidebar" [class.workspace-sidebar-collapsed]="collapsed() && !mobileOpen()"
+  [class.workspace-sidebar-mobile-open]="mobileOpen()" [style.--workspace-color]="workspace().color"
+  [attr.aria-label]="'workspace.detail.sidebarLabel' | translate">
+  <header class="sidebar-workspace-header">
+    <a class="sidebar-workspace-home" [routerLink]="['/workspace', workspace().code, 'board']" (click)="closeMobile.emit()">
+      <span class="sidebar-workspace-mark">{{ workspace().name.slice(0, 1).toUpperCase() || 'W' }}</span>
+      @if (!collapsed()) {
+        <span class="sidebar-workspace-copy">
+          <strong>{{ workspace().name }}</strong>
+          <small>{{ 'workspace.detail.workspaceLabel' | translate }}</small>
+        </span>
+      }
+    </a>
+    <button class="sidebar-collapse-button" type="button" [attr.aria-label]="(collapsed() ? 'workspace.detail.expandSidebar' : 'workspace.detail.collapseSidebar') | translate"
+      (click)="toggleCollapsed.emit()">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path [attr.d]="collapsed() ? 'm7 4 6 6-6 6' : 'm13 4-6 6 6 6'"/></svg>
+    </button>
+    <button class="sidebar-mobile-close" type="button" [attr.aria-label]="'common.close' | translate" (click)="closeMobile.emit()">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg>
+    </button>
+  </header>
+
+  @if (!collapsed()) {
+    <label class="sidebar-search" for="workspace-sidebar-search">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.8" cy="8.8" r="5.7"/><path d="m13 13 4 4"/></svg>
+      <input id="workspace-sidebar-search" type="search" [value]="searchQuery()"
+        [placeholder]="'workspace.detail.sidebarSearch' | translate"
+        (input)="searchQuery.set($any($event.target).value)" />
+    </label>
+  }
+
+  <nav class="sidebar-navigation">
+    @if (showBoardNavigation()) {
+      <div class="sidebar-board-group">
+        <div class="sidebar-board-header">
+          <app-workspace-sidebar-link [label]="'workspace.sidebar.board'" [route]="'/workspace/' + workspace().code + '/board'"
+            icon="board" [collapsed]="collapsed() && !mobileOpen()" [exact]="false" />
+          @if (!collapsed() || mobileOpen()) {
+            <button class="sidebar-expand-button" type="button" [attr.aria-expanded]="boardsExpanded()"
+              [attr.aria-label]="'workspace.detail.toggleBoards' | translate"
+              (click)="boardsExpanded.update((expanded) => !expanded)">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 7.5 5 5 5-5"/></svg>
+            </button>
+          }
+        </div>
+        @if ((!collapsed() || mobileOpen()) && boardsExpanded()) {
+          <div class="sidebar-board-list">
+            @for (board of filteredBoards(); track board.code) {
+              <app-workspace-sidebar-link [label]="board.label"
+                [route]="'/workspace/' + workspace().code + '/board/' + board.code"
+                icon="board" [nested]="true" [collapsed]="collapsed() && !mobileOpen()" />
+            } @empty {
+              <p class="sidebar-no-boards">{{ 'workspace.detail.noBoards' | translate }}</p>
+            }
+          </div>
+        }
+      </div>
+    }
+    @if (matchesNav('workspace.sidebar.members')) {
+      <app-workspace-sidebar-link [label]="'workspace.sidebar.members'" [route]="'/workspace/' + workspace().code + '/members'"
+        icon="members" [collapsed]="collapsed() && !mobileOpen()" />
+    }
+    @if (matchesNav('workspace.sidebar.labels')) {
+      <app-workspace-sidebar-link [label]="'workspace.sidebar.labels'" [route]="'/workspace/' + workspace().code + '/labels'"
+        icon="labels" [collapsed]="collapsed() && !mobileOpen()" />
+    }
+    @if (matchesNav('workspace.sidebar.settings')) {
+      <app-workspace-sidebar-link [label]="'workspace.sidebar.settings'" [route]="'/workspace/' + workspace().code + '/settings'"
+        icon="settings" [collapsed]="collapsed() && !mobileOpen()" />
+    }
+  </nav>
+
+  <footer class="sidebar-footer">
+    @if (!collapsed() || mobileOpen()) {
+      <span class="sidebar-role-label">{{ 'workspace.detail.yourRole' | translate }}</span>
+      <span class="sidebar-role-value">{{ ('workspace.members.' + workspace().roleMember + 'Role') | translate }}</span>
+    } @else {
+      <span class="sidebar-role-dot" [title]="('workspace.members.' + workspace().roleMember + 'Role') | translate"></span>
+    }
+  </footer>
+</aside>

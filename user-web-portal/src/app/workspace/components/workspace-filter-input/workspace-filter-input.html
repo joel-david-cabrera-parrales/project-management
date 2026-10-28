@@ -1,0 +1,9 @@
+<label class="workspace-filter-input" [for]="inputId()">
+  <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.8" cy="8.8" r="5.7"/><path d="m13 13 4 4"/></svg>
+  <input [id]="inputId()" type="search" [value]="value()" [placeholder]="placeholderKey() | translate" (input)="update($event)" />
+  @if (value()) {
+    <button type="button" [attr.aria-label]="'common.clearSearch' | translate" (click)="valueChange.emit('')">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg>
+    </button>
+  }
+</label>

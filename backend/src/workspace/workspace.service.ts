@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -21,6 +21,7 @@ import { AddMemberToWorkspaceUseCase } from './classes/add-member-to-worspace.cl
 import { RemoveMemberUseCase } from './classes/remove-member.class';
 import { AddMemberToWorkspaceDto } from './dto/add-member-to.workspace.dto';
 import { Board } from './entities/board.entity';
+import { WorkspaceMember } from './entities/workspace-member.entity';
 
 @Injectable()
 export class WorkspaceService {
@@ -29,6 +30,8 @@ export class WorkspaceService {
     private readonly workspaceRepository: Repository<Workspace>,
     @InjectRepository(Board)
     private readonly boardRepository: Repository<Board>,
+    @InjectRepository(WorkspaceMember)
+    private readonly workspaceMemberRepository: Repository<WorkspaceMember>,
     private readonly uuidService: UuidManager,
     private readonly authService: AuthService,
     private readonly createWorkspaceUseCase: CreateWorkspaceUseCase,
@@ -126,6 +129,23 @@ export class WorkspaceService {
     await this.removeMemberUseCase.execute(workspace.id, memberId, validUser);
     await this.workspaceHistory.memberRemoved(validUser, workspace, workspace.code, EntityType.WORKSPACE_MEMBER);
     this.sendMemberRemovedEmailUseCase.execute(memberId).catch(() => {});
+  }
+
+  async updateMemberRole(workspaceCode: string, memberId: number, roleMember: 'member' | 'viewer') {
+    const workspace = await this.workspaceRepository.findOneBy({ code: workspaceCode, isAvailable: true });
+    if (!workspace) throw new NotFoundException('Workspace not found');
+
+    const member = await this.workspaceMemberRepository.findOne({
+      where: { id: memberId, workspace: { id: workspace.id }, isAvailable: true },
+    });
+    if (!member) throw new NotFoundException('Member not found');
+    if (member.roleMember === 'owner' || member.isOwner || member.isOriginalOwner) {
+      throw new ForbiddenException('The workspace owner role cannot be changed');
+    }
+
+    member.roleMember = roleMember;
+    await this.workspaceMemberRepository.save(member);
+    return { workspaceMemberId: member.id, roleMember: member.roleMember };
   }
 
   async resetData(): Promise<void> {

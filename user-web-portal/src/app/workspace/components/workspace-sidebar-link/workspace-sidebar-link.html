@@ -1,0 +1,13 @@
+<a class="sidebar-link" [class.sidebar-link-nested]="nested()" [class.sidebar-link-collapsed]="collapsed()"
+  [routerLink]="route()" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: exact() }"
+  ariaCurrentWhenActive="page" [attr.title]="collapsed() ? (label() | translate) : null">
+  <svg class="sidebar-link-icon" viewBox="0 0 20 20" aria-hidden="true">
+    @switch (icon()) {
+      @case ('board') { <rect x="2.5" y="3" width="15" height="14" rx="2"/><path d="M7.5 3v14M12.5 3v6h5"/> }
+      @case ('members') { <circle cx="7" cy="7" r="3"/><path d="M1.8 17a5.2 5.2 0 0 1 10.4 0M13 4.5a3 3 0 0 1 0 5.8M14 12a4.5 4.5 0 0 1 4.2 5"/> }
+      @case ('labels') { <path d="M3 3h7l7 7-7 7-7-7V3Z"/><circle cx="7" cy="7" r="1"/> }
+      @case ('settings') { <circle cx="10" cy="10" r="2.5"/><path d="M10 2.5v1.7M10 15.8v1.7M2.5 10h1.7m11.6 0h1.7M4.7 4.7l1.2 1.2m8.2 8.2 1.2 1.2m0-10.6-1.2 1.2m-8.2 8.2-1.2 1.2"/> }
+    }
+  </svg>
+  @if (!collapsed()) { <span class="sidebar-link-label">{{ label() | translate }}</span> }
+</a>

@@ -1,0 +1,34 @@
+@if (store.loading()) {
+  <div class="detail-state" role="status" aria-live="polite">
+    <span class="detail-spinner" aria-hidden="true"></span>
+    {{ 'common.loading' | translate }}
+  </div>
+} @else if (store.loadError() || !store.workspace()) {
+  <div class="detail-state detail-state-error" role="alert">
+    <h1>{{ 'workspace.detail.notFoundTitle' | translate }}</h1>
+    <p>{{ 'workspace.detail.notFoundDescription' | translate }}</p>
+  </div>
+} @else {
+  <div class="workspace-detail-shell" [class.sidebar-collapsed]="collapsed()">
+    <app-workspace-sidebar [workspace]="store.workspace()!" [collapsed]="collapsed()"
+      [mobileOpen]="mobileSidebarOpen()" (toggleCollapsed)="toggleCollapsed()"
+      (closeMobile)="mobileSidebarOpen.set(false)" />
+
+    @if (mobileSidebarOpen()) {
+      <button class="sidebar-scrim" type="button" [attr.aria-label]="'common.close' | translate"
+        (click)="mobileSidebarOpen.set(false)"></button>
+    }
+
+    <div class="workspace-detail-main">
+      <app-workspace-topbar />
+      <main class="workspace-detail-content">
+        <button class="mobile-sidebar-trigger" type="button" [attr.aria-expanded]="mobileSidebarOpen()"
+          (click)="mobileSidebarOpen.set(true)">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+          {{ store.workspace()!.name }}
+        </button>
+        <router-outlet />
+      </main>
+    </div>
+  </div>
+}

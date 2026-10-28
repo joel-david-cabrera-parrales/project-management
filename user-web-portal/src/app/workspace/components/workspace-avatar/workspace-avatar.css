@@ -1,0 +1,4 @@
+:host { display: inline-flex; flex: 0 0 auto; }
+.workspace-avatar { display: grid; width: 2.5rem; height: 2.5rem; flex: 0 0 auto; place-items: center; overflow: hidden; border-radius: 50%; object-fit: cover; }
+.workspace-avatar-fallback { color: white; font-size: 0.72rem; font-weight: 800; }
+.workspace-avatar-sm { width: 2rem; height: 2rem; font-size: 0.62rem; }
