@@ -16,6 +16,18 @@
 @keyframes app-tooltip-out { to { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .app-tooltip-enter, .app-tooltip-exit { animation: none; } }
 
+.task-label-create-trigger { display: inline-flex; min-height: 2rem; align-items: center; gap: 0.35rem; border: 1px dashed var(--border-default); border-radius: 0.55rem; background: transparent; padding: 0.35rem 0.55rem; color: var(--accent); cursor: pointer; font: inherit; font-size: 0.68rem; font-weight: 700; }
+.task-label-create-trigger:hover { border-color: var(--accent); }
+.task-label-create-form { display: grid; gap: 0.55rem; border: 1px solid var(--border-subtle); border-radius: 0.6rem; background: var(--bg-base); padding: 0.65rem; }
+.task-label-create-form input { min-height: 2.1rem; border: 1px solid var(--border-default); border-radius: 0.45rem; background: var(--bg-raised); padding: 0.45rem 0.55rem; color: var(--text-primary); font: inherit; font-size: 0.7rem; }
+.task-label-color-options { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.task-label-color-option { width: 1.15rem; height: 1.15rem; border: 2px solid var(--bg-raised); border-radius: 50%; background: var(--label-option-color); cursor: pointer; }
+.task-label-color-option.selected { outline: 2px solid var(--label-option-color); outline-offset: 1px; }
+.task-label-create-actions { display: flex; justify-content: flex-end; gap: 0.45rem; }
+.task-label-create-cancel, .task-label-create-save { border: 1px solid var(--border-default); border-radius: 0.4rem; background: var(--bg-raised); padding: 0.35rem 0.55rem; color: var(--text-secondary); cursor: pointer; font: inherit; font-size: 0.65rem; font-weight: 700; }
+.task-label-create-save { border-color: var(--accent); background: var(--accent); color: white; }
+.task-label-create-cancel:disabled, .task-label-create-save:disabled { cursor: wait; opacity: 0.55; }
+
 .topbar-notifications-button { position: relative; }
 .topbar-notification-badge { position: absolute; top: 0; right: 0; min-width: 1rem; border: 2px solid var(--bg-raised); border-radius: 1rem; background: var(--danger); padding: 0 0.17rem; color: white; font-size: 0.52rem; font-weight: 800; text-align: center; }
 

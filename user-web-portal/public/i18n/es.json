@@ -428,6 +428,10 @@
     },
     "taskDrawer": {
       "addLabel": "Añadir etiqueta",
+      "createLabel": "Crear etiqueta",
+      "newLabelName": "Nombre de la etiqueta",
+      "labelColor": "Color de la etiqueta",
+      "labelCreateError": "No se pudo crear la etiqueta. Inténtalo de nuevo.",
       "removeLabel": "Quitar etiqueta",
       "allLabelsSelected": "Ya están seleccionadas todas las etiquetas.",
       "labelsLoadError": "No se pudieron cargar las etiquetas.",

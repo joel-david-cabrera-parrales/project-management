@@ -20,6 +20,8 @@ export interface PendingTaskFile {
   previewUrl: string | null;
 }
 
+const LABEL_COLORS = ['#dc2626', '#2563eb', '#059669', '#d97706', '#7c3aed', '#db2777', '#0f766e', '#475569'];
+
 @Component({
   selector: 'app-workspace-task-drawer',
   imports: [ReactiveFormsModule, TranslatePipe, WorkspaceDrawer, WorkspaceAvatar, WorkspaceTaskActivity, WorkspaceRichTextEditor],
@@ -53,6 +55,12 @@ export class WorkspaceTaskDrawer {
   readonly labelLoadError = signal(false);
   readonly selectedLabelIds = signal<number[]>([]);
   readonly showLabelOptions = signal(false);
+  readonly showLabelCreation = signal(false);
+  readonly newLabelName = signal('');
+  readonly newLabelColor = signal(LABEL_COLORS[0]);
+  readonly labelColors = LABEL_COLORS;
+  readonly creatingLabel = signal(false);
+  readonly labelCreateError = signal(false);
   readonly selectedMemberIds = signal<number[]>([]);
   readonly availableMembers = computed(() => this.detailStore.workspace()?.members ?? []);
   readonly canRemoveAssociations = computed(() => this.detailStore.isActive() && this.detailStore.isOwner());
@@ -107,6 +115,9 @@ export class WorkspaceTaskDrawer {
         this.currentTask.set(task);
         this.selectedLabelIds.set(task?.labels.map((label) => label.id) ?? []);
         this.showLabelOptions.set(false);
+        this.showLabelCreation.set(false);
+        this.newLabelName.set('');
+        this.labelCreateError.set(false);
         this.selectedMemberIds.set(task?.assignees.map((assignee) => assignee.workspaceMemberId) ?? []);
         if (task) {
           this.form.reset({
@@ -244,7 +255,44 @@ export class WorkspaceTaskDrawer {
   }
 
   toggleLabelOptions(): void {
-    this.showLabelOptions.update((open) => !open);
+    const next = !this.showLabelOptions();
+    this.showLabelOptions.set(next);
+    if (!next) this.cancelLabelCreation();
+  }
+
+  openLabelCreation(): void {
+    this.showLabelOptions.set(true);
+    this.showLabelCreation.set(true);
+    this.newLabelName.set('');
+    this.newLabelColor.set(LABEL_COLORS[0]);
+    this.labelCreateError.set(false);
+  }
+
+  cancelLabelCreation(): void {
+    if (this.creatingLabel()) return;
+    this.showLabelCreation.set(false);
+    this.newLabelName.set('');
+    this.labelCreateError.set(false);
+  }
+
+  createAndAssignLabel(): void {
+    const workspaceCode = this.workspaceCode();
+    const name = this.newLabelName().trim();
+    if (!workspaceCode || !name || name.length > 50 || this.creatingLabel()) return;
+
+    this.creatingLabel.set(true);
+    this.labelCreateError.set(false);
+    this.labelsApi.createLabel(workspaceCode, { name, color: this.newLabelColor() })
+      .pipe(finalize(() => this.creatingLabel.set(false)), takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (label) => {
+          this.availableLabels.update((labels) => labels.some((item) => item.id === label.id) ? labels : [...labels, label]);
+          this.selectedLabelIds.update((ids) => ids.includes(label.id) ? ids : [...ids, label.id]);
+          this.showLabelCreation.set(false);
+          this.newLabelName.set('');
+        },
+        error: () => this.labelCreateError.set(true),
+      });
   }
 
   toggleMember(memberId: number): void {

@@ -428,6 +428,10 @@
     },
     "taskDrawer": {
       "addLabel": "Add label",
+      "createLabel": "Create label",
+      "newLabelName": "Label name",
+      "labelColor": "Label color",
+      "labelCreateError": "Could not create the label. Please try again.",
       "removeLabel": "Remove label",
       "allLabelsSelected": "All labels are already selected.",
       "labelsLoadError": "Labels could not be loaded.",

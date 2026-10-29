@@ -47,7 +47,7 @@
           <p class="task-options-empty" role="status">{{ 'common.loading' | translate }}</p>
         } @else if (labelLoadError()) {
           <p class="task-drawer-error" role="alert">{{ 'workspace.taskDrawer.labelsLoadError' | translate }}</p>
-        } @else if (availableLabels().length) {
+        } @else {
           @if (selectedLabelIds().length) {
             <div class="task-selected-labels">
               @for (label of availableLabels(); track label.id) {
@@ -64,23 +64,53 @@
             </div>
           }
           @if (showLabelOptions()) {
-          <div class="task-association-options">
-            @for (label of availableLabels(); track label.id) {
-              @if (!isLabelSelected(label.id)) {
-                <button class="task-association-option" type="button" (click)="toggleLabel(label.id)">
-                  <span class="association-color" [style.background-color]="label.color"></span>
-                  <span>{{ label.name }}</span>
-                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v14M3 10h14"/></svg>
+            <div class="task-association-options">
+              @for (label of availableLabels(); track label.id) {
+                @if (!isLabelSelected(label.id)) {
+                  <button class="task-association-option" type="button" (click)="toggleLabel(label.id)">
+                    <span class="association-color" [style.background-color]="label.color"></span>
+                    <span>{{ label.name }}</span>
+                    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v14M3 10h14"/></svg>
+                  </button>
+                }
+              } @empty {
+                <p class="task-options-empty">{{ 'workspace.taskDrawer.noLabels' | translate }}</p>
+              }
+              @if (!showLabelCreation()) {
+                <button class="task-label-create-trigger" type="button" (click)="openLabelCreation()">
+                  <span aria-hidden="true">＋</span>{{ 'workspace.taskDrawer.createLabel' | translate }}
                 </button>
               }
-            }
-          </div>
-          @if (availableLabels().length === selectedLabelIds().length) {
-            <p class="task-options-empty">{{ 'workspace.taskDrawer.allLabelsSelected' | translate }}</p>
+            </div>
           }
+          @if (showLabelCreation()) {
+            <div class="task-label-create-form">
+              <label class="sr-only" for="task-new-label-name">{{ 'workspace.taskDrawer.newLabelName' | translate }}</label>
+              <input id="task-new-label-name" type="text" maxlength="50" [value]="newLabelName()"
+                [placeholder]="'workspace.taskDrawer.newLabelName' | translate"
+                (input)="newLabelName.set($any($event.target).value)" />
+              <div class="task-label-color-options" role="group" [attr.aria-label]="'workspace.taskDrawer.labelColor' | translate">
+                @for (color of labelColors; track color) {
+                  <button type="button" class="task-label-color-option" [class.selected]="newLabelColor() === color"
+                    [style.--label-option-color]="color" [attr.aria-label]="color"
+                    [attr.aria-pressed]="newLabelColor() === color" (click)="newLabelColor.set(color)"></button>
+                }
+              </div>
+              @if (labelCreateError()) { <p class="task-drawer-error" role="alert">{{ 'workspace.taskDrawer.labelCreateError' | translate }}</p> }
+              <div class="task-label-create-actions">
+                <button type="button" class="task-label-create-cancel" [disabled]="creatingLabel()" (click)="cancelLabelCreation()">
+                  {{ 'common.cancel' | translate }}
+                </button>
+                <button type="button" class="task-label-create-save" [disabled]="!newLabelName().trim() || creatingLabel()"
+                  (click)="createAndAssignLabel()">
+                  {{ (creatingLabel() ? 'common.saving' : 'workspace.taskDrawer.createLabel') | translate }}
+                </button>
+              </div>
+            </div>
           }
-        } @else {
-          <p class="task-options-empty">{{ 'workspace.taskDrawer.noLabels' | translate }}</p>
+          @if (!availableLabels().length && !showLabelOptions() && !showLabelCreation()) {
+            <p class="task-options-empty">{{ 'workspace.taskDrawer.noLabels' | translate }}</p>
+          }
         }
       </section>
 
