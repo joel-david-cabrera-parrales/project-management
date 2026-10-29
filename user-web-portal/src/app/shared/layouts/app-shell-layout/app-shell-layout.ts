@@ -7,10 +7,11 @@ import { WorkspaceTopbar } from '../../../workspace/components/workspace-topbar/
 import { WorkspaceListStore } from '../../../workspace/state/workspace-list.store';
 import { TranslationService } from '../../services/translation.service';
 import { NotificationCenterService } from '../../services/notification-center.service';
+import { ChatbotWidget } from '../../../chatbot/components/chatbot-widget/chatbot-widget';
 
 @Component({
   selector: 'app-shell-layout',
-  imports: [RouterOutlet, WorkspaceTopbar, WorkspaceCreateModal],
+  imports: [RouterOutlet, WorkspaceTopbar, WorkspaceCreateModal, ChatbotWidget],
   templateUrl: './app-shell-layout.html',
   styleUrl: './app-shell-layout.css',
 })

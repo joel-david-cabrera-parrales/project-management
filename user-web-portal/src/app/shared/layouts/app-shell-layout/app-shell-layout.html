@@ -7,4 +7,5 @@
   </main>
   <app-workspace-create-modal [open]="workspaceStore.createModalOpen()"
     (close)="workspaceStore.createModalOpen.set(false)" (created)="onWorkspaceCreated()" />
+  <app-chatbot-widget />
 </div>

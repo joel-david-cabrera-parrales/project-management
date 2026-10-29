@@ -2,6 +2,12 @@ export type ChatbotInputType = 'text' | 'choice' | 'confirmation';
 
 export type ChatbotUserData = Record<string, unknown>;
 
+export interface ChatbotInputPrompt {
+  type: ChatbotInputType;
+  required: boolean;
+  options?: string[];
+}
+
 export interface ChatbotTransition {
   event: 'VALID' | 'SELECT' | 'CONFIRM' | 'CANCEL' | 'RESTART';
   value?: string;
@@ -11,6 +17,8 @@ export interface ChatbotTransition {
 
 export interface ChatbotState {
   message: string | string[];
+  taskCardsFrom?: string;
+  listItemsFrom?: string;
   input?: {
     type: ChatbotInputType;
     saveAs?: string;

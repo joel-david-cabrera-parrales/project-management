@@ -38,17 +38,20 @@ export const TASK_ASSISTANT_FLOW: ChatbotFlow = {
 
     'my-tasks': {
       message: ['📋 Estas son tus tareas abiertas asignadas:', '{{taskSummary}}', '¡Dime si quieres que te ayude con alguna! 😊'],
+      taskCardsFrom: 'taskCards',
       terminal: true,
     },
 
     'choose-workspace': {
       message: ['¡Vamos a crearla! 🚀 Elige un workspace activo escribiendo su código o nombre:', '{{workspaceSummary}}'],
       input: { type: 'text', saveAs: 'workspaceRef', required: true },
+      listItemsFrom: 'workspaceItems',
       transitions: [{ event: 'VALID', target: 'choose-list', action: 'resolve-workspace-for-create' }],
     },
     'choose-list': {
       message: ['Perfecto, {{workspaceTitle}}. Ahora elige una columna por su ID o nombre:', '{{taskListSummary}}'],
       input: { type: 'text', saveAs: 'taskListRef', required: true },
+      listItemsFrom: 'taskListItems',
       transitions: [{ event: 'VALID', target: 'task-title', action: 'resolve-task-list' }],
     },
     'task-title': {
@@ -84,6 +87,7 @@ export const TASK_ASSISTANT_FLOW: ChatbotFlow = {
     'choose-task-to-complete': {
       message: ['¡Te ayudo! ✅ Escribe el código o ID de la tarea que quieres completar:', '{{taskSummary}}'],
       input: { type: 'text', saveAs: 'taskRef', required: true },
+      listItemsFrom: 'taskItems',
       transitions: [{ event: 'VALID', target: 'confirm-completion', action: 'resolve-task-to-complete' }],
     },
     'confirm-completion': {
@@ -102,11 +106,13 @@ export const TASK_ASSISTANT_FLOW: ChatbotFlow = {
     'choose-task-to-assign': {
       message: ['¿A qué tarea le asignamos a alguien? Escribe su código o ID:', '{{taskSummary}}'],
       input: { type: 'text', saveAs: 'taskRef', required: true },
+      listItemsFrom: 'taskItems',
       transitions: [{ event: 'VALID', target: 'choose-assignee', action: 'resolve-task-for-assignment' }],
     },
     'choose-assignee': {
       message: ['¿A quién asignamos “{{targetTaskTitle}}”? Escribe el ID, nombre o correo de un miembro:', '{{memberSummary}}'],
       input: { type: 'text', saveAs: 'assigneeRef', required: true },
+      listItemsFrom: 'memberItems',
       transitions: [{ event: 'VALID', target: 'confirm-assignment', action: 'resolve-assignee' }],
     },
     'confirm-assignment': {
@@ -125,6 +131,7 @@ export const TASK_ASSISTANT_FLOW: ChatbotFlow = {
     'choose-task-to-comment': {
       message: ['¿En qué tarea quieres dejar un comentario? Escribe su código o ID:', '{{taskSummary}}'],
       input: { type: 'text', saveAs: 'taskRef', required: true },
+      listItemsFrom: 'taskItems',
       transitions: [{ event: 'VALID', target: 'write-comment', action: 'resolve-task-for-comment' }],
     },
     'write-comment': {

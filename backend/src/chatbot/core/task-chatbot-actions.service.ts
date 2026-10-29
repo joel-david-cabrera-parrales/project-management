@@ -7,6 +7,8 @@ import { TaskService } from 'src/task/task.service';
 import { IBoard, ITask, IWorkspace, TaskListResponse, WorkspaceRole } from 'src/workspace/interfaces/workspace-response.interface';
 import { WorkspaceService } from 'src/workspace/workspace.service';
 import { ChatbotUserData } from '../interfaces/chatbot-flow.interface';
+import { ChatbotTaskCard } from '../interfaces/chatbot-conversation.interface';
+import { ChatbotListItem } from '../interfaces/chatbot-conversation.interface';
 import { ChatbotActionExecutor } from '../classes/chatbot-action-executor.class';
 
 type ResolvedTask = {
@@ -50,9 +52,14 @@ export class TaskChatbotActionsService extends ChatbotActionExecutor {
     const workspaces = (await this.workspaceService.findAll(user))
       .filter((workspace) => workspace.status === 1 && this.canWrite(workspace.userRelation?.roleMember));
     return {
-      workspaceSummary: workspaces.length
-        ? workspaces.map((workspace) => `• ${workspace.title} — código ${workspace.code}`).join('\n')
-        : 'No encontré workspaces activos a los que tengas acceso.',
+      workspaceSummary: workspaces.length ? '' : 'No encontré workspaces activos a los que tengas acceso.',
+      workspaceItems: workspaces.map((workspace): ChatbotListItem => ({
+        id: workspace.code,
+        value: workspace.code,
+        kind: 'workspace',
+        title: workspace.title,
+        subtitle: `${workspace.userRelation?.roleMember ?? 'member'} · ${workspace.code}`,
+      })),
     };
   }
 
@@ -67,9 +74,15 @@ export class TaskChatbotActionsService extends ChatbotActionExecutor {
     return {
       workspaceCode: workspace.code,
       workspaceTitle: workspace.title,
-      taskListSummary: taskLists
-        .map(({ board, list }) => `• ${list.id} — ${board.title?.trim() || 'Tablero'} / ${list.title}`)
-        .join('\n'),
+      taskListSummary: taskLists.length ? '' : 'Este workspace todavía no tiene columnas.',
+      taskListItems: taskLists.map(({ board, list }): ChatbotListItem => ({
+        id: String(list.id),
+        value: String(list.id),
+        kind: 'task-list',
+        title: list.title,
+        subtitle: board.title?.trim() || 'Tablero',
+        detail: `ID ${list.id}`,
+      })),
     };
   }
 
@@ -145,9 +158,18 @@ export class TaskChatbotActionsService extends ChatbotActionExecutor {
     )).slice(0, 20);
 
     return {
-      taskSummary: tasks.length
-        ? tasks.map(({ workspace, board, list, task }) => this.formatTask(workspace, board, list, task)).join('\n')
-        : '¡Qué bien! No tienes tareas abiertas asignadas ahora mismo. 🌟',
+      taskSummary: tasks.length ? '' : '¡Qué bien! No tienes tareas abiertas asignadas ahora mismo. 🌟',
+      taskCards: tasks.map(({ workspace, board, list, task }): ChatbotTaskCard => ({
+        taskCode: task.code,
+        title: task.title,
+        completed: task.completed,
+        workspaceCode: workspace.code,
+        workspaceName: workspace.title,
+        boardCode: board.code,
+        boardName: board.title?.trim() || 'Tablero',
+        taskListName: list.title,
+        dateEnd: task.dateEnd ? new Date(task.dateEnd).toISOString().slice(0, 10) : null,
+      })),
     };
   }
 
@@ -162,9 +184,8 @@ export class TaskChatbotActionsService extends ChatbotActionExecutor {
       )).slice(0, 20);
 
     return {
-      taskSummary: tasks.length
-        ? tasks.map(({ workspace, board, list, task }) => this.formatTask(workspace, board, list, task)).join('\n')
-        : 'No hay tareas abiertas en tus workspaces activos. ✅',
+      taskSummary: tasks.length ? '' : 'No hay tareas abiertas en tus workspaces activos. ✅',
+      taskItems: tasks.map(({ workspace, board, list, task }): ChatbotListItem => this.toTaskListItem(workspace, board, list, task)),
     };
   }
 
@@ -179,9 +200,8 @@ export class TaskChatbotActionsService extends ChatbotActionExecutor {
       )).slice(0, 20);
 
     return {
-      taskSummary: tasks.length
-        ? tasks.map(({ workspace, board, list, task }) => this.formatTask(workspace, board, list, task)).join('\n')
-        : 'No encontré tareas en tus workspaces activos.',
+      taskSummary: tasks.length ? '' : 'No encontré tareas en tus workspaces activos.',
+      taskItems: tasks.map(({ workspace, board, list, task }): ChatbotListItem => this.toTaskListItem(workspace, board, list, task)),
     };
   }
 
@@ -222,9 +242,15 @@ export class TaskChatbotActionsService extends ChatbotActionExecutor {
       targetTaskTitle: task.title,
       ...(purpose === 'assign' ? { targetAssignedMemberIds: task.assignees?.map((assignee) => assignee.workspaceMemberId) ?? [] } : {}),
       ...(purpose === 'assign' ? {
-        memberSummary: workspace.workspaceMembers
-          .map((member) => `• ${member.workspaceMemberId} — ${member.fullname} (${member.email})`)
-          .join('\n') || 'Este workspace todavía no tiene miembros disponibles.',
+        memberSummary: workspace.workspaceMembers.length ? '' : 'Este workspace todavía no tiene miembros disponibles.',
+        memberItems: workspace.workspaceMembers.map((member): ChatbotListItem => ({
+          id: String(member.workspaceMemberId),
+          value: String(member.workspaceMemberId),
+          kind: 'member',
+          title: member.fullname,
+          subtitle: member.email,
+          detail: `ID ${member.workspaceMemberId}`,
+        })),
       } : {}),
     };
   }
@@ -311,10 +337,17 @@ export class TaskChatbotActionsService extends ChatbotActionExecutor {
     return role === 'owner' || role === 'member';
   }
 
-  private formatTask(workspace: IWorkspace, board: IBoard, list: TaskListResponse, task: ITask): string {
-    const status = task.completed ? '✅ Completada' : '🟡 Pendiente';
-    const dueDate = task.dateEnd ? ` — vence ${new Date(task.dateEnd).toLocaleDateString('es-ES')}` : '';
-    return `• ${task.code} — ${task.title} (${status}) · ${workspace.title} / ${board.title || 'Tablero'} / ${list.title}${dueDate}`;
+  private toTaskListItem(workspace: IWorkspace, board: IBoard, list: TaskListResponse, task: ITask): ChatbotListItem {
+    const status = task.completed ? 'Completada' : 'Pendiente';
+    const dueDate = task.dateEnd ? ` · Vence ${new Date(task.dateEnd).toLocaleDateString('es-ES')}` : '';
+    return {
+      id: task.code,
+      value: task.code,
+      kind: 'task',
+      title: task.title,
+      subtitle: `${workspace.title} · ${board.title || 'Tablero'} · ${list.title}`,
+      detail: `${status}${dueDate}`,
+    };
   }
 
   private readString(data: ChatbotUserData, key: string): string {

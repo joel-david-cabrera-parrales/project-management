@@ -191,6 +191,36 @@
       "board_created": "New board"
     }
   },
+  "chatbot": {
+    "open": "Open virtual assistant",
+    "close": "Close assistant",
+    "title": "Lumi · Virtual assistant",
+    "subtitle": "Here to help",
+    "starting": "Preparing your conversation...",
+    "restoring": "Restoring your conversation...",
+    "typing": "Lumi is typing",
+    "options": "Assistant options",
+    "confirmationOptions": "Confirm or cancel the action",
+    "inputLabel": "Write your message to Lumi",
+    "placeholder": "Write a message...",
+    "send": "Send message",
+    "enterHint": "Enter to send · Shift + Enter for a new line",
+    "yes": "Yes, confirm",
+    "no": "No, cancel",
+    "restart": "Start over",
+    "newConversation": "Start another conversation",
+    "taskOpen": "Open",
+    "taskDone": "Completed",
+    "taskDue": "Due",
+    "retry": "Retry",
+    "errors": {
+      "start": "I couldn't start the chat. Please try again.",
+      "load": "I couldn't restore the conversation.",
+      "message": "I couldn't send the message. You can try again.",
+      "reset": "I couldn't restart the conversation.",
+      "completed": "This conversation has ended. Start another whenever you're ready."
+    }
+  },
   "auth": {
     "brand": {
       "eyebrow": "Team task management",

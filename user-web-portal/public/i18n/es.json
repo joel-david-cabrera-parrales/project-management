@@ -191,6 +191,36 @@
       "board_created": "Nuevo tablero"
     }
   },
+  "chatbot": {
+    "open": "Abrir asistente virtual",
+    "close": "Cerrar asistente",
+    "title": "Lumi · Asistente virtual",
+    "subtitle": "Aquí para ayudarte",
+    "starting": "Preparando tu conversación...",
+    "restoring": "Recuperando tu conversación...",
+    "typing": "Lumi está escribiendo",
+    "options": "Opciones del asistente",
+    "confirmationOptions": "Confirma o cancela la acción",
+    "inputLabel": "Escribe tu mensaje para Lumi",
+    "placeholder": "Escribe tu mensaje...",
+    "send": "Enviar mensaje",
+    "enterHint": "Enter para enviar · Shift + Enter para nueva línea",
+    "yes": "Sí, confirmar",
+    "no": "No, cancelar",
+    "restart": "Empezar de nuevo",
+    "newConversation": "Empezar otra conversación",
+    "taskOpen": "Pendiente",
+    "taskDone": "Completada",
+    "taskDue": "Vence",
+    "retry": "Reintentar",
+    "errors": {
+      "start": "No pude iniciar el chat. Inténtalo de nuevo.",
+      "load": "No pude recuperar la conversación.",
+      "message": "No pude enviar el mensaje. Puedes intentarlo otra vez.",
+      "reset": "No pude reiniciar la conversación.",
+      "completed": "La conversación terminó. Puedes empezar otra cuando quieras."
+    }
+  },
   "auth": {
     "brand": {
       "eyebrow": "Gestión de tareas, en equipo",

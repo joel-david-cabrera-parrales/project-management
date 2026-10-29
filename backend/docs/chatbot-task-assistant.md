@@ -18,6 +18,10 @@ Todos requieren `Authorization: Bearer <access-token>` y quedan bajo `/api/v1`:
 
 No se recibe un `userId` del cliente: el usuario se obtiene del JWT. Las consultas de conversación siempre filtran por el ID autenticado, por lo que conocer el UUID de otra conversación no permite leerla ni modificarla.
 
+Cada respuesta incluye el estado actual y un campo `input` seguro para que el cliente muestre la interacción adecuada: tipo de entrada y opciones para estados `choice`. Las claves internas de los flujos (`saveAs`) no se exponen.
+
+Los mensajes del asistente pueden incluir contenido estructurado: `tasks` para las tareas asignadas y `items` para workspaces, columnas, tareas seleccionables y miembros. El frontend puede presentarlos como cards/chips sin tener que analizar el texto del mensaje.
+
 ## Flujos disponibles
 
 El flujo `task-assistant` comienza con un menú. Puede:

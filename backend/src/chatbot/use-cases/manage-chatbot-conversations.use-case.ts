@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { AuthenticatedUserDto } from 'src/auth/dto/authenticated-user.dto';
 import { ChatbotConversation } from '../entities/chatbot-conversation.entity';
 import { ChatbotMessage } from '../interfaces/chatbot-conversation.interface';
-import { ChatbotFlow } from '../interfaces/chatbot-flow.interface';
+import { ChatbotFlow, ChatbotInputPrompt } from '../interfaces/chatbot-flow.interface';
 import { TASK_ASSISTANT_FLOW } from '../flows/task-assistant.flow';
 import { StateMachineService } from '../core/state-machine.service';
 import { ChatbotConversationResponse, ManageChatbotConversationsUseCase } from '../classes/manage-chatbot-conversations.class';
@@ -54,7 +54,7 @@ export class ManageChatbotConversationsUseCaseImp extends ManageChatbotConversat
     conversation.currentState = result.state;
     conversation.userData = userData;
     conversation.completed = result.completed;
-    conversation.history = [...history, ...this.toAssistantMessages(result.responses, new Date().toISOString())]
+    conversation.history = [...history, ...this.toAssistantMessages(result.responses, new Date().toISOString(), result.taskCards, result.listItems)]
       .slice(-MAX_HISTORY_MESSAGES);
 
     const saved = await this.conversationRepository.save(conversation);
@@ -91,8 +91,26 @@ export class ManageChatbotConversationsUseCaseImp extends ManageChatbotConversat
     return flow;
   }
 
-  private toAssistantMessages(messages: string[], timestamp: string): ChatbotMessage[] {
-    return messages.filter(Boolean).map((content) => ({ sender: 'assistant', content, timestamp }));
+  private toAssistantMessages(
+    messages: string[],
+    timestamp: string,
+    taskCards?: ChatbotMessage['tasks'],
+    items?: ChatbotMessage['items'],
+  ): ChatbotMessage[] {
+    let attachTaskCards = Boolean(taskCards?.length);
+    let attachItems = Boolean(items?.length);
+    return messages.filter(Boolean).map((content) => {
+      const message: ChatbotMessage = { sender: 'assistant', content, timestamp };
+      if (attachTaskCards) {
+        message.tasks = taskCards;
+        attachTaskCards = false;
+      }
+      if (attachItems) {
+        message.items = items;
+        attachItems = false;
+      }
+      return message;
+    });
   }
 
   private toConversationResponse(conversation: ChatbotConversation, responses: string[]): ChatbotConversationResponse {
@@ -101,10 +119,20 @@ export class ManageChatbotConversationsUseCaseImp extends ManageChatbotConversat
       flowId: conversation.flowId,
       state: conversation.currentState,
       completed: conversation.completed,
+      input: this.toInputPrompt(this.findFlow(conversation.flowId).states[conversation.currentState]?.input),
       responses,
       history: conversation.history,
       createdAt: conversation.createdAt,
       updatedAt: conversation.updatedAt,
+    };
+  }
+
+  private toInputPrompt(input?: ChatbotFlow['states'][string]['input']): ChatbotInputPrompt | null {
+    if (!input) return null;
+    return {
+      type: input.type,
+      required: input.required !== false,
+      ...(input.options ? { options: [...input.options] } : {}),
     };
   }
 }

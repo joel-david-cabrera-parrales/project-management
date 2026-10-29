@@ -1,0 +1,153 @@
+<button class="chatbot-launcher" type="button" [attr.aria-label]="'chatbot.open' | translate"
+  [class.chatbot-launcher-open]="open()" [attr.aria-hidden]="open()" [attr.tabindex]="open() ? -1 : 0"
+  [attr.aria-expanded]="open()" [appTooltip]="'chatbot.open' | translate" (click)="toggle()">
+  @if (open()) {
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+  } @else {
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H6l-3 2v-5.2A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></svg>
+  }
+  <span class="chatbot-launcher-pulse" aria-hidden="true"></span>
+</button>
+
+@if (open()) {
+  <button class="chatbot-backdrop" type="button" tabindex="-1" [attr.aria-label]="'chatbot.close' | translate"
+    (click)="close()"></button>
+  <section class="chatbot-window" role="dialog" aria-modal="false" [attr.aria-label]="'chatbot.title' | translate">
+    <header class="chatbot-header">
+      <div class="chatbot-identity">
+        <span class="chatbot-avatar" aria-hidden="true">L</span>
+        <span class="chatbot-identity-copy">
+          <strong>{{ 'chatbot.title' | translate }}</strong>
+          <small><span class="chatbot-online-dot"></span>{{ 'chatbot.subtitle' | translate }}</small>
+        </span>
+      </div>
+      <div class="chatbot-header-actions">
+        @if (conversation()) {
+          <button type="button" class="chatbot-header-button" [disabled]="busy()"
+            [attr.aria-label]="'chatbot.restart' | translate" [appTooltip]="'chatbot.restart' | translate"
+            (click)="resetConversation()">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 9a6.5 6.5 0 1 1 1.7 5.8M3.5 4v5h5"/></svg>
+          </button>
+        }
+        <button type="button" class="chatbot-header-button" [attr.aria-label]="'chatbot.close' | translate"
+          [appTooltip]="'chatbot.close' | translate" (click)="close()">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg>
+        </button>
+      </div>
+    </header>
+
+    @if (conversation(); as currentConversation) {
+      <div #messagesViewport class="chatbot-messages" aria-live="polite" aria-relevant="additions text">
+        @for (message of currentConversation.history; track trackMessage($index, message)) {
+          <article class="chatbot-message" [class.chatbot-message-user]="message.sender === 'user'">
+            @if (message.sender === 'assistant') { <span class="chatbot-message-avatar" aria-hidden="true">L</span> }
+            <div class="chatbot-bubble-wrap">
+              <div class="chatbot-bubble">
+                @if (message.content) { <p class="chatbot-bubble-text">{{ message.content }}</p> }
+                @if (message.tasks; as taskCards) {
+                  @if (taskCards.length) {
+                  <div class="chatbot-task-cards">
+                    @for (task of taskCards; track task.taskCode; let taskIndex = $index) {
+                      <button type="button" class="chatbot-task-card" [style.animation-delay.ms]="taskIndex * 75"
+                        (click)="openTask(task)">
+                        <span class="chatbot-task-card-heading">
+                          <strong>{{ task.title }}</strong>
+                          <span class="chatbot-task-status" [class.chatbot-task-status-done]="task.completed">
+                            {{ (task.completed ? 'chatbot.taskDone' : 'chatbot.taskOpen') | translate }}
+                          </span>
+                        </span>
+                        <span class="chatbot-task-location">{{ task.workspaceName }} · {{ task.boardName }} · {{ task.taskListName }}</span>
+                        @if (task.dateEnd) {
+                          <span class="chatbot-task-due">{{ 'chatbot.taskDue' | translate }} {{ task.dateEnd | date:'mediumDate':'UTC' }}</span>
+                        }
+                      </button>
+                    }
+                  </div>
+                  }
+                }
+                @if (message.items; as listItems) {
+                  @if (listItems.length) {
+                    <div class="chatbot-list-items">
+                      @for (item of listItems; track item.id; let itemIndex = $index) {
+                        <button type="button" class="chatbot-list-item" [class.chatbot-list-item-task]="item.kind === 'task'"
+                          [style.animation-delay.ms]="itemIndex * 65" (click)="selectListItem(item)">
+                          <span class="chatbot-list-item-mark" aria-hidden="true">
+                            @switch (item.kind) {
+                              @case ('workspace') { ▦ }
+                              @case ('task-list') { ☷ }
+                              @case ('task') { ✓ }
+                              @case ('member') { ◉ }
+                            }
+                          </span>
+                          <span class="chatbot-list-item-copy">
+                            <strong>{{ item.title }}</strong>
+                            @if (item.subtitle) { <small>{{ item.subtitle }}</small> }
+                            @if (item.detail) { <small class="chatbot-list-item-detail">{{ item.detail }}</small> }
+                          </span>
+                          <span class="chatbot-list-item-select" aria-hidden="true">↗</span>
+                        </button>
+                      }
+                    </div>
+                  }
+                }
+              </div>
+              <time>{{ message.timestamp | date:'shortTime' }}</time>
+            </div>
+          </article>
+        }
+        @if (busy()) {
+          <div class="chatbot-typing" role="status" [attr.aria-label]="'chatbot.typing' | translate">
+            <span></span><span></span><span></span>
+          </div>
+        }
+      </div>
+
+      @if (errorKey()) {
+        <div class="chatbot-error" role="alert">
+          <span>{{ errorKey()! | translate }}</span>
+          <button type="button" (click)="retry()">{{ 'chatbot.retry' | translate }}</button>
+        </div>
+      }
+
+      @if (currentConversation.completed) {
+        <div class="chatbot-completed-actions">
+          <button type="button" class="chatbot-new-conversation" [disabled]="busy()" (click)="startNewConversation()">
+            {{ 'chatbot.newConversation' | translate }}
+          </button>
+        </div>
+      } @else if (currentConversation.input?.type === 'choice' && quickOptions().length) {
+        <div class="chatbot-quick-replies" [attr.aria-label]="'chatbot.options' | translate">
+          @for (option of quickOptions(); track option) {
+            <button type="button" [disabled]="busy()" (click)="sendQuickReply(option)">{{ option }}</button>
+          }
+        </div>
+      } @else if (currentConversation.input?.type === 'confirmation') {
+        <div class="chatbot-quick-replies chatbot-confirm-replies" [attr.aria-label]="'chatbot.confirmationOptions' | translate">
+          <button type="button" [disabled]="busy()" (click)="sendQuickReply('Sí')">{{ 'chatbot.yes' | translate }}</button>
+          <button type="button" [disabled]="busy()" (click)="sendQuickReply('No')">{{ 'chatbot.no' | translate }}</button>
+        </div>
+      } @else {
+        <form class="chatbot-composer" (submit)="$event.preventDefault(); sendDraft()">
+          <label class="sr-only" for="chatbot-message-input">{{ 'chatbot.inputLabel' | translate }}</label>
+          <textarea #textInput id="chatbot-message-input" aria-describedby="chatbot-input-hint" maxlength="2000" rows="1" [value]="draft()" [disabled]="busy()"
+            [placeholder]="'chatbot.placeholder' | translate"
+            (input)="draft.set($any($event.target).value)" (keydown)="onInputKeydown($event)"></textarea>
+          <button type="submit" [disabled]="!draft().trim() || busy()" [attr.aria-label]="'chatbot.send' | translate">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m3 3 14 7-14 7 2-7-2-7Zm2 7h12"/></svg>
+          </button>
+          <small id="chatbot-input-hint">{{ 'chatbot.enterHint' | translate }}</small>
+        </form>
+      }
+    } @else {
+      <div class="chatbot-loading" role="status">
+        @if (errorKey()) {
+          <p>{{ errorKey()! | translate }}</p>
+          <button type="button" (click)="retry()">{{ 'chatbot.retry' | translate }}</button>
+        } @else {
+          <span class="chatbot-spinner" aria-hidden="true"></span>
+          <span>{{ (restoring() ? 'chatbot.restoring' : 'chatbot.starting') | translate }}</span>
+        }
+      </div>
+    }
+  </section>
+}

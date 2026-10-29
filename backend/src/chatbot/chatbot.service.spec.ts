@@ -6,7 +6,8 @@ import { ManageChatbotConversationsUseCaseImp } from './use-cases/manage-chatbot
 
 describe('ManageChatbotConversationsUseCaseImp', () => {
   const user = AuthenticatedUserDto.fromUserProfile(12, 'user-code-12');
-  let service: ChatbotService;
+  let service: ManageChatbotConversationsUseCaseImp;
+  let executeAction: jest.Mock;
   let repository: {
     create: jest.Mock;
     save: jest.Mock;
@@ -24,7 +25,8 @@ describe('ManageChatbotConversationsUseCaseImp', () => {
       })),
       findOneBy: jest.fn(),
     };
-    const actions = { execute: jest.fn().mockResolvedValue({}) } as unknown as ChatbotActionExecutor;
+    executeAction = jest.fn().mockResolvedValue({});
+    const actions = { execute: executeAction } as unknown as ChatbotActionExecutor;
     service = new ManageChatbotConversationsUseCaseImp(repository as any, new StateMachineService(actions));
   });
 
@@ -33,6 +35,7 @@ describe('ManageChatbotConversationsUseCaseImp', () => {
 
     expect(repository.save).toHaveBeenCalledWith(expect.objectContaining({ userId: user.id, flowId: 'task-assistant' }));
     expect(result.id).toBe('conversation-uuid');
+    expect(result.input).toMatchObject({ type: 'choice', options: expect.arrayContaining(['Ver mis tareas', 'Crear una tarea']) });
     expect(result.history[0]).toMatchObject({ sender: 'assistant' });
   });
 
@@ -56,6 +59,57 @@ describe('ManageChatbotConversationsUseCaseImp', () => {
     expect(result.completed).toBe(true);
     expect(result.history.some((message: { sender: string; content: string }) => message.sender === 'user' && message.content === 'Ayuda')).toBe(true);
     expect(repository.save).toHaveBeenLastCalledWith(expect.objectContaining({ currentState: 'help', completed: true }));
+  });
+
+  it('persists task cards as structured assistant content for the frontend reveal animation', async () => {
+    const conversation = await service.startConversation(user);
+    repository.findOneBy.mockResolvedValueOnce({
+      id: conversation.id,
+      userId: user.id,
+      flowId: 'task-assistant',
+      currentState: 'welcome',
+      userData: {},
+      history: conversation.history,
+      completed: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    executeAction.mockResolvedValueOnce({
+      taskSummary: '',
+      taskCards: [{ taskCode: 'task-1', title: 'Preparar demo', workspaceName: 'Equipo' }],
+    });
+
+    const result = await service.processMessage(user, conversation.id, 'Ver mis tareas');
+
+    expect(result.history.find((message) => message.tasks)?.tasks).toEqual([
+      { taskCode: 'task-1', title: 'Preparar demo', workspaceName: 'Equipo' },
+    ]);
+    expect(repository.save.mock.lastCall?.[0].userData.taskCards).toBeUndefined();
+  });
+
+  it('persists selectable lists as structured assistant content', async () => {
+    const conversation = await service.startConversation(user);
+    repository.findOneBy.mockResolvedValueOnce({
+      id: conversation.id,
+      userId: user.id,
+      flowId: 'task-assistant',
+      currentState: 'welcome',
+      userData: {},
+      history: conversation.history,
+      completed: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    executeAction.mockResolvedValueOnce({
+      workspaceSummary: '',
+      workspaceItems: [{ id: 'workspace-code', value: 'workspace-code', kind: 'workspace', title: 'Diseño' }],
+    });
+
+    const result = await service.processMessage(user, conversation.id, 'Crear una tarea');
+
+    expect(result.history.find((message) => message.items)?.items).toEqual([
+      { id: 'workspace-code', value: 'workspace-code', kind: 'workspace', title: 'Diseño' },
+    ]);
   });
 
   it('does not expose another user conversation by id', async () => {

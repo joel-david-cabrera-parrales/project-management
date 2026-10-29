@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AuthenticatedUserDto } from 'src/auth/dto/authenticated-user.dto';
 import { ChatbotFlow, ChatbotUserData } from '../interfaces/chatbot-flow.interface';
+import { ChatbotListItem, ChatbotTaskCard } from '../interfaces/chatbot-conversation.interface';
 import { ChatbotActionExecutor } from '../classes/chatbot-action-executor.class';
 
 export interface ChatbotTransitionResult {
@@ -8,6 +9,8 @@ export interface ChatbotTransitionResult {
   responses: string[];
   completed: boolean;
   success: boolean;
+  taskCards?: ChatbotTaskCard[];
+  listItems?: ChatbotListItem[];
 }
 
 @Injectable()
@@ -63,11 +66,20 @@ export class StateMachineService {
       }
     }
 
+    const cardsValue = nextState.taskCardsFrom ? userData[nextState.taskCardsFrom] : undefined;
+    const taskCards = Array.isArray(cardsValue) ? cardsValue as ChatbotTaskCard[] : undefined;
+    if (nextState.taskCardsFrom) delete userData[nextState.taskCardsFrom];
+    const itemsValue = nextState.listItemsFrom ? userData[nextState.listItemsFrom] : undefined;
+    const listItems = Array.isArray(itemsValue) ? itemsValue as ChatbotListItem[] : undefined;
+    if (nextState.listItemsFrom) delete userData[nextState.listItemsFrom];
+
     return {
       state: transition.target,
       responses: this.render(nextState.message, userData),
       completed: nextState.terminal === true,
       success: true,
+      ...(taskCards?.length ? { taskCards } : {}),
+      ...(listItems?.length ? { listItems } : {}),
     };
   }
 
