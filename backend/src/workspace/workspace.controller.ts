@@ -111,11 +111,9 @@ export class WorkspaceController {
     return this.workspaceService.updateMemberRole(code, memberId, dto.roleMember);
   }
 
-  // Ruta para agregar un miembro a un workspace
+  // Ruta para agregar un miembro a un workspace (aceptar invitación)
   @Post('add-member')
-  @UseGuards(WorkspaceRoleGuard)
-  @WorkspaceRoles('owner')
-  @ApiOperation({ summary: 'Agregar un miembro a un workspace' })
+  @ApiOperation({ summary: 'Agregar un miembro a un workspace (aceptar invitación)' })
   @ApiResponse({ status: 200, description: 'Miembro agregado exitosamente' })
   @ApiResponse({ status: 401, description: 'No autorizado' })
   addMemberToWorkspace(@Body() body: AddMemberToWorkspaceDto, @GetUser() user: AuthenticatedUserDto) {

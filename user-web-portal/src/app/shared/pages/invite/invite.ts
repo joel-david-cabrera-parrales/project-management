@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { InvitationService, InviteWorkspace } from '../../services/invitation.service';
 import { StorageService } from '../../services/storage.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'app-invite',
@@ -15,6 +16,7 @@ export class Invite implements OnInit {
   private readonly router = inject(Router);
   private readonly invitationService = inject(InvitationService);
   private readonly storage = inject(StorageService);
+  private readonly translation = inject(TranslationService);
 
   readonly invitationCode = signal<string | null>(null);
   readonly workspace = signal<InviteWorkspace | null>(null);
@@ -36,6 +38,8 @@ export class Invite implements OnInit {
   }
 
   ngOnInit(): void {
+    void this.translation.setLanguage(this.translation.currentLang());
+
     const code = this.route.snapshot.paramMap.get('code');
     if (!code) {
       this.error.set('invite.invalidLink');
