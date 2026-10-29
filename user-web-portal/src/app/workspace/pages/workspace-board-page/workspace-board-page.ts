@@ -56,7 +56,11 @@ export class WorkspaceBoardPage {
   readonly loadingTaskDetails = signal(false);
   readonly deleteTarget = signal<WorkspaceTask | null>(null);
   readonly deletingTask = signal(false);
+  readonly deletingList = signal(false);
   readonly deleteError = signal(false);
+  readonly creatingList = signal(false);
+  readonly newListTitle = signal('');
+  readonly deleteListTarget = signal<{ id: number; title: string } | null>(null);
   private editRequestVersion = 0;
 
   constructor() {
@@ -125,6 +129,45 @@ export class WorkspaceBoardPage {
     this.selectedList.set(list);
     this.selectedTask.set(null);
     this.taskDrawerOpen.set(true);
+  }
+
+  openCreateList(): void {
+    if (!this.canManageTasks() || !this.selectedBoard()) return;
+    this.newListTitle.set('');
+    this.creatingList.set(true);
+  }
+
+  closeCreateList(): void {
+    this.creatingList.set(false);
+    this.newListTitle.set('');
+  }
+
+  createList(): void {
+    const board = this.selectedBoard();
+    const title = this.newListTitle().trim();
+    if (!board || !title || this.creatingList() === false) return;
+
+    this.store.createTaskList(board.code, title);
+    this.closeCreateList();
+  }
+
+  confirmDeleteList(listId: number): void {
+    if (!this.canDeleteTasks()) return;
+    const list = this.taskLists().find((l) => l.id === listId);
+    this.deleteListTarget.set(list ? { id: list.id, title: list.title } : { id: listId, title: '' });
+  }
+
+  deleteList(): void {
+    const target = this.deleteListTarget();
+    if (!target || this.deletingList()) return;
+    this.deletingList.set(true);
+    this.store.deleteTaskList(target.id);
+    this.deleteListTarget.set(null);
+    this.deletingList.set(false);
+  }
+
+  cancelDeleteList(): void {
+    this.deleteListTarget.set(null);
   }
 
   openEditTask(data: { task: WorkspaceTask; list: WorkspaceDetailTaskList }): void {

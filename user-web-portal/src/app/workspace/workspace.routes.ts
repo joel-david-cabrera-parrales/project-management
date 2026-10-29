@@ -6,6 +6,7 @@ import { WorkspaceMembersPage } from './pages/workspace-members-page/workspace-m
 import { WorkspaceLabelsPage } from './pages/workspace-labels-page/workspace-labels-page';
 import { WorkspaceSettingsPage } from './pages/workspace-settings-page/workspace-settings-page';
 import { WorkspaceDetailStore } from './state/workspace-detail.store';
+import { workspaceExistGuard } from './guards/workspace-exist.guard';
 
 export const workspaceRoutes: Routes = [
   {
@@ -15,6 +16,7 @@ export const workspaceRoutes: Routes = [
   {
     path: ':workspaceCode',
     component: WorkspaceDetailLayout,
+    canActivate: [workspaceExistGuard],
     providers: [WorkspaceDetailStore],
     children: [
       { path: '', redirectTo: 'board', pathMatch: 'full' },

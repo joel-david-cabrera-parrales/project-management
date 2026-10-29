@@ -1,7 +1,12 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { finalize } from 'rxjs';
 import { WorkspaceDetailApiService } from '../data-access/workspace-detail-api.service';
-import { WorkspaceDetail, WorkspaceTaskDropEvent } from '../models/workspace-detail.models';
+import {
+  CreateTaskListPayload,
+  WorkspaceDetail,
+  WorkspaceDetailTaskList,
+  WorkspaceTaskDropEvent,
+} from '../models/workspace-detail.models';
 
 export interface OptimisticTaskDropResult {
   rollback: () => void;
@@ -74,6 +79,79 @@ export class WorkspaceDetailStore {
     });
 
     return () => this.workspace.set(snapshot);
+  }
+
+  createTaskList(boardCode: string, title: string): void {
+    const snapshot = this.workspace();
+    if (!snapshot) return;
+
+    const board = snapshot.boards.find((b) => b.code === boardCode);
+    if (!board) return;
+
+    const optimisticList: WorkspaceDetailTaskList = {
+      id: -1,
+      code: `temp-${Date.now()}`,
+      title,
+      position: board.taskList.length,
+      isAvailable: true,
+      tasks: [],
+    };
+
+    this.workspace.set({
+      ...snapshot,
+      boards: snapshot.boards.map((b) => {
+        if (b.code !== boardCode) return b;
+        return {
+          ...b,
+          taskList: [...b.taskList, optimisticList],
+        };
+      }),
+    });
+
+    const boardId = board.boardId;
+    const position = board.taskList.length;
+    this.api
+      .createTaskList({ title, boardId, position })
+      .subscribe({
+        next: (saved) => {
+          const current = this.workspace();
+          if (!current) return;
+          this.workspace.set({
+            ...current,
+            boards: current.boards.map((b) => {
+              if (b.code !== boardCode) return b;
+              return {
+                ...b,
+                taskList: b.taskList.map((list) =>
+                  list.id === optimisticList.id ? saved : list,
+                ),
+              };
+            }),
+          });
+        },
+        error: () => {
+          this.workspace.set(snapshot);
+        },
+      });
+  }
+
+  deleteTaskList(listId: number): void {
+    const snapshot = this.workspace();
+    if (!snapshot) return;
+
+    this.workspace.set({
+      ...snapshot,
+      boards: snapshot.boards.map((b) => ({
+        ...b,
+        taskList: b.taskList.filter((list) => list.id !== listId),
+      })),
+    });
+
+    this.api.deleteTaskList(listId).subscribe({
+      error: () => {
+        this.workspace.set(snapshot);
+      },
+    });
   }
 
   applyTaskDrop(event: WorkspaceTaskDropEvent): OptimisticTaskDropResult | null {

@@ -19,3 +19,74 @@
 .board-error { flex: 0 0 auto; margin-bottom: 0.7rem; color: var(--danger); font-size: 0.75rem; }
 .board-loading { flex: 0 0 auto; margin-bottom: 0.7rem; color: var(--text-tertiary); font-size: 0.75rem; }
 @media (max-width: 680px) { .workspace-board-columns { min-height: 0; } }
+
+.board-header-actions {
+  flex: 0 0 auto;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.board-add-list {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.5rem;
+  padding: 0 0.9rem;
+  border: 1px solid var(--border-default);
+  border-radius: 0.5rem;
+  background: var(--bg-raised);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.board-add-list:hover { background: var(--bg-hover); border-color: var(--accent); }
+.board-add-list svg { width: 1.2rem; height: 1.2rem; color: var(--text-primary); }
+
+.create-list-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  border: 1px dashed var(--border-default);
+  border-radius: 0.5rem;
+  background: var(--bg-raised);
+}
+.create-list-form input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  padding: 0.25rem 0;
+  outline: none;
+}
+.create-list-form input::placeholder { color: var(--text-muted); }
+.create-list-cancel {
+  flex: 0 0 auto;
+  padding: 0.25rem 0.6rem;
+  border: none;
+  border-radius: 0.4rem;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.create-list-cancel:hover { background: var(--bg-hover); color: var(--text-primary); }
+.create-list-save {
+  flex: 0 0 auto;
+  padding: 0.25rem 0.7rem;
+  border: none;
+  border-radius: 0.4rem;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.create-list-save:disabled { opacity: 0.5; cursor: not-allowed; }
+.create-list-save:not(:disabled):hover { filter: brightness(0.9); }

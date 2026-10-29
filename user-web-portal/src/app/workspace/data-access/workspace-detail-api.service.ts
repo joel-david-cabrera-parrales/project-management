@@ -3,7 +3,12 @@ import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { WorkspaceDetailMapper } from '../models/workspace-detail.mapper';
-import { WorkspaceDetail, WorkspaceDetailApiResponse, WorkspaceDetailTaskList } from '../models/workspace-detail.models';
+import {
+  CreateTaskListPayload,
+  WorkspaceDetail,
+  WorkspaceDetailApiResponse,
+  WorkspaceDetailTaskList,
+} from '../models/workspace-detail.models';
 
 @Injectable({ providedIn: 'root' })
 export class WorkspaceDetailApiService {
@@ -26,5 +31,13 @@ export class WorkspaceDetailApiService {
 
   updateTaskListTitle(listId: number, title: string): Observable<WorkspaceDetailTaskList> {
     return this.http.patch<WorkspaceDetailTaskList>(`${this.taskListEndpoint}/${listId}`, { title });
+  }
+
+  createTaskList(payload: CreateTaskListPayload): Observable<WorkspaceDetailTaskList> {
+    return this.http.post<WorkspaceDetailTaskList>(this.taskListEndpoint, payload);
+  }
+
+  deleteTaskList(listId: number): Observable<void> {
+    return this.http.delete<void>(`${this.taskListEndpoint}/${listId}`);
   }
 }

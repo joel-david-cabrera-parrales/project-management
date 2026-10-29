@@ -19,6 +19,7 @@ export class WorkspaceBoardColumn {
   readonly editTask = output<{ task: WorkspaceTask; list: WorkspaceDetailTaskList }>();
   readonly deleteTask = output<WorkspaceTask>();
   readonly renameList = output<{ listId: number; title: string }>();
+  readonly deleteList = output<number>();
   readonly taskDropped = output<WorkspaceTaskDropEvent>();
 
   readonly editingTitle = signal(false);

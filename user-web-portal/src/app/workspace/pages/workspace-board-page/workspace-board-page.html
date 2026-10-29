@@ -26,6 +26,32 @@
       <p>{{ 'workspace.board.pageSubtitle' | translate: { count: taskLists().length } }}</p>
     </div>
   </header>
+  <div class="board-header-actions">
+    @if (canManageTasks() && selectedBoard()) {
+      <button
+        type="button"
+        class="board-add-list"
+        (click)="openCreateList()">
+        <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3v14M3 10h14"/></svg>
+        <span>{{ 'workspace.board.addColumn' | translate }}</span>
+      </button>
+    }
+  </div>
+  @if (creatingList()) {
+    <form class="create-list-form" (submit)="createList()" novalidate>
+      <input
+        type="text"
+        maxlength="150"
+        [placeholder]="'workspace.board.newColumnPlaceholder' | translate"
+        [value]="newListTitle()"
+        (input)="newListTitle.set($any($event.target).value)"
+        (keydown.enter)="createList()"
+        (keydown.escape)="closeCreateList()"
+        autofocus />
+      <button type="button" class="create-list-cancel" (click)="closeCreateList()">{{ 'common.cancel' | translate }}</button>
+      <button type="submit" class="create-list-save" [disabled]="!newListTitle().trim()">{{ 'common.save' | translate }}</button>
+    </form>
+  }
   @if (deleteError()) { <p class="board-error" role="alert">{{ 'workspace.task.deleteError' | translate }}</p> }
   @if (loadingTaskDetails()) { <p class="board-loading" role="status">{{ 'workspace.taskForm.loadingDetails' | translate }}</p> }
   @if (!store.workspace()?.boards?.length) {
@@ -46,6 +72,7 @@
           (editTask)="openEditTask($event)"
           (deleteTask)="confirmDeleteTask($event)"
           (renameList)="onRenameList($event)"
+          (deleteList)="confirmDeleteList($event)"
           (taskDropped)="onTaskDropped($event)" />
       }
     </div>
@@ -61,3 +88,8 @@
 <app-workspace-confirm-dialog [open]="!!deleteTarget()" titleKey="workspace.task.delete"
   descriptionKey="workspace.task.deleteConfirm" confirmKey="common.delete" pendingKey="common.deleting"
   [pending]="deletingTask()" (close)="deleteTarget.set(null)" (confirm)="deleteTask()" />
+
+<app-workspace-confirm-dialog [open]="!!deleteListTarget()" titleKey="workspace.board.deleteList"
+  [descriptionParams]="{ name: deleteListTarget()?.title ?? '' }" descriptionKey="workspace.board.deleteListConfirm"
+  confirmKey="common.delete" pendingKey="common.deleting"
+  [pending]="deletingList()" (close)="cancelDeleteList()" (confirm)="deleteList()" />

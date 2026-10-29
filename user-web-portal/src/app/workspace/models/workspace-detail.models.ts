@@ -133,6 +133,12 @@ export interface CreateWorkspaceTaskPayload {
   boardCode: string;
 }
 
+export interface CreateTaskListPayload {
+  title: string;
+  boardId: number;
+  position: number;
+}
+
 export interface UpdateWorkspaceTaskPayload {
   title?: string;
   description?: string;

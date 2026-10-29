@@ -379,7 +379,11 @@
       "deleteListConfirm": "¿Eliminar lista {{name}}?",
       "deleteListDesc": "Todas las tareas se eliminarán permanentemente",
       "noLists": "No hay columnas",
-      "noListsDesc": "Crea tu primera columna para empezar"
+      "noListsDesc": "Crea tu primera columna para empezar",
+      "addColumn": "Añadir Columna",
+      "newColumnPlaceholder": "Nombre de la columna",
+      "deleteList": "Eliminar columna",
+      "deleteListConfirm": "¿Eliminar columna {{name}}?"
     },
     "task": {
       "viewDetail": "Ver detalle",

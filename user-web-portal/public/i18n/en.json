@@ -379,7 +379,11 @@
       "deleteListConfirm": "Delete list {{name}}?",
       "deleteListDesc": "All tasks will be permanently deleted",
       "noLists": "No columns yet",
-      "noListsDesc": "Create your first column to get started"
+      "noListsDesc": "Create your first column to get started",
+      "addColumn": "Add Column",
+      "newColumnPlaceholder": "Column name",
+      "deleteList": "Delete Column",
+      "deleteListConfirm": "Delete column {{name}}?"
     },
     "task": {
       "viewDetail": "View details",
