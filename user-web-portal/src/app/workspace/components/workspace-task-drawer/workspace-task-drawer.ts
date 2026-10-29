@@ -1,17 +1,24 @@
-import { Component, DestroyRef, computed, effect, inject, input, output, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize, Observable, of, switchMap } from 'rxjs';
+import { catchError, finalize, forkJoin, last, map, Observable, of, switchMap } from 'rxjs';
 import { dateRangeValidator } from '../../../shared/validators/date-range.validator';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { WorkspaceDrawer } from '../workspace-drawer/workspace-drawer';
 import { WorkspaceTasksApiService } from '../../data-access/workspace-tasks-api.service';
 import { WorkspaceLabelsApiService } from '../../data-access/workspace-labels-api.service';
+import { WorkspaceTaskActivityApiService } from '../../data-access/workspace-task-activity-api.service';
 import { WorkspaceAvatar } from '../workspace-avatar/workspace-avatar';
-import { WorkspaceTaskActivity } from '../workspace-task-activity/workspace-task-activity';
+import { ALLOWED_TASK_FILE_TYPES, MAX_TASK_FILE_SIZE, WorkspaceTaskActivity } from '../workspace-task-activity/workspace-task-activity';
 import { WorkspaceRichTextEditor } from '../workspace-rich-text-editor/workspace-rich-text-editor';
 import { WorkspaceDetailTaskList, WorkspaceLabel, WorkspaceTask } from '../../models/workspace-detail.models';
 import { WorkspaceDetailStore } from '../../state/workspace-detail.store';
+
+export interface PendingTaskFile {
+  id: number;
+  file: File;
+  previewUrl: string | null;
+}
 
 @Component({
   selector: 'app-workspace-task-drawer',
@@ -24,6 +31,7 @@ export class WorkspaceTaskDrawer {
   private readonly destroyRef = inject(DestroyRef);
   private readonly api = inject(WorkspaceTasksApiService);
   private readonly labelsApi = inject(WorkspaceLabelsApiService);
+  private readonly activityApi = inject(WorkspaceTaskActivityApiService);
   private readonly detailStore = inject(WorkspaceDetailStore);
   private labelsLoadedForWorkspace: string | null = null;
   private labelsRequestForWorkspace: string | null = null;
@@ -48,6 +56,12 @@ export class WorkspaceTaskDrawer {
   readonly selectedMemberIds = signal<number[]>([]);
   readonly availableMembers = computed(() => this.detailStore.workspace()?.members ?? []);
   readonly canRemoveAssociations = this.detailStore.isOwner;
+  readonly canManageAttachments = computed(() => ['owner', 'member'].includes(this.detailStore.workspace()?.roleMember ?? ''));
+
+  // Queued files while creating a task
+  readonly pendingFiles = signal<PendingTaskFile[]>([]);
+  readonly pendingDragOver = signal(false);
+  readonly pendingFileError = signal(false);
 
   readonly form = this.formBuilder.nonNullable.group({
     title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(250)]],
@@ -64,6 +78,7 @@ export class WorkspaceTaskDrawer {
       const workspaceCode = this.workspaceCode();
       if (!isOpen) {
         wasOpen = false;
+        this.clearPendingFiles();
         return;
       }
       if (!wasOpen || workspaceCode !== previousWorkspaceCode) this.loadLabels(workspaceCode);
@@ -85,22 +100,28 @@ export class WorkspaceTaskDrawer {
       formWasOpen = true;
       formTaskId = taskId;
 
-      this.saveError.set(false);
-      this.currentTask.set(task);
-      this.selectedLabelIds.set(task?.labels.map((label) => label.id) ?? []);
-      this.showLabelOptions.set(false);
-      this.selectedMemberIds.set(task?.assignees.map((assignee) => assignee.workspaceMemberId) ?? []);
-      if (task) {
-        this.form.reset({
-          title: task.title,
-          description: task.description ?? '',
-          dateInit: task.dateInit?.slice(0, 10) ?? '',
-          dateEnd: task.dateEnd?.slice(0, 10) ?? '',
-        });
-      } else {
-        this.form.reset({ title: '', description: '', dateInit: '', dateEnd: '' });
-      }
+      untracked(() => {
+        this.saveError.set(false);
+        this.pendingFileError.set(false);
+        this.clearPendingFiles();
+        this.currentTask.set(task);
+        this.selectedLabelIds.set(task?.labels.map((label) => label.id) ?? []);
+        this.showLabelOptions.set(false);
+        this.selectedMemberIds.set(task?.assignees.map((assignee) => assignee.workspaceMemberId) ?? []);
+        if (task) {
+          this.form.reset({
+            title: task.title,
+            description: task.description ?? '',
+            dateInit: task.dateInit?.slice(0, 10) ?? '',
+            dateEnd: task.dateEnd?.slice(0, 10) ?? '',
+          });
+        } else {
+          this.form.reset({ title: '', description: '', dateInit: '', dateEnd: '' });
+        }
+      });
     });
+
+    this.destroyRef.onDestroy(() => this.clearPendingFiles());
   }
 
   submit(): void {
@@ -141,12 +162,80 @@ export class WorkspaceTaskDrawer {
         this.currentTask.set(savedTask);
         return this.syncAssociations(savedTask);
       }),
+      switchMap((savedTask) => this.uploadPendingFiles(savedTask)),
       finalize(() => this.saving.set(false)),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe({
       next: () => this.saved.emit(),
       error: () => this.saveError.set(true),
     });
+  }
+
+  onPendingFilesSelected(event: Event): void {
+    const inputEl = event.target as HTMLInputElement;
+    const files = Array.from(inputEl.files ?? []);
+    inputEl.value = '';
+    this.enqueuePendingFiles(files);
+  }
+
+  onPendingDragOver(event: DragEvent): void {
+    if (!this.canManageAttachments()) return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.pendingDragOver.set(true);
+  }
+
+  onPendingDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.pendingDragOver.set(false);
+  }
+
+  onPendingDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.pendingDragOver.set(false);
+    if (!this.canManageAttachments()) return;
+    const files = Array.from(event.dataTransfer?.files ?? []);
+    this.enqueuePendingFiles(files);
+  }
+
+  removePendingFile(id: number): void {
+    this.pendingFiles.update((items) => {
+      const target = items.find((item) => item.id === id);
+      if (target?.previewUrl) URL.revokeObjectURL(target.previewUrl);
+      return items.filter((item) => item.id !== id);
+    });
+  }
+
+  fileExt(fileName: string): string {
+    const idx = fileName.lastIndexOf('.');
+    return idx > 0 ? fileName.slice(idx + 1).toLowerCase() : '';
+  }
+
+  fileTypeLabel(fileName: string): string {
+    const ext = this.fileExt(fileName);
+    return ext ? ext.toUpperCase() : 'FILE';
+  }
+
+  isImage(fileName: string): boolean {
+    return ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'bmp'].includes(this.fileExt(fileName));
+  }
+
+  accentColor(fileName: string): string {
+    const ext = this.fileExt(fileName);
+    if (ext === 'pdf') return '#ef4444';
+    if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'bmp'].includes(ext)) return '#3b82f6';
+    if (['doc', 'docx'].includes(ext)) return '#6366f1';
+    if (['xls', 'xlsx', 'csv'].includes(ext)) return '#10b981';
+    if (['ppt', 'pptx'].includes(ext)) return '#f59e0b';
+    return '#64748b';
+  }
+
+  formatSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 
   toggleLabel(labelId: number): void {
@@ -167,6 +256,48 @@ export class WorkspaceTaskDrawer {
   isMemberSelected(memberId: number): boolean { return this.selectedMemberIds().includes(memberId); }
   isLabelLocked(labelId: number): boolean { return !this.canRemoveAssociations() && !!this.currentTask()?.labels.some((label) => label.id === labelId); }
   isMemberLocked(memberId: number): boolean { return !this.canRemoveAssociations() && !!this.currentTask()?.assignees.some((assignee) => assignee.workspaceMemberId === memberId); }
+
+  private enqueuePendingFiles(files: File[]): void {
+    if (!files.length) return;
+    const allowed = files.filter((file) => ALLOWED_TASK_FILE_TYPES.has(file.type) && file.size <= MAX_TASK_FILE_SIZE);
+    if (allowed.length !== files.length) this.pendingFileError.set(true);
+    else this.pendingFileError.set(false);
+    if (!allowed.length) return;
+
+    const entries: PendingTaskFile[] = allowed.map((file) => ({
+      id: Date.now() + Math.random(),
+      file,
+      previewUrl: this.isImage(file.name) ? URL.createObjectURL(file) : null,
+    }));
+    this.pendingFiles.update((prev) => [...prev, ...entries]);
+  }
+
+  private clearPendingFiles(): void {
+    const items = untracked(() => this.pendingFiles());
+    if (!items.length) return;
+    for (const item of items) {
+      if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+    }
+    this.pendingFiles.set([]);
+  }
+
+  private uploadPendingFiles(task: WorkspaceTask): Observable<WorkspaceTask> {
+    const queued = this.pendingFiles();
+    if (!queued.length) return of(task);
+
+    const uploads$ = queued.map((entry) =>
+      this.activityApi.uploadAttachment(task.code, entry.file).pipe(
+        last(),
+        catchError(() => of(null)),
+      ),
+    );
+    return forkJoin(uploads$).pipe(
+      map(() => {
+        this.clearPendingFiles();
+        return task;
+      }),
+    );
+  }
 
   private loadLabels(workspaceCode: string): void {
     if (this.labelsLoadedForWorkspace === workspaceCode || this.labelsRequestForWorkspace === workspaceCode) return;

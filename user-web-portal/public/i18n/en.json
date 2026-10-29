@@ -369,7 +369,8 @@
       "labelsLoadError": "Labels could not be loaded.",
       "noLabels": "This workspace does not have any labels yet.",
       "noMembers": "This workspace does not have any members yet.",
-      "ownerRequiredToRemove": "Only the owner can remove existing labels or assignees."
+      "ownerRequiredToRemove": "Only the owner can remove existing labels or assignees.",
+      "queuedHint": "Queued files will upload automatically when the task is created."
     },
     "richText": {
       "placeholder": "Write a description…",
@@ -456,7 +457,10 @@
       "uploading": "Uploading files...",
       "download": "Download",
       "delete": "Delete",
-      "deleteConfirm": "Delete attachment?"
+      "deleteConfirm": "Delete attachment?",
+      "dropHint": "Drop files here or click to browse",
+      "allowedHint": "PDF, PNG, JPG, GIF, WEBP, DOC, XLS, PPT — max 10 MB",
+      "previewUnavailable": "Preview is not available for this file type."
     },
     "assignee": {
       "title": "Assign to",

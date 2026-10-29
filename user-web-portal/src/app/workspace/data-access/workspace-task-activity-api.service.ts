@@ -35,8 +35,8 @@ export class WorkspaceTaskActivityApiService {
     return this.http.get<WorkspaceTaskComment[]>(`${this.commentsUrl}/task/${taskCode}`);
   }
 
-  createComment(taskCode: string, content: string, parentId?: number): Observable<WorkspaceTaskComment> {
-    return this.http.post<WorkspaceTaskComment>(`${this.commentsUrl}/task/${taskCode}`, { content, parentId });
+  createComment(taskCode: string, content: string, parentId?: number, mentions?: number[]): Observable<WorkspaceTaskComment> {
+    return this.http.post<WorkspaceTaskComment>(`${this.commentsUrl}/task/${taskCode}`, { content, parentId, mentions });
   }
 
   deleteComment(code: string): Observable<unknown> {

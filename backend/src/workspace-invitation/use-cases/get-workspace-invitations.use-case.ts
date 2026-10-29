@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { WorkspaceInvitation } from '../entities/workspace-invitation.entity';
 import { GetWorkspaceInvitationsUseCase, InvitationItem } from '../classes/get-workspace-invitations.class';
 import { AuthorizeWorkspaceMembershipUseCase } from 'src/common/classes/authorize-workspace-membership.class';
+import { toPhotoUrl } from '../../common/helpers/photo-url.helper';
 
 const AVATAR_COLORS = ['#ef4444', '#6366f1', '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6'];
 
@@ -38,7 +39,7 @@ export class GetWorkspaceInvitationsUseCaseImp implements GetWorkspaceInvitation
         code: inv.code,
         invitedEmail: inv.user.profile.email,
         invitedName: fullname,
-        photo: inv.user.profile.photo ?? null,
+        photo: toPhotoUrl(inv.user.profile.photo, inv.user.profile.code),
         initials: toInitials(inv.user.profile.firstName, inv.user.profile.firstSurname),
         avatarColor: toAvatarColor(fullname),
         role: inv.rolMember,

@@ -4,6 +4,7 @@ import { FindCommentsByTaskUseCase } from './classes/find-comments-by-task.class
 import { DeleteCommentUseCase } from './classes/delete-comment.class';
 import { SendMentionedEmailUseCase } from './classes/send-mentioned-email.class';
 import { CommentResponse } from 'src/common/responses';
+import { toPhotoUrl } from '../common/helpers/photo-url.helper';
 
 @Injectable()
 export class CommentService {
@@ -48,7 +49,7 @@ export class CommentService {
         id: comment.author.id,
         fullname,
         email,
-        photo: profile?.photo ?? null,
+        photo: toPhotoUrl(profile?.photo, profile?.code),
         initials: `${firstName.charAt(0)}${firstSurname.charAt(0)}`.toUpperCase() || '?',
         avatarColor: this.toAvatarColor(fullname),
       },

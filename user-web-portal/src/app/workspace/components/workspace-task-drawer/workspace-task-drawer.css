@@ -1,3 +1,4 @@
+.task-drawer-body { display: grid; gap: 1rem; }
 .task-drawer-form { display: grid; gap: 1rem; }
 .task-drawer-field { display: grid; gap: 0.45rem; }
 .task-drawer-field label { color: var(--text-secondary); font-size: 0.73rem; font-weight: 700; }
@@ -15,6 +16,7 @@
 .task-association-heading > div { display: flex; align-items: center; gap: 0.45rem; }
 .task-add-option { display: inline-flex; min-height: 1.8rem; align-items: center; gap: 0.3rem; border: 1px dashed var(--border-default); border-radius: 0.45rem; background: transparent; padding: 0.3rem 0.5rem; color: var(--text-secondary); cursor: pointer; font: inherit; font-size: 0.64rem; font-weight: 700; }
 .task-add-option:hover { border-color: var(--accent); color: var(--accent); }
+.task-add-option input { display: none; }
 .task-add-option svg { width: 0.8rem; height: 0.8rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.7; }
 .task-association-section h3 { color: var(--text-secondary); font-size: 0.72rem; font-weight: 750; }
 .task-association-section > header small { display: inline-grid; min-width: 1.25rem; height: 1.25rem; place-items: center; border: 1px solid var(--border-subtle); border-radius: 99px; color: var(--text-tertiary); font-size: 0.6rem; }
@@ -37,3 +39,27 @@
 .task-member-option .association-check { margin-left: 0.1rem; }
 .task-options-empty, .task-association-note { color: var(--text-tertiary); font-size: 0.65rem; }
 .task-association-note { border-radius: 0.45rem; background: var(--bg-base); padding: 0.45rem 0.55rem; }
+
+/* Queued attachments during creation */
+.pending-dropzone { display: grid; justify-items: center; gap: 0.25rem; border: 1.5px dashed var(--border-default); border-radius: 0.65rem; background: var(--bg-base); padding: 1rem 0.85rem; text-align: center; cursor: pointer; transition: border-color 150ms, background-color 150ms; }
+.pending-dropzone.compact { padding: 0.65rem 0.85rem; }
+.pending-dropzone:hover, .pending-dropzone.drag-over { border-color: var(--accent); background: var(--accent-alpha); }
+.pending-dropzone input { display: none; }
+.pending-dropzone-icon { display: grid; width: 2rem; height: 2rem; place-items: center; border: 1px solid var(--border-subtle); border-radius: 0.5rem; background: var(--bg-raised); color: var(--text-tertiary); margin-bottom: 0.1rem; }
+.pending-dropzone.drag-over .pending-dropzone-icon { border-color: var(--accent); color: var(--accent); }
+.pending-dropzone-icon svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
+.pending-dropzone strong { color: var(--text-secondary); font-size: 0.68rem; font-weight: 700; }
+.pending-dropzone .pending-dropzone-active { color: var(--accent); }
+.pending-dropzone small { color: var(--text-tertiary); font-size: 0.58rem; }
+.pending-file-list { display: grid; gap: 0.4rem; }
+.pending-file-card { position: relative; display: flex; min-width: 0; align-items: center; gap: 0.6rem; overflow: hidden; border: 1px solid var(--border-subtle); border-radius: 0.55rem; background: var(--bg-raised); padding: 0.45rem 0.5rem 0.45rem 0.7rem; }
+.pending-file-stripe { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--file-accent, var(--accent)); }
+.pending-file-thumb { display: grid; width: 2rem; height: 2rem; flex: 0 0 auto; place-items: center; overflow: hidden; border-radius: 0.4rem; background: color-mix(in srgb, var(--file-accent, var(--accent)) 12%, transparent); color: var(--file-accent, var(--accent)); }
+.pending-file-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pending-file-thumb svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
+.pending-file-copy { display: grid; min-width: 0; flex: 1; gap: 0.08rem; }
+.pending-file-copy strong, .pending-file-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pending-file-copy strong { color: var(--text-primary); font-size: 0.66rem; font-weight: 700; }
+.pending-file-copy small { color: var(--text-muted); font-size: 0.58rem; }
+.pending-file-remove { display: grid; width: 1.6rem; height: 1.6rem; flex: 0 0 auto; place-items: center; border: 0; border-radius: 0.4rem; background: transparent; color: var(--text-tertiary); cursor: pointer; font: inherit; font-size: 1rem; line-height: 1; }
+.pending-file-remove:hover:not(:disabled) { background: var(--danger-alpha); color: var(--danger); }

@@ -1,118 +1,186 @@
 <app-workspace-drawer [open]="open()"
   [titleKey]="editing() ? 'workspace.taskForm.updateTitle' : 'workspace.taskForm.createTitle'"
   [busy]="saving()" (close)="close.emit()">
-  <form drawer-body id="workspace-task-form" class="task-drawer-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-    <div class="task-drawer-field">
-      <label for="workspace-task-title">{{ 'workspace.taskForm.titleLabel' | translate }}</label>
-      <input id="workspace-task-title" type="text" formControlName="title" maxlength="250" autofocus
-        [placeholder]="'workspace.taskForm.titlePlaceholder' | translate"
-        [attr.aria-invalid]="form.controls.title.invalid && form.controls.title.touched" />
-      @if (form.controls.title.touched && form.controls.title.hasError('minlength')) {
-        <small class="task-drawer-error">{{ 'workspace.taskForm.titleMinLength' | translate }}</small>
-      } @else if (form.controls.title.touched && form.controls.title.hasError('required')) {
-        <small class="task-drawer-error">{{ 'auth.validation.required' | translate }}</small>
+  <div drawer-body class="task-drawer-body">
+    <form id="workspace-task-form" class="task-drawer-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="task-drawer-field">
+        <label for="workspace-task-title">{{ 'workspace.taskForm.titleLabel' | translate }}</label>
+        <input id="workspace-task-title" type="text" formControlName="title" maxlength="250" autofocus
+          [placeholder]="'workspace.taskForm.titlePlaceholder' | translate"
+          [attr.aria-invalid]="form.controls.title.invalid && form.controls.title.touched" />
+        @if (form.controls.title.touched && form.controls.title.hasError('minlength')) {
+          <small class="task-drawer-error">{{ 'workspace.taskForm.titleMinLength' | translate }}</small>
+        } @else if (form.controls.title.touched && form.controls.title.hasError('required')) {
+          <small class="task-drawer-error">{{ 'auth.validation.required' | translate }}</small>
+        }
+      </div>
+      <div class="task-drawer-field">
+        <app-workspace-rich-text-editor formControlName="description" [label]="'common.description' | translate"
+          [placeholder]="'workspace.taskForm.descPlaceholder' | translate" [linkPrompt]="'workspace.richText.linkPrompt' | translate"
+          [minHeight]="120" [maxHeight]="500"
+          [maxLength]="2000" [minLength]="5" />
+      </div>
+      <div class="task-drawer-dates">
+        <div class="task-drawer-field">
+          <label for="workspace-task-start">{{ 'workspace.taskForm.dateInit' | translate }}</label>
+          <input id="workspace-task-start" type="date" formControlName="dateInit" />
+        </div>
+        <div class="task-drawer-field">
+          <label for="workspace-task-due">{{ 'workspace.taskForm.dateEnd' | translate }}</label>
+          <input id="workspace-task-due" type="date" formControlName="dateEnd" />
+        </div>
+      </div>
+      @if (form.errors?.['dateRange'] && (form.controls.dateEnd.touched || form.controls.dateEnd.dirty)) {
+        <small class="task-drawer-error">{{ 'workspace.taskForm.dateRangeError' | translate }}</small>
       }
-    </div>
-    <div class="task-drawer-field">
-      <app-workspace-rich-text-editor formControlName="description" [label]="'common.description' | translate"
-        [placeholder]="'workspace.taskForm.descPlaceholder' | translate" [linkPrompt]="'workspace.richText.linkPrompt' | translate"
-        [minHeight]="120" [maxHeight]="500"
-        [maxLength]="2000" [minLength]="5" />
-    </div>
-    <div class="task-drawer-dates">
-      <div class="task-drawer-field">
-        <label for="workspace-task-start">{{ 'workspace.taskForm.dateInit' | translate }}</label>
-        <input id="workspace-task-start" type="date" formControlName="dateInit" />
-      </div>
-      <div class="task-drawer-field">
-        <label for="workspace-task-due">{{ 'workspace.taskForm.dateEnd' | translate }}</label>
-        <input id="workspace-task-due" type="date" formControlName="dateEnd" />
-      </div>
-    </div>
-    @if (form.errors?.['dateRange'] && (form.controls.dateEnd.touched || form.controls.dateEnd.dirty)) {
-      <small class="task-drawer-error">{{ 'workspace.taskForm.dateRangeError' | translate }}</small>
-    }
 
-    <section class="task-association-section" aria-labelledby="task-labels-heading">
-      <header class="task-association-heading">
-        <div><h3 id="task-labels-heading">{{ 'workspace.taskDetail.labels' | translate }}</h3><small>{{ selectedLabelIds().length }}</small></div>
-        <button class="task-add-option" type="button" [attr.aria-expanded]="showLabelOptions()"
-          (click)="toggleLabelOptions()">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v14M3 10h14"/></svg>
-          {{ 'workspace.taskDrawer.addLabel' | translate }}
-        </button>
-      </header>
-      @if (loadingLabels()) {
-        <p class="task-options-empty" role="status">{{ 'common.loading' | translate }}</p>
-      } @else if (labelLoadError()) {
-        <p class="task-drawer-error" role="alert">{{ 'workspace.taskDrawer.labelsLoadError' | translate }}</p>
-      } @else if (availableLabels().length) {
-        @if (selectedLabelIds().length) {
-          <div class="task-selected-labels">
+      <section class="task-association-section" aria-labelledby="task-labels-heading">
+        <header class="task-association-heading">
+          <div><h3 id="task-labels-heading">{{ 'workspace.taskDetail.labels' | translate }}</h3><small>{{ selectedLabelIds().length }}</small></div>
+          <button class="task-add-option" type="button" [attr.aria-expanded]="showLabelOptions()"
+            (click)="toggleLabelOptions()">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v14M3 10h14"/></svg>
+            {{ 'workspace.taskDrawer.addLabel' | translate }}
+          </button>
+        </header>
+        @if (loadingLabels()) {
+          <p class="task-options-empty" role="status">{{ 'common.loading' | translate }}</p>
+        } @else if (labelLoadError()) {
+          <p class="task-drawer-error" role="alert">{{ 'workspace.taskDrawer.labelsLoadError' | translate }}</p>
+        } @else if (availableLabels().length) {
+          @if (selectedLabelIds().length) {
+            <div class="task-selected-labels">
+              @for (label of availableLabels(); track label.id) {
+                @if (isLabelSelected(label.id)) {
+                  <span class="task-selected-label" [style.--label-color]="label.color">
+                    <span class="association-color"></span>{{ label.name }}
+                    @if (!isLabelLocked(label.id)) {
+                      <button type="button" [attr.aria-label]="'workspace.taskDrawer.removeLabel' | translate"
+                        (click)="toggleLabel(label.id)">×</button>
+                    }
+                  </span>
+                }
+              }
+            </div>
+          }
+          @if (showLabelOptions()) {
+          <div class="task-association-options">
             @for (label of availableLabels(); track label.id) {
-              @if (isLabelSelected(label.id)) {
-                <span class="task-selected-label" [style.--label-color]="label.color">
-                  <span class="association-color"></span>{{ label.name }}
-                  @if (!isLabelLocked(label.id)) {
-                    <button type="button" [attr.aria-label]="'workspace.taskDrawer.removeLabel' | translate"
-                      (click)="toggleLabel(label.id)">×</button>
-                  }
-                </span>
+              @if (!isLabelSelected(label.id)) {
+                <button class="task-association-option" type="button" (click)="toggleLabel(label.id)">
+                  <span class="association-color" [style.background-color]="label.color"></span>
+                  <span>{{ label.name }}</span>
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v14M3 10h14"/></svg>
+                </button>
               }
             }
           </div>
+          @if (availableLabels().length === selectedLabelIds().length) {
+            <p class="task-options-empty">{{ 'workspace.taskDrawer.allLabelsSelected' | translate }}</p>
+          }
+          }
+        } @else {
+          <p class="task-options-empty">{{ 'workspace.taskDrawer.noLabels' | translate }}</p>
         }
-        @if (showLabelOptions()) {
-        <div class="task-association-options">
-          @for (label of availableLabels(); track label.id) {
-            @if (!isLabelSelected(label.id)) {
-              <button class="task-association-option" type="button" (click)="toggleLabel(label.id)">
-                <span class="association-color" [style.background-color]="label.color"></span>
-                <span>{{ label.name }}</span>
-                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v14M3 10h14"/></svg>
+      </section>
+
+      <section class="task-association-section" aria-labelledby="task-assignees-heading">
+        <header><h3 id="task-assignees-heading">{{ 'workspace.taskDetail.assignees' | translate }}</h3><small>{{ selectedMemberIds().length }}</small></header>
+        @if (availableMembers().length) {
+          <div class="task-association-options">
+            @for (member of availableMembers(); track member.workspaceMemberId) {
+              <button class="task-association-option task-member-option" type="button"
+                [class.selected]="isMemberSelected(member.workspaceMemberId)" [disabled]="isMemberLocked(member.workspaceMemberId)"
+                [attr.aria-pressed]="isMemberSelected(member.workspaceMemberId)"
+                (click)="toggleMember(member.workspaceMemberId)">
+                <app-workspace-avatar [name]="member.fullname" [photo]="member.photo" [initials]="member.initials"
+                  [color]="member.avatarColor" size="sm" />
+                <span class="task-member-copy"><strong>{{ member.fullname }}</strong><small>{{ member.email }}</small></span>
+                @if (isMemberSelected(member.workspaceMemberId)) { <svg class="association-check" viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-8"/></svg> }
               </button>
             }
-          }
-        </div>
-        @if (availableLabels().length === selectedLabelIds().length) {
-          <p class="task-options-empty">{{ 'workspace.taskDrawer.allLabelsSelected' | translate }}</p>
+          </div>
+        } @else {
+          <p class="task-options-empty">{{ 'workspace.taskDrawer.noMembers' | translate }}</p>
         }
+        @if (editing() && !canRemoveAssociations()) {
+          <p class="task-association-note">{{ 'workspace.taskDrawer.ownerRequiredToRemove' | translate }}</p>
         }
-      } @else {
-        <p class="task-options-empty">{{ 'workspace.taskDrawer.noLabels' | translate }}</p>
-      }
-    </section>
+      </section>
 
-    <section class="task-association-section" aria-labelledby="task-assignees-heading">
-      <header><h3 id="task-assignees-heading">{{ 'workspace.taskDetail.assignees' | translate }}</h3><small>{{ selectedMemberIds().length }}</small></header>
-      @if (availableMembers().length) {
-        <div class="task-association-options">
-          @for (member of availableMembers(); track member.workspaceMemberId) {
-            <button class="task-association-option task-member-option" type="button"
-              [class.selected]="isMemberSelected(member.workspaceMemberId)" [disabled]="isMemberLocked(member.workspaceMemberId)"
-              [attr.aria-pressed]="isMemberSelected(member.workspaceMemberId)"
-              (click)="toggleMember(member.workspaceMemberId)">
-              <app-workspace-avatar [name]="member.fullname" [photo]="member.photo" [initials]="member.initials"
-                [color]="member.avatarColor" size="sm" />
-              <span class="task-member-copy"><strong>{{ member.fullname }}</strong><small>{{ member.email }}</small></span>
-              @if (isMemberSelected(member.workspaceMemberId)) { <svg class="association-check" viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-8"/></svg> }
-            </button>
+      @if (!effectiveTask() && canManageAttachments()) {
+        <section class="task-association-section" aria-labelledby="task-pending-attachments-heading">
+          <header class="task-association-heading">
+            <div>
+              <h3 id="task-pending-attachments-heading">{{ 'workspace.taskDetail.attachments' | translate }}</h3>
+              <small>{{ pendingFiles().length }}</small>
+            </div>
+            <label class="task-add-option">
+              <input type="file" hidden multiple accept=".pdf,.png,.jpg,.jpeg,.gif,.webp,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                [disabled]="saving()" (change)="onPendingFilesSelected($event)" />
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v14M3 10h14"/></svg>
+              {{ 'workspace.attachment.add' | translate }}
+            </label>
+          </header>
+
+          <label class="pending-dropzone" [class.drag-over]="pendingDragOver()" [class.compact]="pendingFiles().length > 0"
+            (dragover)="onPendingDragOver($event)" (dragleave)="onPendingDragLeave($event)" (drop)="onPendingDrop($event)">
+            <input type="file" hidden multiple accept=".pdf,.png,.jpg,.jpeg,.gif,.webp,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+              [disabled]="saving()" (change)="onPendingFilesSelected($event)" />
+            <span class="pending-dropzone-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            </span>
+            @if (pendingDragOver()) {
+              <strong class="pending-dropzone-active">{{ 'workspace.taskDetail.dropFiles' | translate }}</strong>
+            } @else {
+              <strong>{{ 'workspace.attachment.dropHint' | translate }}</strong>
+              <small>{{ 'workspace.attachment.allowedHint' | translate }}</small>
+            }
+          </label>
+
+          @if (pendingFileError()) {
+            <p class="task-drawer-error" role="alert">{{ 'workspace.attachment.allowedHint' | translate }}</p>
           }
-        </div>
-      } @else {
-        <p class="task-options-empty">{{ 'workspace.taskDrawer.noMembers' | translate }}</p>
+
+          @if (pendingFiles().length) {
+            <div class="pending-file-list">
+              @for (item of pendingFiles(); track item.id) {
+                <article class="pending-file-card" [style.--file-accent]="accentColor(item.file.name)">
+                  <span class="pending-file-stripe" aria-hidden="true"></span>
+                  <div class="pending-file-thumb">
+                    @if (item.previewUrl; as previewUrl) {
+                      <img [src]="previewUrl" [alt]="item.file.name" />
+                    } @else {
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                      </svg>
+                    }
+                  </div>
+                  <div class="pending-file-copy">
+                    <strong>{{ item.file.name }}</strong>
+                    <small>{{ formatSize(item.file.size) }} · {{ fileTypeLabel(item.file.name) }}</small>
+                  </div>
+                  <button type="button" class="pending-file-remove" [disabled]="saving()"
+                    [attr.aria-label]="'common.remove' | translate" (click)="removePendingFile(item.id)">
+                    ×
+                  </button>
+                </article>
+              }
+            </div>
+            <p class="task-options-empty">{{ 'workspace.taskDrawer.queuedHint' | translate }}</p>
+          }
+        </section>
       }
-      @if (editing() && !canRemoveAssociations()) {
-        <p class="task-association-note">{{ 'workspace.taskDrawer.ownerRequiredToRemove' | translate }}</p>
-      }
-    </section>
+
+      @if (saveError()) { <p class="task-drawer-error" role="alert">{{ 'workspace.taskForm.saveError' | translate }}</p> }
+    </form>
 
     @if (effectiveTask(); as currentTask) {
-      <app-workspace-task-activity [taskCode]="currentTask.code" />
+      <app-workspace-task-activity [taskCode]="currentTask.code" [assignees]="currentTask.assignees" />
     }
+  </div>
 
-    @if (saveError()) { <p class="task-drawer-error" role="alert">{{ 'workspace.taskForm.saveError' | translate }}</p> }
-  </form>
   <div drawer-footer>
     <button class="task-drawer-cancel" type="button" [disabled]="saving()" (click)="close.emit()">{{ 'common.cancel' | translate }}</button>
     <button class="task-drawer-submit" type="submit" form="workspace-task-form" [disabled]="saving() || form.invalid">

@@ -12,13 +12,30 @@
       }
     </header>
 
+    @if (canManageAttachments()) {
+      <label class="attachment-dropzone" [class.drag-over]="uploadDragOver()" [class.compact]="attachments().length > 0"
+        (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+        <input type="file" hidden multiple accept=".pdf,.png,.jpg,.jpeg,.gif,.webp,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+          [disabled]="uploading()" (change)="onFilesSelected($event)" />
+        <span class="dropzone-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        </span>
+        @if (uploadDragOver()) {
+          <strong class="dropzone-active-text">{{ 'workspace.taskDetail.dropFiles' | translate }}</strong>
+        } @else {
+          <strong>{{ 'workspace.attachment.dropHint' | translate }}</strong>
+          <small>{{ 'workspace.attachment.allowedHint' | translate }}</small>
+        }
+      </label>
+    }
+
     @if (loadingAttachments()) {
       <p class="activity-empty" role="status">{{ 'common.loading' | translate }}</p>
     } @else if (attachments().length || uploads().length) {
       <div class="attachment-list">
         @for (upload of uploads(); track upload.id) {
-          <article class="attachment-row attachment-upload-row">
-            <span class="attachment-type-icon" aria-hidden="true">↑</span>
+          <article class="attachment-card attachment-upload-row">
+            <span class="attachment-card-badge" aria-hidden="true">↑</span>
             <div class="attachment-copy">
               <strong>{{ upload.name }}</strong>
               <div class="upload-progress-track" role="progressbar" [attr.aria-valuenow]="upload.progress" aria-valuemin="0" aria-valuemax="100">
@@ -29,19 +46,43 @@
           </article>
         }
         @for (attachment of attachments(); track attachment.code) {
-          <article class="attachment-row">
-            <span class="attachment-type-icon" aria-hidden="true">↧</span>
-            <div class="attachment-copy"><strong>{{ attachment.fileName }}</strong><small>{{ formatSize(attachment.fileSize) }}</small></div>
-            <button class="activity-icon-button" type="button" [attr.aria-label]="'workspace.attachment.download' | translate"
-              [title]="'workspace.attachment.download' | translate" (click)="download(attachment)">
-              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5v10m-4-4 4 4 4-4M3 14v3h14v-3"/></svg>
-            </button>
-            @if (canManageAttachments()) {
-              <button class="activity-icon-button activity-delete-button" type="button"
-                [attr.aria-label]="'workspace.taskDetail.deleteAttachment' | translate" (click)="confirmAttachmentDelete(attachment)">
-                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M7 5V3.5h6V5m-8 0 1 12h8l1-12M8 8v6m4-6v6"/></svg>
+          <article class="attachment-card" [style.--file-accent]="accentColor(attachment.fileName)"
+            (click)="openPreview(attachment)">
+            <span class="attachment-card-stripe" aria-hidden="true"></span>
+            <div class="attachment-card-thumb">
+              @if (isImage(attachment.fileName) && thumbnails()[attachment.code]; as thumbUrl) {
+                <img [src]="thumbUrl" [alt]="attachment.fileName" loading="lazy" />
+              } @else {
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+              }
+            </div>
+            <div class="attachment-copy">
+              <strong>{{ attachment.fileName }}</strong>
+              <small>{{ formatSize(attachment.fileSize) }} · {{ fileTypeLabel(attachment.fileName) }}</small>
+            </div>
+            <div class="attachment-actions">
+              <button class="activity-icon-button" type="button" [attr.aria-label]="'common.preview' | translate"
+                [title]="'common.preview' | translate" (click)="openPreview(attachment); $event.stopPropagation()">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M1.75 10S4.75 4.5 10 4.5 18.25 10 18.25 10 15.25 15.5 10 15.5 1.75 10 1.75 10Z"/><circle cx="10" cy="10" r="2.5"/></svg>
               </button>
-            }
+              <button class="activity-icon-button" type="button" [attr.aria-label]="'workspace.attachment.download' | translate"
+                [title]="'workspace.attachment.download' | translate" (click)="download(attachment, $event)">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5v10m-4-4 4 4 4-4M3 14v3h14v-3"/></svg>
+              </button>
+              @if (canManageAttachments()) {
+                <button class="activity-icon-button activity-delete-button" type="button"
+                  [attr.aria-label]="'workspace.taskDetail.deleteAttachment' | translate"
+                  [title]="'workspace.attachment.delete' | translate"
+                  (click)="confirmAttachmentDelete(attachment, $event)">
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M7 5V3.5h6V5m-8 0 1 12h8l1-12M8 8v6m4-6v6"/></svg>
+                </button>
+              }
+            </div>
           </article>
         }
       </div>
@@ -56,13 +97,34 @@
     </header>
 
     @if (canComment()) {
-      <form class="comment-compose" (ngSubmit)="submitComment()">
-        <textarea rows="2" [value]="commentText()" (input)="commentText.set($any($event.target).value)"
-          [placeholder]="'workspace.taskDetail.writeComment' | translate" aria-label="{{ 'workspace.taskDetail.writeComment' | translate }}"></textarea>
-        <button type="submit" class="activity-send-button" [disabled]="!commentText().trim() || sendingComment()">
-          {{ (sendingComment() ? 'common.sending' : 'workspace.taskDetail.send') | translate }}
-        </button>
-      </form>
+      <div class="comment-compose-wrapper">
+        <div class="comment-compose">
+          <textarea #commentTextarea rows="2" [value]="commentText()"
+            (input)="onCommentInput(commentTextarea.value, 'comment', commentTextarea)"
+            (keydown.escape)="closeMentionDropdown()"
+            [placeholder]="'workspace.taskDetail.writeComment' | translate"
+            [attr.aria-label]="'workspace.taskDetail.writeComment' | translate"></textarea>
+          <button type="button" class="activity-send-button" [disabled]="!commentText().trim() || sendingComment()"
+            (click)="submitComment()">
+            {{ (sendingComment() ? 'common.sending' : 'workspace.taskDetail.send') | translate }}
+          </button>
+        </div>
+
+        @if (mentionTarget() === 'comment' && filteredMentions().length) {
+          <div class="mention-dropdown" role="listbox">
+            @for (member of filteredMentions(); track member.workspaceMemberId) {
+              <button type="button" class="mention-option" (mousedown)="selectMention(member, 'comment', commentTextarea)">
+                <app-workspace-avatar [name]="member.fullname" [photo]="member.photo" [initials]="member.initials"
+                  [color]="member.avatarColor" size="sm" />
+                <span class="mention-copy">
+                  <strong>{{ member.fullname }}</strong>
+                  <small>{{ member.email }}</small>
+                </span>
+              </button>
+            }
+          </div>
+        }
+      </div>
     }
 
     @if (loadingComments()) {
@@ -71,31 +133,86 @@
       <div class="comment-list">
         @for (comment of comments(); track comment.code) {
           <article class="comment-row">
-            <app-workspace-avatar [name]="comment.author.fullname" [photo]="comment.author.photo"
+            <app-workspace-avatar [name]="comment.author.fullname" [photo]="authorAvatarPhoto(comment.author)"
               [initials]="comment.author.initials" [color]="comment.author.avatarColor" size="sm" />
             <div class="comment-content">
-              <header><strong>{{ comment.author.fullname }}</strong><time>{{ comment.createdAt | date:'mediumDate' }}</time></header>
-              <p>{{ comment.content }}</p>
+              <header><strong>{{ comment.author.fullname }}</strong><time>{{ comment.createdAt | date:'MMM d, y · h:mm a' }}</time></header>
+              <p class="comment-text">
+                @for (part of parseContentParts(comment.content); track $index) {
+                  @if (part.isMention) {
+                    <span class="comment-mention">{{ part.text }}</span>
+                  } @else {
+                    {{ part.text }}
+                  }
+                }
+              </p>
               <div class="comment-actions">
-                @if (canComment()) { <button type="button" (click)="replyTo.set(replyTo() === comment.id ? null : comment.id)">{{ 'workspace.comment.reply' | translate }}</button> }
-                @if (canDeleteComment(comment)) { <button type="button" class="comment-delete" (click)="commentToDelete.set(comment)">{{ 'workspace.comment.delete' | translate }}</button> }
+                @if (canComment()) {
+                  <button type="button" (click)="replyTo.set(replyTo() === comment.id ? null : comment.id)">
+                    {{ (replyTo() === comment.id ? 'workspace.comment.cancel' : 'workspace.comment.reply') | translate }}
+                  </button>
+                }
+                @if (canDeleteComment(comment)) {
+                  <button type="button" class="comment-delete" (click)="commentToDelete.set(comment)">
+                    {{ 'workspace.comment.delete' | translate }}
+                  </button>
+                }
               </div>
               @if (replyTo() === comment.id) {
-                <form class="comment-reply-form" (ngSubmit)="submitComment(comment.id)">
-                  <textarea rows="2" [value]="replyText()" (input)="replyText.set($any($event.target).value)"
-                    [placeholder]="'workspace.comment.writeReply' | translate"></textarea>
-                  <div><button type="button" (click)="cancelReply()">{{ 'common.cancel' | translate }}</button>
-                    <button type="submit" [disabled]="!replyText().trim() || sendingComment()">{{ 'workspace.comment.send' | translate }}</button></div>
-                </form>
+                <div class="comment-compose-wrapper">
+                  <div class="comment-reply-form">
+                    <textarea #replyTextarea rows="2" [value]="replyText()"
+                      (input)="onCommentInput(replyTextarea.value, 'reply', replyTextarea)"
+                      (keydown.escape)="closeMentionDropdown()"
+                      [placeholder]="'workspace.comment.writeReply' | translate"></textarea>
+                    <div>
+                      <button type="button" (click)="cancelReply()">{{ 'common.cancel' | translate }}</button>
+                      <button type="button" [disabled]="!replyText().trim() || sendingComment()"
+                        (click)="submitComment(comment.id)">
+                        {{ 'workspace.comment.send' | translate }}
+                      </button>
+                    </div>
+                  </div>
+
+                  @if (mentionTarget() === 'reply' && filteredMentions().length) {
+                    <div class="mention-dropdown" role="listbox">
+                      @for (member of filteredMentions(); track member.workspaceMemberId) {
+                        <button type="button" class="mention-option" (mousedown)="selectMention(member, 'reply', replyTextarea)">
+                          <app-workspace-avatar [name]="member.fullname" [photo]="member.photo" [initials]="member.initials"
+                            [color]="member.avatarColor" size="sm" />
+                          <span class="mention-copy">
+                            <strong>{{ member.fullname }}</strong>
+                            <small>{{ member.email }}</small>
+                          </span>
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
               }
               @if (comment.replies?.length) {
                 <div class="comment-replies">
                   @for (reply of comment.replies; track reply.code) {
                     <div class="comment-reply-row">
-                      <app-workspace-avatar [name]="reply.author.fullname" [photo]="reply.author.photo"
+                      <app-workspace-avatar [name]="reply.author.fullname" [photo]="authorAvatarPhoto(reply.author)"
                         [initials]="reply.author.initials" [color]="reply.author.avatarColor" size="sm" />
-                      <div class="comment-content"><header><strong>{{ reply.author.fullname }}</strong><time>{{ reply.createdAt | date:'mediumDate' }}</time></header><p>{{ reply.content }}</p></div>
-                      @if (canDeleteComment(reply)) { <button class="comment-delete" type="button" (click)="commentToDelete.set(reply)">{{ 'workspace.comment.delete' | translate }}</button> }
+                      <div class="comment-content">
+                        <header><strong>{{ reply.author.fullname }}</strong><time>{{ reply.createdAt | date:'MMM d, y · h:mm a' }}</time></header>
+                        <p class="comment-text">
+                          @for (part of parseContentParts(reply.content); track $index) {
+                            @if (part.isMention) {
+                              <span class="comment-mention">{{ part.text }}</span>
+                            } @else {
+                              {{ part.text }}
+                            }
+                          }
+                        </p>
+                      </div>
+                      @if (canDeleteComment(reply)) {
+                        <button class="comment-delete" type="button" (click)="commentToDelete.set(reply)">
+                          {{ 'workspace.comment.delete' | translate }}
+                        </button>
+                      }
                     </div>
                   }
                 </div>
@@ -111,6 +228,53 @@
 
   @if (error()) { <p class="activity-error" role="alert">{{ 'workspace.taskDetail.activityError' | translate }}</p> }
 </section>
+
+@if (previewAttachment(); as att) {
+  <div class="attachment-preview-backdrop" role="dialog" aria-modal="true" (click)="closePreview()">
+    <div class="attachment-preview-dialog" (click)="$event.stopPropagation()">
+      <header class="attachment-preview-header">
+        <span class="attachment-preview-badge" [style.--file-accent]="accentColor(att.fileName)">
+          {{ fileTypeLabel(att.fileName) }}
+        </span>
+        <div class="attachment-preview-meta">
+          <strong>{{ att.fileName }}</strong>
+          <small>{{ formatSize(att.fileSize) }} · {{ att.createdAt | date:'mediumDate' }}</small>
+        </div>
+        <div class="attachment-preview-actions">
+          <button type="button" class="activity-icon-button" [title]="'workspace.attachment.download' | translate"
+            (click)="download(att)">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5v10m-4-4 4 4 4-4M3 14v3h14v-3"/></svg>
+          </button>
+          <button type="button" class="activity-icon-button" [title]="'common.close' | translate"
+            (click)="closePreview()">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="attachment-preview-body">
+        @if (previewLoading()) {
+          <p class="activity-empty" role="status">{{ 'common.loading' | translate }}</p>
+        } @else if (isImage(att.fileName) && previewImageUrl(); as imageUrl) {
+          <img [src]="imageUrl" [alt]="att.fileName" class="attachment-preview-image" />
+        } @else {
+          <div class="attachment-preview-fallback">
+            <span class="attachment-preview-large-icon" [style.--file-accent]="accentColor(att.fileName)">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </span>
+            <p>{{ 'workspace.attachment.previewUnavailable' | translate }}</p>
+            <button type="button" class="activity-send-button" (click)="download(att)">
+              {{ 'workspace.attachment.download' | translate }}
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
 
 <app-workspace-confirm-dialog [open]="!!attachmentToDelete()" titleKey="workspace.taskDetail.deleteAttachment"
   descriptionKey="workspace.taskDetail.deleteAttachmentConfirm" confirmKey="common.delete" [pending]="deleting()"

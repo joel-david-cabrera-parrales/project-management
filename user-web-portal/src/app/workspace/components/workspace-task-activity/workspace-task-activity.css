@@ -1,47 +1,96 @@
 .task-activity { display: grid; gap: 1.2rem; margin-top: 0.35rem; border-top: 1px solid var(--border-subtle); padding-top: 1.1rem; }
-.activity-section { display: grid; gap: 0.6rem; }
+.activity-section { display: grid; gap: 0.65rem; }
 .activity-section-heading, .activity-section-heading > div { display: flex; align-items: center; }
 .activity-section-heading { justify-content: space-between; gap: 0.7rem; }
 .activity-section-heading > div { gap: 0.5rem; }
 .activity-section-heading h3 { color: var(--text-secondary); font-size: 0.72rem; font-weight: 750; }
-.activity-section-heading > div > span { display: inline-grid; min-width: 1.25rem; height: 1.25rem; place-items: center; border: 1px solid var(--border-subtle); border-radius: 99px; color: var(--text-tertiary); font-size: 0.6rem; }
-.activity-add-button { display: inline-flex; min-height: 1.85rem; align-items: center; gap: 0.3rem; border: 1px dashed var(--border-default); border-radius: 0.45rem; padding: 0.3rem 0.5rem; color: var(--text-secondary); cursor: pointer; font-size: 0.65rem; font-weight: 700; }
+.activity-section-heading span { display: inline-grid; min-width: 1.25rem; height: 1.25rem; place-items: center; border: 1px solid var(--border-subtle); border-radius: 99px; color: var(--text-tertiary); font-size: 0.6rem; }
+.activity-add-button { display: inline-flex; min-height: 1.85rem; align-items: center; gap: 0.3rem; border: 1px dashed var(--border-default); border-radius: 0.45rem; padding: 0.3rem 0.5rem; color: var(--text-secondary); cursor: pointer; font-size: 0.65rem; font-weight: 700; transition: border-color 150ms, color 150ms; }
 .activity-add-button:hover { border-color: var(--accent); color: var(--accent); }
 .activity-add-button input { display: none; }
 .activity-add-button svg { width: 0.85rem; height: 0.85rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.7; }
 .activity-busy { opacity: 0.55; pointer-events: none; }
+
+/* Drag & Drop zone */
+.attachment-dropzone { display: grid; justify-items: center; gap: 0.25rem; border: 1.5px dashed var(--border-default); border-radius: 0.65rem; background: var(--bg-base); padding: 1.1rem 0.85rem; text-align: center; cursor: pointer; transition: border-color 150ms, background-color 150ms; }
+.attachment-dropzone.compact { padding: 0.65rem 0.85rem; }
+.attachment-dropzone:hover, .attachment-dropzone.drag-over { border-color: var(--accent); background: var(--accent-alpha); }
+.attachment-dropzone input { display: none; }
+.dropzone-icon { display: grid; width: 2rem; height: 2rem; place-items: center; border: 1px solid var(--border-subtle); border-radius: 0.5rem; background: var(--bg-raised); color: var(--text-tertiary); margin-bottom: 0.15rem; }
+.attachment-dropzone.drag-over .dropzone-icon { border-color: var(--accent); color: var(--accent); }
+.dropzone-icon svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
+.attachment-dropzone strong { color: var(--text-secondary); font-size: 0.68rem; font-weight: 700; }
+.attachment-dropzone .dropzone-active-text { color: var(--accent); }
+.attachment-dropzone small { color: var(--text-tertiary); font-size: 0.58rem; }
+
+/* Attachment cards */
 .attachment-list, .comment-list { display: grid; gap: 0.45rem; }
-.attachment-row { display: flex; min-width: 0; align-items: center; gap: 0.55rem; border: 1px solid var(--border-subtle); border-radius: 0.55rem; background: var(--bg-raised); padding: 0.5rem; }
-.attachment-type-icon { display: grid; width: 1.8rem; height: 1.8rem; flex: 0 0 auto; place-items: center; border-radius: 0.45rem; background: var(--accent-alpha); color: var(--accent); }
-.attachment-copy { display: grid; min-width: 0; flex: 1; gap: 0.1rem; }
+.attachment-card { position: relative; display: flex; min-width: 0; align-items: center; gap: 0.65rem; overflow: hidden; border: 1px solid var(--border-subtle); border-radius: 0.6rem; background: var(--bg-raised); padding: 0.5rem 0.55rem 0.5rem 0.75rem; cursor: pointer; transition: border-color 150ms, background-color 150ms; }
+.attachment-card:hover { border-color: var(--border-default); background: var(--bg-hover); }
+.attachment-card-stripe { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--file-accent, var(--accent)); }
+.attachment-card-thumb, .attachment-card-badge { display: grid; width: 2.15rem; height: 2.15rem; flex: 0 0 auto; place-items: center; overflow: hidden; border-radius: 0.45rem; background: color-mix(in srgb, var(--file-accent, var(--accent)) 12%, transparent); color: var(--file-accent, var(--accent)); font-size: 0.72rem; font-weight: 800; }
+.attachment-card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.attachment-card-thumb svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
+.attachment-copy { display: grid; min-width: 0; flex: 1; gap: 0.12rem; }
 .attachment-copy strong, .attachment-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.attachment-copy strong { color: var(--text-primary); font-size: 0.67rem; font-weight: 700; }
-.attachment-copy small { color: var(--text-muted); font-size: 0.6rem; }
+.attachment-copy strong { color: var(--text-primary); font-size: 0.68rem; font-weight: 700; }
+.attachment-copy small { color: var(--text-muted); font-size: 0.59rem; }
+.attachment-actions { display: flex; align-items: center; gap: 0.2rem; flex: 0 0 auto; }
 .upload-progress-track { height: 0.24rem; overflow: hidden; border-radius: 99px; background: var(--bg-base); }
 .upload-progress-track span { display: block; height: 100%; border-radius: inherit; background: var(--accent); transition: width 120ms linear; }
 .upload-progress-value { width: 2.7rem; flex: 0 0 auto; color: var(--text-tertiary); font-size: 0.6rem; font-variant-numeric: tabular-nums; text-align: right; }
-.activity-icon-button { display: grid; width: 1.7rem; height: 1.7rem; flex: 0 0 auto; place-items: center; border: 0; border-radius: 0.4rem; background: transparent; color: var(--text-tertiary); cursor: pointer; }
+.activity-icon-button { display: grid; width: 1.75rem; height: 1.75rem; flex: 0 0 auto; place-items: center; border: 0; border-radius: 0.42rem; background: transparent; color: var(--text-tertiary); cursor: pointer; }
 .activity-icon-button:hover { background: var(--bg-base); color: var(--accent); }
 .activity-icon-button svg { width: 0.9rem; height: 0.9rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.5; }
-.activity-icon-button.activity-delete-button:hover { background: var(--danger-alpha); color: var(--danger); }
+.activity-delete-button:hover { background: var(--danger-alpha); color: var(--danger); }
 .activity-empty { border: 1px dashed var(--border-subtle); border-radius: 0.5rem; padding: 0.75rem; color: var(--text-muted); font-size: 0.66rem; text-align: center; }
+
+/* Comments & Mentions */
+.comment-compose-wrapper { position: relative; }
 .comment-compose { display: grid; justify-items: end; gap: 0.4rem; }
 .comment-compose textarea, .comment-reply-form textarea { width: 100%; resize: vertical; border: 1px solid var(--border-default); border-radius: 0.55rem; background: var(--bg-base); padding: 0.55rem 0.65rem; color: var(--text-primary); font: inherit; font-size: 0.68rem; }
 .comment-compose textarea:focus, .comment-reply-form textarea:focus { border-color: var(--accent); outline: 2px solid var(--accent-alpha); }
-.activity-send-button, .comment-reply-form button { border: 0; border-radius: 0.42rem; background: var(--accent); padding: 0.4rem 0.6rem; color: white; cursor: pointer; font: inherit; font-size: 0.63rem; font-weight: 700; }
+.activity-send-button, .comment-reply-form button { border: 0; border-radius: 0.42rem; background: var(--accent); padding: 0.4rem 0.65rem; color: white; cursor: pointer; font: inherit; font-size: 0.63rem; font-weight: 700; }
 .activity-send-button:disabled, .comment-reply-form button:disabled { cursor: not-allowed; opacity: 0.5; }
+
+.mention-dropdown { position: absolute; left: 0; right: 0; top: calc(100% + 0.25rem); z-index: 95; max-height: 11rem; overflow-y: auto; border: 1px solid var(--border-default); border-radius: 0.6rem; background: var(--bg-raised); padding: 0.3rem; box-shadow: 0 10px 26px rgb(15 23 42 / 18%); display: grid; gap: 0.15rem; }
+.mention-option { display: flex; width: 100%; align-items: center; gap: 0.5rem; border: 0; border-radius: 0.45rem; background: transparent; padding: 0.38rem 0.5rem; text-align: left; cursor: pointer; font: inherit; }
+.mention-option:hover { background: var(--bg-hover); }
+.mention-copy { display: grid; min-width: 0; gap: 0.05rem; }
+.mention-copy strong, .mention-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mention-copy strong { color: var(--text-primary); font-size: 0.66rem; font-weight: 700; }
+.mention-copy small { color: var(--text-tertiary); font-size: 0.57rem; }
+
 .comment-row, .comment-reply-row { display: flex; min-width: 0; align-items: flex-start; gap: 0.5rem; }
-.comment-row { border-top: 1px solid var(--border-subtle); padding-top: 0.55rem; }
+.comment-row { border-top: 1px solid var(--border-subtle); padding-top: 0.65rem; }
 .comment-content { min-width: 0; flex: 1; }
 .comment-content header { display: flex; align-items: center; gap: 0.4rem; }
-.comment-content header strong { overflow: hidden; color: var(--text-primary); font-size: 0.65rem; text-overflow: ellipsis; white-space: nowrap; }
+.comment-content strong { overflow: hidden; color: var(--text-primary); font-size: 0.65rem; text-overflow: ellipsis; white-space: nowrap; }
 .comment-content time { flex: 0 0 auto; color: var(--text-muted); font-size: 0.57rem; }
-.comment-content > p { margin-top: 0.2rem; color: var(--text-secondary); font-size: 0.67rem; line-height: 1.45; overflow-wrap: anywhere; }
+.comment-text { margin-top: 0.22rem; color: var(--text-secondary); font-size: 0.68rem; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+.comment-mention { display: inline-block; border-radius: 0.3rem; background: var(--accent-alpha); padding: 0.02rem 0.3rem; color: var(--accent); font-weight: 700; }
 .comment-actions { display: flex; gap: 0.6rem; margin-top: 0.25rem; }
 .comment-actions button, .comment-delete { border: 0; background: transparent; color: var(--accent); cursor: pointer; font: inherit; font-size: 0.6rem; font-weight: 700; }
 .comment-delete { color: var(--danger); }
-.comment-replies { display: grid; gap: 0.5rem; margin-top: 0.55rem; border-left: 1px solid var(--border-default); padding-left: 0.55rem; }
+.comment-replies { display: grid; gap: 0.55rem; margin-top: 0.55rem; border-left: 2px solid var(--border-subtle); padding-left: 0.65rem; }
 .comment-reply-form { display: grid; justify-items: end; gap: 0.35rem; margin-top: 0.45rem; }
-.comment-reply-form > div { display: flex; gap: 0.45rem; }
-.comment-reply-form > div button:first-child { background: transparent; color: var(--text-secondary); }
+.comment-reply-form div { display: flex; gap: 0.45rem; }
+.comment-reply-form div button:first-child { background: transparent; color: var(--text-secondary); }
 .activity-error { color: var(--danger); font-size: 0.66rem; }
+
+/* Attachment preview modal */
+.attachment-preview-backdrop { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; background: rgb(15 23 42 / 64%); backdrop-filter: blur(3px); padding: 1.25rem; }
+.attachment-preview-dialog { display: flex; width: min(100%, 42rem); max-height: 85vh; flex-direction: column; overflow: hidden; border: 1px solid var(--border-default); border-radius: 0.85rem; background: var(--bg-raised); box-shadow: 0 24px 48px rgb(15 23 42 / 32%); }
+.attachment-preview-header { display: flex; align-items: center; gap: 0.65rem; border-bottom: 1px solid var(--border-subtle); padding: 0.85rem 1.1rem; }
+.attachment-preview-badge { display: inline-grid; min-width: 2.2rem; height: 2rem; place-items: center; border-radius: 0.45rem; background: color-mix(in srgb, var(--file-accent, var(--accent)) 14%, transparent); color: var(--file-accent, var(--accent)); font-size: 0.62rem; font-weight: 800; padding: 0 0.4rem; }
+.attachment-preview-meta { display: grid; min-width: 0; flex: 1; gap: 0.1rem; }
+.attachment-preview-meta strong, .attachment-preview-meta small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.attachment-preview-meta strong { color: var(--text-primary); font-size: 0.76rem; font-weight: 750; }
+.attachment-preview-meta small { color: var(--text-tertiary); font-size: 0.62rem; }
+.attachment-preview-actions { display: flex; align-items: center; gap: 0.25rem; }
+.attachment-preview-body { display: grid; min-height: 16rem; flex: 1; place-items: center; overflow: auto; background: var(--bg-base); padding: 1.25rem; }
+.attachment-preview-image { max-width: 100%; max-height: 62vh; border-radius: 0.55rem; object-fit: contain; }
+.attachment-preview-fallback { display: grid; justify-items: center; gap: 0.75rem; text-align: center; padding: 1.5rem; }
+.attachment-preview-large-icon { display: grid; width: 4rem; height: 4rem; place-items: center; border-radius: 0.85rem; background: color-mix(in srgb, var(--file-accent, var(--accent)) 12%, transparent); color: var(--file-accent, var(--accent)); }
+.attachment-preview-large-icon svg { width: 2rem; height: 2rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.5; }
+.attachment-preview-fallback p { color: var(--text-secondary); font-size: 0.72rem; }

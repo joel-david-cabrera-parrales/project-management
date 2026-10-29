@@ -369,7 +369,8 @@
       "labelsLoadError": "No se pudieron cargar las etiquetas.",
       "noLabels": "Este workspace todavía no tiene etiquetas.",
       "noMembers": "Este workspace todavía no tiene miembros.",
-      "ownerRequiredToRemove": "Solo el propietario puede quitar etiquetas o encargados existentes."
+      "ownerRequiredToRemove": "Solo el propietario puede quitar etiquetas o encargados existentes.",
+      "queuedHint": "Los archivos en cola se subirán automáticamente al crear la tarea."
     },
     "richText": {
       "placeholder": "Escribe una descripción…",
@@ -456,7 +457,10 @@
       "uploading": "Subiendo archivos...",
       "download": "Descargar",
       "delete": "Eliminar",
-      "deleteConfirm": "¿Eliminar archivo adjunto?"
+      "deleteConfirm": "¿Eliminar archivo adjunto?",
+      "dropHint": "Arrastra archivos aquí o haz clic para seleccionarlos",
+      "allowedHint": "PDF, PNG, JPG, GIF, WEBP, DOC, XLS, PPT — máx. 10 MB",
+      "previewUnavailable": "Vista previa no disponible para este tipo de archivo."
     },
     "assignee": {
       "title": "Asignar a",

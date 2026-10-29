@@ -6,6 +6,7 @@ import { TaskList } from 'src/task-list/entities/task-list.entity';
 import { ITask } from 'src/workspace/interfaces/workspace-response.interface';
 import { Repository } from 'typeorm';
 import { Task } from './entities/task.entity';
+import { toPhotoUrl } from '../common/helpers/photo-url.helper';
 import { AssignMemberUseCase } from './classes/assign-member.class';
 import { CreateTaskLabelUseCase } from './classes/create-task-label.class';
 import { DeleteTaskLabelUseCase } from './classes/delete-task-label.class';
@@ -92,7 +93,7 @@ export class TaskService {
         workspaceMemberId: assignment.workspaceMember.id,
         fullname,
         email,
-        photo: profile?.photo ?? null,
+        photo: toPhotoUrl(profile?.photo, profile?.code),
         initials: `${firstName.charAt(0)}${firstSurname.charAt(0)}`.toUpperCase(),
         avatarColor: ['#ef4444', '#6366f1', '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6'][
           fullname.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) % 8
