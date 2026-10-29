@@ -1,12 +1,13 @@
 import { Component, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { TooltipDirective } from '../../../shared/directives/tooltip.directive';
 
 export type WorkspaceSidebarIcon = 'board' | 'members' | 'labels' | 'settings';
 
 @Component({
   selector: 'app-workspace-sidebar-link',
-  imports: [RouterLink, RouterLinkActive, TranslatePipe],
+  imports: [RouterLink, RouterLinkActive, TranslatePipe, TooltipDirective],
   templateUrl: './workspace-sidebar-link.html',
   styleUrl: './workspace-sidebar-link.css',
 })

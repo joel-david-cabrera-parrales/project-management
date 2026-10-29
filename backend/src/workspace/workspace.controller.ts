@@ -14,6 +14,7 @@ import { WorkspaceService } from './workspace.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateWorkspaceMemberRoleDto } from './dto/update-workspace-member-role.dto';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { WorkspaceRoles } from 'src/auth/decorators/workspace-roles.decorator';
@@ -118,6 +119,21 @@ export class WorkspaceController {
   @ApiResponse({ status: 401, description: 'No autorizado' })
   addMemberToWorkspace(@Body() body: AddMemberToWorkspaceDto, @GetUser() user: AuthenticatedUserDto) {
     return this.workspaceService.addMemberToWorkspace(body, user);
+  }
+
+  // Ruta para marcar como favorito un tablero
+  @Post(':workspaceCode/boards')
+  @UseGuards(WorkspaceRoleGuard)
+  @WorkspaceRoles('owner', 'member')
+  @ApiOperation({ summary: 'Crear un tablero en un workspace' })
+  @ApiResponse({ status: 201, description: 'Tablero creado exitosamente' })
+  @ApiResponse({ status: 401, description: 'No autorizado' })
+  createBoard(
+    @Param('workspaceCode', ParseUUIDPipe) workspaceCode: string,
+    @Body() dto: CreateBoardDto,
+    @GetUser() user: AuthenticatedUserDto,
+  ) {
+    return this.workspaceService.createBoard(workspaceCode, dto.title, user);
   }
 
   // Ruta para marcar como favorito un tablero

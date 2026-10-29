@@ -119,6 +119,7 @@
 .invite-avatar + .invite-avatar { margin-left: -0.5rem; }
 
 .invite-avatar-initials { color: #ffffff; font-size: 0.7rem; font-weight: 700; }
+.invite-avatar:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .invite-avatar-extra {
   border: 2px solid var(--surface-raised, #ffffff);

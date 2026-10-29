@@ -1,6 +1,6 @@
 <a class="sidebar-link" [class.sidebar-link-nested]="nested()" [class.sidebar-link-collapsed]="collapsed()"
   [routerLink]="route()" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: exact() }"
-  ariaCurrentWhenActive="page" [attr.title]="collapsed() ? (label() | translate) : null">
+  ariaCurrentWhenActive="page" [appTooltip]="collapsed() ? (label() | translate) : ''">
   <svg class="sidebar-link-icon" viewBox="0 0 20 20" aria-hidden="true">
     @switch (icon()) {
       @case ('board') { <rect x="2.5" y="3" width="15" height="14" rx="2"/><path d="M7.5 3v14M12.5 3v6h5"/> }

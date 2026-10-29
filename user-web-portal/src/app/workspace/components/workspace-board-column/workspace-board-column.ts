@@ -3,10 +3,11 @@ import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { WorkspaceDetailTaskList, WorkspaceTask, WorkspaceTaskDropEvent } from '../../models/workspace-detail.models';
 import { WorkspaceTaskCard } from '../workspace-task-card/workspace-task-card';
+import { TooltipDirective } from '../../../shared/directives/tooltip.directive';
 
 @Component({
   selector: 'app-workspace-board-column',
-  imports: [DragDropModule, TranslatePipe, WorkspaceTaskCard],
+  imports: [DragDropModule, TranslatePipe, WorkspaceTaskCard, TooltipDirective],
   templateUrl: './workspace-board-column.html',
   styleUrl: './workspace-board-column.css',
 })

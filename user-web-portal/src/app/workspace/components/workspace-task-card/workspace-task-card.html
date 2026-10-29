@@ -15,13 +15,13 @@
     <div class="task-card-actions">
       @if (canEdit()) {
         <button type="button" class="task-icon-action" [attr.aria-label]="'workspace.task.editNamed' | translate: { name: task().title }"
-          [title]="'common.edit' | translate" (click)="edit.emit(task())">
+          [appTooltip]="'common.edit' | translate" (click)="edit.emit(task())">
           <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.8 3.2 16.8 7.2M3 17l3.8-.8L16.4 6.6a2.1 2.1 0 0 0-3-3L3.8 13.2 3 17Z"/></svg>
         </button>
       }
       @if (canDelete()) {
         <button type="button" class="task-icon-action task-delete-action" [attr.aria-label]="'workspace.task.deleteNamed' | translate: { name: task().title }"
-          [title]="'common.delete' | translate" (click)="delete.emit(task())">
+          [appTooltip]="'common.delete' | translate" (click)="delete.emit(task())">
           <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M7 5V3.5h6V5m-8 0 1 12h8l1-12M8 8v6m4-6v6"/></svg>
         </button>
       }

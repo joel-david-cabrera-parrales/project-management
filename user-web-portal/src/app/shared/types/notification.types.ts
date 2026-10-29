@@ -19,7 +19,8 @@ export type InboxNotificationType =
   | 'comment_mention'
   | 'new_member'
   | 'member_removed'
-  | 'workspace_invitation';
+  | 'workspace_invitation'
+  | 'board_created';
 
 export interface NotificationActor {
   id: number;
@@ -32,6 +33,7 @@ export interface InboxNotificationData {
   taskId?: number;
   taskCode?: string;
   boardCode?: string;
+  boardId?: number;
   commentId?: number;
   commentCode?: string;
   workspaceId?: number;

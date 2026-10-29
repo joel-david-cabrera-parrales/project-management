@@ -40,6 +40,7 @@
                     @case ('new_member') { + }
                     @case ('member_removed') { − }
                     @case ('workspace_invitation') { ✉ }
+                    @case ('board_created') { ▦ }
                   }
                 </span>
               }
@@ -55,7 +56,7 @@
             @if (!notification.read) { <span class="notification-unread-dot" aria-label="Unread"></span> }
           </button>
           <button type="button" class="notification-delete" [attr.aria-label]="'notificationCenter.delete' | translate"
-            [title]="'notificationCenter.delete' | translate" (click)="remove($event, notification)">
+            [appTooltip]="'notificationCenter.delete' | translate" (click)="remove($event, notification)">
             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6h12M8 6V4h4v2m-6 0 .7 10h6.6L14 6M8.5 9v4m3-4v4" /></svg>
           </button>
         </article>

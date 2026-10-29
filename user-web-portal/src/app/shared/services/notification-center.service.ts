@@ -165,6 +165,10 @@ export class NotificationCenterService {
       void this.router.navigate(commands, { queryParams: { task: data.taskCode, comment: data.commentCode ?? null } });
       return;
     }
+    if (data.boardCode) {
+      void this.router.navigate(['/workspace', data.workspaceCode, 'board', data.boardCode]);
+      return;
+    }
     void this.router.navigate(['/workspace', data.workspaceCode]);
   }
 

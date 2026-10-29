@@ -5,12 +5,14 @@ export enum NotificationType {
   NEW_MEMBER = 'new_member',
   MEMBER_REMOVED = 'member_removed',
   WORKSPACE_INVITATION = 'workspace_invitation',
+  BOARD_CREATED = 'board_created',
 }
 
 export interface NotificationData {
   taskId?: number;
   taskCode?: string;
   boardCode?: string;
+  boardId?: number;
   commentId?: number;
   commentCode?: string;
   workspaceId?: number;

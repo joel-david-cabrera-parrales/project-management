@@ -49,9 +49,9 @@
             <div class="invite-avatars">
               @for (member of visibleMembers; track member.fullname) {
                 @if (member.photo) {
-                  <img class="invite-avatar" [src]="member.photo" [alt]="member.fullname" [title]="member.fullname" />
+                  <img class="invite-avatar" [src]="member.photo" [alt]="member.fullname" tabindex="0" [appTooltip]="member.fullname" />
                 } @else {
-                  <span class="invite-avatar invite-avatar-initials" [style.background]="member.avatarColor" [title]="member.fullname">
+                  <span class="invite-avatar invite-avatar-initials" [style.background]="member.avatarColor" tabindex="0" [appTooltip]="member.fullname">
                     {{ member.initials }}
                   </span>
                 }

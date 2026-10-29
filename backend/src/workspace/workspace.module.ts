@@ -36,11 +36,14 @@ import { TaskListModule } from 'src/task-list/task-list.module';
 import { TaskModule } from 'src/task/task.module';
 import { CommonModule } from 'src/common/common.module';
 import { NotificationModule } from 'src/notification/notification.module';
+import { CreateBoardUseCase } from './classes/create-board.class';
+import { CreateBoardUseCaseImp } from './use-cases/create-board.use-case';
 
 @Module({
   controllers: [WorkspaceController],
   providers: [
     WorkspaceService,
+    { provide: CreateBoardUseCase, useClass: CreateBoardUseCaseImp },
     {
       provide: AddMemberToWorkspaceUseCase,
       useClass: AddMemberToWorkspaceUseCaseImp,

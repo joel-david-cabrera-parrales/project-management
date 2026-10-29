@@ -3,10 +3,11 @@ import { Component, computed, input, output } from '@angular/core';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { WorkspaceTask } from '../../models/workspace-detail.models';
 import { WorkspaceAvatar } from '../workspace-avatar/workspace-avatar';
+import { TooltipDirective } from '../../../shared/directives/tooltip.directive';
 
 @Component({
   selector: 'app-workspace-task-card',
-  imports: [DatePipe, TranslatePipe, WorkspaceAvatar],
+  imports: [DatePipe, TranslatePipe, WorkspaceAvatar, TooltipDirective],
   templateUrl: './workspace-task-card.html',
   styleUrl: './workspace-task-card.css',
 })

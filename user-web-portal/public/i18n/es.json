@@ -187,7 +187,8 @@
       "comment_mention": "Mención en comentario",
       "new_member": "Nuevo miembro",
       "member_removed": "Miembro eliminado",
-      "workspace_invitation": "Invitación a workspace"
+      "workspace_invitation": "Invitación a workspace",
+      "board_created": "Nuevo tablero"
     }
   },
   "auth": {
@@ -359,6 +360,9 @@
       "expandSidebar": "Expandir navegación",
       "sidebarSearch": "Filtrar navegación...",
       "toggleBoards": "Mostrar u ocultar tableros",
+      "createBoard": "Crear tablero",
+      "boardNamePlaceholder": "Nombre del tablero",
+      "createBoardError": "No se pudo crear el tablero. Inténtalo de nuevo.",
       "yourRole": "Tu rol",
       "boardNumber": "Tablero {{number}}",
       "boardCode": "Código del tablero: {{code}}",

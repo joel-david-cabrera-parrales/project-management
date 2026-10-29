@@ -10,12 +10,13 @@ import { ThemeService } from '../../../shared/services/theme.service';
 import { WorkspaceListStore } from '../../state/workspace-list.store';
 import { NotificationCenterService } from '../../../shared/services/notification-center.service';
 import { NotificationCenterPanel } from '../../../shared/components/notification-center-panel/notification-center-panel';
+import { TooltipDirective } from '../../../shared/directives/tooltip.directive';
 
 type TopbarPopover = 'navigation' | 'apps' | 'search' | 'help' | 'notifications' | 'profile' | null;
 
 @Component({
   selector: 'app-workspace-topbar',
-  imports: [RouterLink, TranslatePipe, UpperCasePipe, NotificationCenterPanel],
+  imports: [RouterLink, TranslatePipe, UpperCasePipe, NotificationCenterPanel, TooltipDirective],
   templateUrl: './workspace-topbar.html',
   styleUrl: './workspace-topbar.css',
 })

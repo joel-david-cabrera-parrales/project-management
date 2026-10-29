@@ -187,7 +187,8 @@
       "comment_mention": "Comment mention",
       "new_member": "New member",
       "member_removed": "Member removed",
-      "workspace_invitation": "Workspace invitation"
+      "workspace_invitation": "Workspace invitation",
+      "board_created": "New board"
     }
   },
   "auth": {
@@ -359,6 +360,9 @@
       "expandSidebar": "Expand navigation",
       "sidebarSearch": "Filter navigation...",
       "toggleBoards": "Show or hide boards",
+      "createBoard": "Create board",
+      "boardNamePlaceholder": "Board name",
+      "createBoardError": "Could not create the board. Please try again.",
       "yourRole": "Your role",
       "boardNumber": "Board {{number}}",
       "boardCode": "Board code: {{code}}",

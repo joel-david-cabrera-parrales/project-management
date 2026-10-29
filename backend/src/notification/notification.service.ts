@@ -23,13 +23,14 @@ export class NotificationService {
     title: string;
     message: string;
     data?: NotificationData;
-  }): Promise<Notification | null> {
+  }, options: { force?: boolean } = {}): Promise<Notification | null> {
     const user = await this.userRepository.findOne({
       where: { id: input.userId },
       relations: { profile: true },
     });
     const settings = user?.profile.settings as any;
-    if (!user || settings?.notifications?.inApp?.[this.preferenceKey(input.type)] === false) return null;
+    const preferenceKey = this.preferenceKey(input.type);
+    if (!user || (!options.force && preferenceKey && settings?.notifications?.inApp?.[preferenceKey] === false)) return null;
     const notification = await this.repository.save(this.repository.create({ ...input, read: false }));
     const unreadCount = await this.countUnread(input.userId);
     this.notificationGateway.emitNewNotification(input.userId, notification, unreadCount);
@@ -86,15 +87,15 @@ export class NotificationService {
     this.notificationGateway.emitDeleted(userId, id, unreadCount);
   }
 
-  private preferenceKey(type: NotificationType): string {
-    const prefKey: Record<NotificationType, string> = {
-      [NotificationType.TASK_ASSIGNED]: 'taskAssigned',
-      [NotificationType.TASK_COMPLETED]: 'taskCompleted',
-      [NotificationType.COMMENT_MENTION]: 'commentMentioned',
-      [NotificationType.NEW_MEMBER]: 'newMember',
-      [NotificationType.MEMBER_REMOVED]: 'memberRemoved',
-      [NotificationType.WORKSPACE_INVITATION]: 'workspaceInvitation',
-    };
-    return prefKey[type];
+  private preferenceKey(type: NotificationType): string | null {
+    switch (type) {
+      case NotificationType.TASK_ASSIGNED: return 'taskAssigned';
+      case NotificationType.TASK_COMPLETED: return 'taskCompleted';
+      case NotificationType.COMMENT_MENTION: return 'commentMentioned';
+      case NotificationType.NEW_MEMBER: return 'newMember';
+      case NotificationType.MEMBER_REMOVED: return 'memberRemoved';
+      case NotificationType.WORKSPACE_INVITATION: return 'workspaceInvitation';
+      case NotificationType.BOARD_CREATED: return null;
+    }
   }
 }

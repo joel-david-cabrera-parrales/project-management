@@ -36,13 +36,35 @@
           <app-workspace-sidebar-link [label]="'workspace.sidebar.board'" [route]="'/workspace/' + workspace().code + '/board'"
             icon="board" [collapsed]="collapsed() && !mobileOpen()" [exact]="false" />
           @if (!collapsed() || mobileOpen()) {
+            @if (canCreateBoard()) {
+              <button class="sidebar-add-board" type="button" [disabled]="creatingBoard()"
+                [attr.aria-label]="'workspace.detail.createBoard' | translate"
+                [appTooltip]="'workspace.detail.createBoard' | translate" (click)="startCreateBoard()">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v14M3 10h14"/></svg>
+              </button>
+            }
             <button class="sidebar-expand-button" type="button" [attr.aria-expanded]="boardsExpanded()"
               [attr.aria-label]="'workspace.detail.toggleBoards' | translate"
+              [appTooltip]="'workspace.detail.toggleBoards' | translate"
               (click)="boardsExpanded.update((expanded) => !expanded)">
               <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 7.5 5 5 5-5"/></svg>
             </button>
           }
         </div>
+        @if ((!collapsed() || mobileOpen()) && createBoardFormOpen()) {
+          <form class="sidebar-board-create" (submit)="submitCreateBoard($event)">
+            <input type="text" maxlength="150" autofocus [value]="newBoardTitle()"
+              [placeholder]="'workspace.detail.boardNamePlaceholder' | translate"
+              [attr.aria-label]="'workspace.detail.boardNamePlaceholder' | translate"
+              (input)="newBoardTitle.set($any($event.target).value)" />
+            <button type="button" class="sidebar-board-cancel" [disabled]="creatingBoard()"
+              [attr.aria-label]="'common.cancel' | translate" (click)="cancelCreateBoard()">×</button>
+            <button type="submit" class="sidebar-board-save" [disabled]="!newBoardTitle().trim() || creatingBoard()"
+              [attr.aria-label]="'common.save' | translate">
+              @if (creatingBoard()) { <span class="sidebar-board-spinner" aria-hidden="true"></span> } @else { ✓ }
+            </button>
+          </form>
+        }
         @if ((!collapsed() || mobileOpen()) && boardsExpanded()) {
           <div class="sidebar-board-list">
             @for (board of filteredBoards(); track board.code) {
@@ -75,7 +97,7 @@
       <span class="sidebar-role-label">{{ 'workspace.detail.yourRole' | translate }}</span>
       <span class="sidebar-role-value">{{ ('workspace.members.' + workspace().roleMember + 'Role') | translate }}</span>
     } @else {
-      <span class="sidebar-role-dot" [title]="('workspace.members.' + workspace().roleMember + 'Role') | translate"></span>
+      <span class="sidebar-role-dot" tabindex="0" [appTooltip]="('workspace.members.' + workspace().roleMember + 'Role') | translate"></span>
     }
   </footer>
 </aside>

@@ -1,8 +1,9 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { finalize } from 'rxjs';
+import { finalize, Observable, tap, throwError } from 'rxjs';
 import { WorkspaceDetailApiService } from '../data-access/workspace-detail-api.service';
 import {
   CreateTaskListPayload,
+  WorkspaceDetailBoard,
   WorkspaceDetail,
   WorkspaceDetailTaskList,
   WorkspaceTaskDropEvent,
@@ -45,6 +46,19 @@ export class WorkspaceDetailStore {
 
   setWorkspace(workspace: WorkspaceDetail): void {
     this.workspace.set(workspace);
+  }
+
+  createBoard(title: string): Observable<WorkspaceDetailBoard> {
+    const workspace = this.workspace();
+    if (!workspace) return throwError(() => new Error('Workspace is not loaded'));
+
+    return this.api.createBoard(workspace.code, title).pipe(
+      tap((board) => {
+        this.workspace.update((current) => current
+          ? { ...current, boards: [...current.boards, { ...board, taskList: board.taskList ?? [] }] }
+          : current);
+      }),
+    );
   }
 
   updateBoardTitle(boardCode: string, title: string): (() => void) | null {

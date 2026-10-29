@@ -15,6 +15,7 @@ import { SendNewMemberEmailUseCase } from './classes/send-new-member-email.class
 import { SendMemberJoinedEmailUseCase } from './classes/send-member-joined-email.class';
 import { SendMemberRemovedEmailUseCase } from './classes/send-member-removed-email.class';
 import { ResetWorkspaceDataUseCase } from './classes/reset-workspace-data.class';
+import { CreateBoardUseCase } from './classes/create-board.class';
 import { Workspace } from './entities/workspace.entity';
 import { UuidManager } from 'src/common/classes/uuid-manager.class';
 import { AddMemberToWorkspaceUseCase } from './classes/add-member-to-worspace.class';
@@ -45,6 +46,7 @@ export class WorkspaceService {
     private readonly sendMemberJoinedEmailUseCase: SendMemberJoinedEmailUseCase,
     private readonly sendMemberRemovedEmailUseCase: SendMemberRemovedEmailUseCase,
     private readonly resetWorkspaceDataUseCase: ResetWorkspaceDataUseCase,
+    private readonly createBoardUseCase: CreateBoardUseCase,
   ) {}
   async create(createWorkspaceDto: CreateWorkspaceDto, createdBy: AuthenticatedUserDto) {
     const useCase = await this.createWorkspaceUseCase.execute(createWorkspaceDto, createdBy);
@@ -158,6 +160,10 @@ export class WorkspaceService {
 
   async resetData(): Promise<void> {
     await this.resetWorkspaceDataUseCase.execute();
+  }
+
+  async createBoard(workspaceCode: string, title: string, createdBy: AuthenticatedUserDto) {
+    return this.createBoardUseCase.execute(workspaceCode, title, createdBy);
   }
 
   async toggleBoardStar(boardCode: string, workspaceCode: string, user: AuthenticatedUserDto) {

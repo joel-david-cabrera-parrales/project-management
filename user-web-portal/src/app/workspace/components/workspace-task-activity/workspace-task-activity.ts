@@ -9,6 +9,7 @@ import { WorkspaceDetailMember, WorkspaceTaskAssignee, WorkspaceTaskAttachment, 
 import { WorkspaceDetailStore } from '../../state/workspace-detail.store';
 import { WorkspaceAvatar } from '../workspace-avatar/workspace-avatar';
 import { WorkspaceConfirmDialog } from '../workspace-confirm-dialog/workspace-confirm-dialog';
+import { TooltipDirective } from '../../../shared/directives/tooltip.directive';
 
 export const ALLOWED_TASK_FILE_TYPES = new Set([
   'application/pdf', 'image/png', 'image/jpeg', 'image/gif', 'image/webp',
@@ -25,7 +26,7 @@ export interface CommentContentPart {
 
 @Component({
   selector: 'app-workspace-task-activity',
-  imports: [DatePipe, DecimalPipe, TranslatePipe, WorkspaceAvatar, WorkspaceConfirmDialog],
+  imports: [DatePipe, DecimalPipe, TranslatePipe, WorkspaceAvatar, WorkspaceConfirmDialog, TooltipDirective],
   templateUrl: './workspace-task-activity.html',
   styleUrl: './workspace-task-activity.css',
 })

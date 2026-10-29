@@ -8,6 +8,7 @@ import {
   WorkspaceDetail,
   WorkspaceDetailApiResponse,
   WorkspaceDetailTaskList,
+  WorkspaceDetailBoard,
 } from '../models/workspace-detail.models';
 
 @Injectable({ providedIn: 'root' })
@@ -27,6 +28,10 @@ export class WorkspaceDetailApiService {
       `${this.endpoint}/${workspaceCode}/boards/${boardCode}`,
       { title },
     );
+  }
+
+  createBoard(workspaceCode: string, title: string): Observable<WorkspaceDetailBoard> {
+    return this.http.post<WorkspaceDetailBoard>(`${this.endpoint}/${workspaceCode}/boards`, { title });
   }
 
   updateTaskListTitle(listId: number, title: string): Observable<WorkspaceDetailTaskList> {

@@ -11,6 +11,7 @@ import { WorkspaceDetailMember, WorkspaceInvitation, WorkspaceMemberRole } from 
 import { WorkspaceDetailStore } from '../../state/workspace-detail.store';
 import { WorkspaceFilterInput } from '../../components/workspace-filter-input/workspace-filter-input';
 import { WorkspaceDrawer } from '../../components/workspace-drawer/workspace-drawer';
+import { TooltipDirective } from '../../../shared/directives/tooltip.directive';
 
 type MemberDeleteTarget =
   | { kind: 'member'; member: WorkspaceDetailMember }
@@ -18,7 +19,7 @@ type MemberDeleteTarget =
 
 @Component({
   selector: 'app-workspace-members-page',
-  imports: [ReactiveFormsModule, TranslatePipe, WorkspaceAvatar, WorkspaceConfirmDialog, WorkspaceFilterInput, WorkspaceDrawer],
+  imports: [ReactiveFormsModule, TranslatePipe, WorkspaceAvatar, WorkspaceConfirmDialog, WorkspaceFilterInput, WorkspaceDrawer, TooltipDirective],
   templateUrl: './workspace-members-page.html',
   styleUrl: './workspace-members-page.css',
 })

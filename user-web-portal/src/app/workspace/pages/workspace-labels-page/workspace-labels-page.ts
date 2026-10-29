@@ -9,12 +9,13 @@ import { WorkspaceLabelsApiService } from '../../data-access/workspace-labels-ap
 import { WorkspaceLabel } from '../../models/workspace-detail.models';
 import { WorkspaceDetailStore } from '../../state/workspace-detail.store';
 import { WorkspaceFilterInput } from '../../components/workspace-filter-input/workspace-filter-input';
+import { TooltipDirective } from '../../../shared/directives/tooltip.directive';
 
 const PRESET_COLORS = ['#dc2626', '#2563eb', '#059669', '#d97706', '#7c3aed', '#db2777', '#4f46e5', '#0f766e'];
 
 @Component({
   selector: 'app-workspace-labels-page',
-  imports: [TranslatePipe, WorkspaceConfirmDialog, WorkspaceDrawer, WorkspaceFilterInput],
+  imports: [TranslatePipe, WorkspaceConfirmDialog, WorkspaceDrawer, WorkspaceFilterInput, TooltipDirective],
   templateUrl: './workspace-labels-page.html',
   styleUrl: './workspace-labels-page.css',
 })

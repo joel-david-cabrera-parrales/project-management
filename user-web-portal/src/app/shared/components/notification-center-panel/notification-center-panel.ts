@@ -3,10 +3,11 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { TranslationService } from '../../services/translation.service';
 import { NotificationCenterService } from '../../services/notification-center.service';
 import { InboxNotification } from '../../types/notification.types';
+import { TooltipDirective } from '../../directives/tooltip.directive';
 
 @Component({
   selector: 'app-notification-center-panel',
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, TooltipDirective],
   templateUrl: './notification-center-panel.html',
   styleUrl: './notification-center-panel.css',
 })

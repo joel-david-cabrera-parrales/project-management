@@ -4,6 +4,18 @@
 /* Dark mode by class on <html>, not by prefers-color-scheme */
 @custom-variant dark (&:where(.dark, .dark *));
 
+.app-tooltip-overlay { position: fixed; z-index: 2000; width: max-content; max-width: min(16rem, calc(100vw - 1rem)); border: 1px solid rgb(255 255 255 / 8%); border-radius: 0.5rem; background: #0f172a; padding: 0.4rem 0.6rem; color: #fff; box-shadow: 0 8px 22px rgb(15 23 42 / 28%); font-size: 0.72rem; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; pointer-events: none; }
+.app-tooltip-overlay::after { position: absolute; width: 0.42rem; height: 0.42rem; background: #0f172a; content: ''; transform: rotate(45deg); }
+.app-tooltip-overlay[data-placement='top']::after { bottom: -0.25rem; left: calc(50% - 0.21rem); border-right: 1px solid rgb(255 255 255 / 8%); border-bottom: 1px solid rgb(255 255 255 / 8%); }
+.app-tooltip-overlay[data-placement='bottom']::after { top: -0.25rem; left: calc(50% - 0.21rem); border-top: 1px solid rgb(255 255 255 / 8%); border-left: 1px solid rgb(255 255 255 / 8%); }
+.app-tooltip-overlay[data-placement='left']::after { right: -0.25rem; top: calc(50% - 0.21rem); border-top: 1px solid rgb(255 255 255 / 8%); border-right: 1px solid rgb(255 255 255 / 8%); }
+.app-tooltip-overlay[data-placement='right']::after { left: -0.25rem; top: calc(50% - 0.21rem); border-bottom: 1px solid rgb(255 255 255 / 8%); border-left: 1px solid rgb(255 255 255 / 8%); }
+.app-tooltip-enter { animation: app-tooltip-in 130ms ease-out both; }
+.app-tooltip-exit { animation: app-tooltip-out 90ms ease-in both; }
+@keyframes app-tooltip-in { from { opacity: 0; transform: translateY(3px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes app-tooltip-out { to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .app-tooltip-enter, .app-tooltip-exit { animation: none; } }
+
 .topbar-notifications-button { position: relative; }
 .topbar-notification-badge { position: absolute; top: 0; right: 0; min-width: 1rem; border: 2px solid var(--bg-raised); border-radius: 1rem; background: var(--danger); padding: 0 0.17rem; color: white; font-size: 0.52rem; font-weight: 800; text-align: center; }
 

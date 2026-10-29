@@ -4,10 +4,11 @@ import { InvitationService, InviteWorkspace } from '../../services/invitation.se
 import { StorageService } from '../../services/storage.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { TranslationService } from '../../services/translation.service';
+import { TooltipDirective } from '../../directives/tooltip.directive';
 
 @Component({
   selector: 'app-invite',
-  imports: [RouterLink, TranslatePipe],
+  imports: [RouterLink, TranslatePipe, TooltipDirective],
   templateUrl: './invite.html',
   styleUrl: './invite.css',
 })

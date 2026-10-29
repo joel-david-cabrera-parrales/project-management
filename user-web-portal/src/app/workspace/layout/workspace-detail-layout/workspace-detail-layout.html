@@ -12,6 +12,7 @@
   <div class="workspace-detail-shell" [class.sidebar-collapsed]="collapsed()">
     <app-workspace-sidebar [workspace]="store.workspace()!" [collapsed]="collapsed()"
       [mobileOpen]="mobileSidebarOpen()" (toggleCollapsed)="toggleCollapsed()"
+      [creatingBoard]="creatingBoard()" (createBoard)="createBoard($event)"
       (closeMobile)="mobileSidebarOpen.set(false)" />
 
     @if (mobileSidebarOpen()) {
