@@ -5,10 +5,6 @@
         [attr.aria-expanded]="activePopover() === 'navigation'" (click)="togglePopover('navigation')">
         <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="3" width="15" height="14" rx="2"/><path d="M7 3v14M10 7h4M10 10h4M10 13h4"/></svg>
       </button>
-      <button class="topbar-icon-button topbar-apps-trigger" type="button" [attr.aria-label]="'appShell.appSwitcher' | translate"
-        [attr.aria-expanded]="activePopover() === 'apps'" (click)="togglePopover('apps')">
-        <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="2.5" width="5" height="5" rx="1"/><rect x="12.5" y="2.5" width="5" height="5" rx="1"/><rect x="2.5" y="12.5" width="5" height="5" rx="1"/><rect x="12.5" y="12.5" width="5" height="5" rx="1"/></svg>
-      </button>
       <a class="topbar-brand" routerLink="/workspace" (click)="closePopover()">
         <span class="topbar-brand-mark" aria-hidden="true">
           <svg viewBox="0 0 20 20"><path d="M4 4.5h12v11H4zM7 4.5v11M7 8h9"/></svg>

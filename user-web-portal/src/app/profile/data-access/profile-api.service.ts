@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { map, Observable, tap } from 'rxjs';
+import { map, Observable, switchMap, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { StorageService } from '../../shared/services/storage.service';
 import {
@@ -19,6 +19,12 @@ export class ProfileApiService {
 
   getMyProfile(): Observable<UserProfile> {
     return this.http.get<UserProfileResponse>(`${this.baseUrl}/profile/me`).pipe(
+      map((raw) => {
+        const photoWithBust = raw.photo
+          ? `${raw.photo}${raw.photo.includes('?') ? '&' : '?'}v=${Date.now()}`
+          : null;
+        return { ...raw, photo: photoWithBust };
+      }),
       tap((raw) => this.syncStoredProfile(raw)),
       map((raw) => mapToUserProfile(raw)),
     );
@@ -42,7 +48,7 @@ export class ProfileApiService {
         return { ...raw, photo: photoWithBust };
       }),
       tap((raw) => this.syncStoredProfile(raw)),
-      map((raw) => mapToUserProfile(raw)),
+      switchMap(() => this.getMyProfile()),
     );
   }
 
