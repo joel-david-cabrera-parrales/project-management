@@ -16,16 +16,16 @@ Main modules: `auth`, `profile`, `workspace`, `workspace-invitation`, `task-list
 
 ## Setup
 
-Requirements: Node.js 20+, npm, Docker Desktop (or a reachable PostgreSQL server).
+The recommended project startup is from the repository root: copy `.env.example` to `.env`, replace the placeholders with the credentials/settings you will use, then run `docker compose up --build`. The root Compose file starts the database, pgAdmin, backend, and frontend together and passes the root `.env` into the backend container. See the [root README](../README.md#local-development-docker-compose) for complete steps and URLs.
+
+For backend-only development, ensure PostgreSQL is running and the backend process receives its environment (for example via `backend/.env`, using `TORM_PG_HOST=localhost` and the published PostgreSQL port `5434`), then run:
 
 ```bash
-docker compose up -d
 npm install
-# Create backend/.env with the settings below; do not commit credentials.
 npm run start:dev
 ```
 
-The default local API is `http://localhost:3000/api/v1`; Swagger is `http://localhost:3000/api/docs`; pgAdmin is `http://localhost:8083` when enabled by Compose.
+The default local API is `http://localhost:3000/api/v1`; Swagger is `http://localhost:3000/api/docs`; pgAdmin is `http://localhost:8083` when enabled by root Compose.
 
 ## Configuration
 
