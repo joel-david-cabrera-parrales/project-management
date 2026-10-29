@@ -16,6 +16,7 @@ import { AttachmentModule } from './attachment/attachment.module';
 import { CommentModule } from './comment/comment.module';
 import { NotificationModule } from './notification/notification.module';
 import { CreateNotifications1761700000000 } from './database/migrations/1761700000000-CreateNotifications';
+import { ChatbotModule } from './chatbot/chatbot.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { CreateNotifications1761700000000 } from './database/migrations/17617000
     AttachmentModule,
     CommentModule,
     NotificationModule,
+    ChatbotModule,
   ],
   controllers: [],
   providers: [
