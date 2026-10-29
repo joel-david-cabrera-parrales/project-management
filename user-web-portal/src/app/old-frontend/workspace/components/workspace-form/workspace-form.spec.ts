@@ -13,6 +13,8 @@ describe('WorkspaceForm', () => {
 
     fixture = TestBed.createComponent(WorkspaceForm);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('workspace', null);
+    fixture.detectChanges();
     await fixture.whenStable();
   });
 

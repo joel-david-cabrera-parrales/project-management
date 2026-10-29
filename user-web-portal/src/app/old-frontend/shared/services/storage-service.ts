@@ -4,40 +4,49 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class StorageService {
+  private browserStorage(): Storage | null {
+    try {
+      return typeof localStorage === 'undefined' ? null : localStorage;
+    } catch {
+      return null;
+    }
+  }
+
   setToken(token: string): void {
-    localStorage.setItem('token', token);
+    this.browserStorage()?.setItem('token', token);
   }
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return this.browserStorage()?.getItem('token') ?? null;
   }
   removeToken(): void {
-    localStorage.removeItem('token');
+    this.browserStorage()?.removeItem('token');
   }
 
   setUserCode(code: string): void {
-    localStorage.setItem('userCode', code);
+    this.browserStorage()?.setItem('userCode', code);
   }
   getUserCode(): string | null {
-    return localStorage.getItem('userCode');
+    return this.browserStorage()?.getItem('userCode') ?? null;
   }
   removeUserCode(): void {
-    localStorage.removeItem('userCode');
+    this.browserStorage()?.removeItem('userCode');
   }
 
   setRefreshToken(token: string): void {
-    localStorage.setItem('refreshToken', token);
+    this.browserStorage()?.setItem('refreshToken', token);
   }
   getRefreshToken(): string | null {
-    return localStorage.getItem('refreshToken');
+    return this.browserStorage()?.getItem('refreshToken') ?? null;
   }
   removeRefreshToken(): void {
-    localStorage.removeItem('refreshToken');
+    this.browserStorage()?.removeItem('refreshToken');
   }
 
   removeAll(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userCode');
-    localStorage.removeItem('refreshToken');
+    const storage = this.browserStorage();
+    storage?.removeItem('token');
+    storage?.removeItem('userCode');
+    storage?.removeItem('refreshToken');
   }
 
   isTokenExpired(): boolean {
