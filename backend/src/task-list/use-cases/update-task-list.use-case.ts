@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TaskList } from '../entities/task-list.entity';
@@ -23,6 +23,7 @@ export class UpdateTaskListUseCaseImp implements UpdateTaskListUseCase {
       relations: { board: { workspace: true } },
     });
     if (!entity) throw new NotFoundException('Task list not found');
+    if (entity.board.workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
     await this.authorizeWorkspaceMembership.execute(entity.board.workspace.code, userId, ['owner', 'member']);
 
     this.taskListRepository.merge(entity, dto);

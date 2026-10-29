@@ -17,6 +17,7 @@ export class WorkspaceDetailStore {
   readonly loading = signal(true);
   readonly loadError = signal(false);
   readonly isOwner = computed(() => this.workspace()?.roleMember === 'owner');
+  readonly isActive = computed(() => (this.workspace()?.status ?? 1) === 1);
 
   load(code: string): void {
     this.loading.set(true);

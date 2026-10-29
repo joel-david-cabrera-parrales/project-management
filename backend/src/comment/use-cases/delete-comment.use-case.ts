@@ -19,6 +19,7 @@ export class DeleteCommentUseCaseImp implements DeleteCommentUseCase {
       relations: { author: { user: true }, task: { taskList: { board: { workspace: true } } } },
     });
     if (!comment) throw new NotFoundException('Comment not found');
+    if (comment.task.taskList.board.workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
     await this.authorizeWorkspaceMembership.execute(comment.task.taskList.board.workspace.code, userId);
     if (comment.author.user.id !== userId) throw new ForbiddenException('You can only delete your own comments');
 

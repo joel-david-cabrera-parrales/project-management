@@ -1,13 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TaskList } from '../entities/task-list.entity';
-import { Board } from 'src/workspace/entities/board.entity';
 import { CreateTaskListDto } from '../dto/create-task-list.dto';
 import { TaskListResponse } from 'src/common/responses/task-list.response';
 import { CreateTaskListUseCase } from '../classes/create-task-list.class';
 import { TaskListMapper } from '../mappers/task-list.mapper';
 import { AuthorizeWorkspaceMembershipUseCase } from 'src/common/classes/authorize-workspace-membership.class';
+import { Board } from 'src/workspace/entities/board.entity';
 
 @Injectable()
 export class CreateTaskListUseCaseImp implements CreateTaskListUseCase {
@@ -26,6 +26,7 @@ export class CreateTaskListUseCaseImp implements CreateTaskListUseCase {
       relations: { workspace: true },
     });
     if (!board) throw new NotFoundException('Board not found');
+    if (board.workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
     await this.authorizeWorkspaceMembership.execute(board.workspace.code, userId, ['owner', 'member']);
 
     const entity = this.taskListRepository.create({

@@ -28,7 +28,7 @@ export class WorkspaceTopbar {
 
   readonly activePopover = signal<TopbarPopover>(null);
   readonly showWorkspaceSearch = signal(false);
-  readonly profile = signal(this.storage.getProfile());
+  readonly profile = this.storage.profile;
   readonly profileName = computed(() => this.profile()?.fullName?.trim() || this.profile()?.email || '');
   readonly profileEmail = computed(() => this.profile()?.email || '');
   readonly profileInitials = computed(() => {

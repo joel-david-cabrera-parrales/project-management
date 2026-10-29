@@ -35,8 +35,8 @@ export class WorkspaceLabelsPage implements OnInit {
   });
   readonly loading = signal(true);
   readonly loadError = signal(false);
-  readonly canEdit = computed(() => this.store.workspace()?.roleMember === 'owner' || this.store.workspace()?.roleMember === 'member');
-  readonly canDelete = this.store.isOwner;
+  readonly canEdit = computed(() => this.store.isActive() && (this.store.workspace()?.roleMember === 'owner' || this.store.workspace()?.roleMember === 'member'));
+  readonly canDelete = computed(() => this.store.isActive() && this.store.isOwner());
   readonly dialogOpen = signal(false);
   readonly editingLabel = signal<WorkspaceLabel | null>(null);
   readonly labelName = signal('');

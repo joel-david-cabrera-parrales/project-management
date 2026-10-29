@@ -1,0 +1,489 @@
+<section class="profile-page" aria-labelledby="profile-page-title">
+  <header class="profile-page-header">
+    <div>
+      <a class="profile-back-link" routerLink="/workspace">
+        <svg viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M12.5 4.5 7 10l5.5 5.5M7.5 10H17" />
+        </svg>
+        <span>{{ 'workspace.detail.back' | translate }}</span>
+      </a>
+      <p class="profile-eyebrow">{{ 'profile.eyebrow' | translate }}</p>
+      <h1 id="profile-page-title">{{ 'profile.title' | translate }}</h1>
+      <p class="profile-subtitle">{{ 'profile.subtitle' | translate }}</p>
+    </div>
+    <span class="profile-status-pill">
+      <span class="profile-status-dot" aria-hidden="true"></span>
+      {{ 'profile.activeAccount' | translate }}
+    </span>
+  </header>
+
+  @if (loading() && !profile()) {
+    <div class="profile-skeleton-stack" role="status" aria-live="polite">
+      <div class="profile-skeleton-card profile-skeleton-lg"></div>
+      <div class="profile-skeleton-card profile-skeleton-md"></div>
+      <div class="profile-skeleton-card profile-skeleton-sm"></div>
+    </div>
+  } @else if (loadError() && !profile()) {
+    <div class="profile-error-banner" role="alert">
+      <p>{{ 'profile.loadError' | translate }}</p>
+      <button type="button" class="profile-secondary-btn" (click)="loadProfile()">
+        {{ 'profile.retry' | translate }}
+      </button>
+    </div>
+  } @else if (profile(); as currentProfile) {
+    <div class="profile-layout-grid">
+      <div class="profile-main-column">
+        <!-- Tarjeta 1: Identidad y Datos Personales -->
+        <article class="profile-card" aria-labelledby="personal-info-heading">
+          <div class="profile-identity-bar">
+            <div class="profile-avatar-wrapper">
+              <input
+                #photoInput
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                class="sr-only"
+                (change)="onPhotoSelected($event)"
+              />
+
+              <button
+                type="button"
+                class="profile-avatar-trigger"
+                [disabled]="uploadingPhoto()"
+                [attr.aria-label]="'profile.photo.change' | translate"
+                (click)="triggerPhotoDialog()"
+              >
+                @if (uploadingPhoto()) {
+                  <span class="profile-avatar-loading">
+                    <span class="profile-spinner" aria-hidden="true"></span>
+                  </span>
+                } @else if (currentProfile.photo) {
+                  <img
+                    class="profile-avatar-img"
+                    [src]="currentProfile.photo"
+                    [alt]="currentProfile.fullName"
+                  />
+                } @else {
+                  <span
+                    class="profile-avatar-fallback"
+                    [style.background-color]="currentProfile.avatarColor"
+                    aria-hidden="true"
+                  >
+                    {{ currentProfile.initials }}
+                  </span>
+                }
+
+                <span class="profile-avatar-overlay" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                    <circle cx="12" cy="13" r="4" />
+                  </svg>
+                </span>
+              </button>
+            </div>
+
+            <div class="profile-identity-meta">
+              <div class="profile-identity-name-row">
+                <h2>{{ currentProfile.fullName }}</h2>
+                <span class="profile-verified-badge">
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="m6.5 10.2 2.3 2.3 4.8-5" />
+                  </svg>
+                  {{ 'profile.verified' | translate }}
+                </span>
+              </div>
+              <p class="profile-identity-email">{{ currentProfile.email }}</p>
+              <div class="profile-photo-actions">
+                <button
+                  type="button"
+                  class="profile-photo-btn"
+                  [disabled]="uploadingPhoto()"
+                  (click)="triggerPhotoDialog()"
+                >
+                  {{ (uploadingPhoto() ? 'profile.photo.uploading' : 'profile.photo.change') | translate }}
+                </button>
+                <span class="profile-photo-hint">{{ 'profile.photo.hint' | translate }}</span>
+              </div>
+              @if (uploadError()) {
+                <p class="profile-field-error" role="alert">{{ uploadError() }}</p>
+              }
+            </div>
+          </div>
+
+          <hr class="profile-divider" />
+
+          <div class="profile-section-heading">
+            <span class="profile-section-icon" aria-hidden="true">
+              <svg viewBox="0 0 20 20">
+                <circle cx="10" cy="6.5" r="3.2" />
+                <path d="M4 16.5c.8-3 3.3-4.5 6-4.5s5.2 1.5 6 4.5" />
+              </svg>
+            </span>
+            <div>
+              <h3 id="personal-info-heading">{{ 'profile.personal.title' | translate }}</h3>
+              <p>{{ 'profile.personal.subtitle' | translate }}</p>
+            </div>
+          </div>
+
+          <form class="profile-form" (ngSubmit)="saveProfile()">
+            <div class="profile-form-grid">
+              <div class="profile-field">
+                <div class="profile-label-row">
+                  <label for="profile-first-name">{{ 'profile.personal.firstNameLabel' | translate }}</label>
+                  <span class="profile-field-tag">REQ</span>
+                </div>
+                <input
+                  id="profile-first-name"
+                  type="text"
+                  name="firstName"
+                  required
+                  [ngModel]="firstName()"
+                  (ngModelChange)="firstName.set($event)"
+                  [placeholder]="'profile.personal.firstNamePlaceholder' | translate"
+                />
+              </div>
+
+              <div class="profile-field">
+                <div class="profile-label-row">
+                  <label for="profile-first-surname">{{ 'profile.personal.firstSurnameLabel' | translate }}</label>
+                  <span class="profile-field-tag">REQ</span>
+                </div>
+                <input
+                  id="profile-first-surname"
+                  type="text"
+                  name="firstSurname"
+                  required
+                  [ngModel]="firstSurname()"
+                  (ngModelChange)="firstSurname.set($event)"
+                  [placeholder]="'profile.personal.firstSurnamePlaceholder' | translate"
+                />
+              </div>
+
+              <div class="profile-field">
+                <div class="profile-label-row">
+                  <label for="profile-second-name">{{ 'profile.personal.secondNameLabel' | translate }}</label>
+                </div>
+                <input
+                  id="profile-second-name"
+                  type="text"
+                  name="secondName"
+                  [ngModel]="secondName()"
+                  (ngModelChange)="secondName.set($event)"
+                  [placeholder]="'profile.personal.secondNamePlaceholder' | translate"
+                />
+              </div>
+
+              <div class="profile-field">
+                <div class="profile-label-row">
+                  <label for="profile-second-surname">{{ 'profile.personal.secondSurnameLabel' | translate }}</label>
+                </div>
+                <input
+                  id="profile-second-surname"
+                  type="text"
+                  name="secondSurname"
+                  [ngModel]="secondSurname()"
+                  (ngModelChange)="secondSurname.set($event)"
+                  [placeholder]="'profile.personal.secondSurnamePlaceholder' | translate"
+                />
+              </div>
+            </div>
+
+            <div class="profile-field">
+              <div class="profile-label-row">
+                <label for="profile-email-readonly">{{ 'profile.personal.emailLabel' | translate }}</label>
+                <span class="profile-field-tag profile-field-tag-locked">{{ 'profile.verified' | translate }}</span>
+              </div>
+              <div class="profile-readonly-input">
+                <input
+                  id="profile-email-readonly"
+                  type="email"
+                  readonly
+                  [value]="currentProfile.email"
+                />
+              </div>
+              <small class="profile-field-hint">{{ 'profile.personal.emailHint' | translate }}</small>
+            </div>
+
+            <div class="profile-field">
+              <div class="profile-label-row">
+                <label for="profile-phone">{{ 'profile.personal.phoneLabel' | translate }}</label>
+              </div>
+              <input
+                id="profile-phone"
+                type="text"
+                name="phone"
+                [ngModel]="phone()"
+                (ngModelChange)="phone.set($event)"
+                [placeholder]="'profile.personal.phonePlaceholder' | translate"
+              />
+              <small class="profile-field-hint">{{ 'profile.personal.phoneHint' | translate }}</small>
+            </div>
+
+            @if (profileError()) {
+              <p class="profile-field-error" role="alert">{{ profileError() }}</p>
+            }
+
+            <footer class="profile-card-footer">
+              @if (profileSaved()) {
+                <span class="profile-save-indicator" role="status">
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="m4.5 10.5 3.5 3.5 7.5-7.5" />
+                  </svg>
+                  {{ 'profile.personal.saved' | translate }}
+                </span>
+              }
+              <button
+                type="submit"
+                class="profile-primary-btn"
+                [disabled]="!canSaveProfile()"
+              >
+                @if (savingProfile()) {
+                  <span class="profile-btn-spinner" aria-hidden="true"></span>
+                }
+                {{ (savingProfile() ? 'profile.personal.saving' : 'profile.personal.saveButton') | translate }}
+              </button>
+            </footer>
+          </form>
+        </article>
+
+        <!-- Tarjeta 2: Seguridad y Contraseña -->
+        <article class="profile-card" aria-labelledby="security-heading">
+          <div class="profile-section-heading">
+            <span class="profile-section-icon" aria-hidden="true">
+              <svg viewBox="0 0 20 20">
+                <rect x="4" y="9" width="12" height="8" rx="1.8" />
+                <path d="M6.8 9V6.6a3.2 3.2 0 0 1 6.4 0V9" />
+              </svg>
+            </span>
+            <div>
+              <h2 id="security-heading">{{ 'profile.security.title' | translate }}</h2>
+              <p>{{ 'profile.security.subtitle' | translate }}</p>
+            </div>
+          </div>
+
+          <form class="profile-form" (ngSubmit)="changePassword()">
+            <div class="profile-field">
+              <label for="profile-current-password">{{ 'profile.security.currentPasswordLabel' | translate }}</label>
+              <div class="profile-password-wrap">
+                <input
+                  id="profile-current-password"
+                  name="currentPassword"
+                  autocomplete="current-password"
+                  [type]="showCurrentPassword() ? 'text' : 'password'"
+                  [ngModel]="currentPassword()"
+                  (ngModelChange)="currentPassword.set($event)"
+                  [placeholder]="'profile.security.currentPasswordPlaceholder' | translate"
+                />
+                <button
+                  type="button"
+                  class="profile-password-toggle"
+                  [attr.aria-label]="(showCurrentPassword() ? 'profile.security.hidePassword' : 'profile.security.showPassword') | translate"
+                  [attr.aria-pressed]="showCurrentPassword()"
+                  (click)="showCurrentPassword.update(v => !v)"
+                >
+                  @if (showCurrentPassword()) {
+                    <svg viewBox="0 0 20 20" aria-hidden="true">
+                      <path d="M2.5 2.5 17.5 17.5M8.2 8.3a2.5 2.5 0 0 0 3.5 3.5M5.2 5.4C3.5 6.6 2.3 8.2 1.8 10c1.4 4.1 5 6.5 8.2 6.5 1.5 0 3-.4 4.3-1.2M9.5 3.5c3.4-.2 6.9 2.2 8.7 6.5-.5 1.4-1.3 2.7-2.4 3.7" />
+                    </svg>
+                  } @else {
+                    <svg viewBox="0 0 20 20" aria-hidden="true">
+                      <path d="M1.8 10c1.5-4.2 5.1-6.5 8.2-6.5s6.7 2.3 8.2 6.5c-1.5 4.2-5.1 6.5-8.2 6.5S3.3 14.2 1.8 10Z" />
+                      <circle cx="10" cy="10" r="2.6" />
+                    </svg>
+                  }
+                </button>
+              </div>
+            </div>
+
+            <div class="profile-form-grid">
+              <div class="profile-field">
+                <label for="profile-new-password">{{ 'profile.security.newPasswordLabel' | translate }}</label>
+                <div class="profile-password-wrap">
+                  <input
+                    id="profile-new-password"
+                    name="newPassword"
+                    autocomplete="new-password"
+                    [type]="showNewPassword() ? 'text' : 'password'"
+                    [ngModel]="newPassword()"
+                    (ngModelChange)="newPassword.set($event)"
+                    [placeholder]="'profile.security.newPasswordPlaceholder' | translate"
+                  />
+                  <button
+                    type="button"
+                    class="profile-password-toggle"
+                    [attr.aria-label]="(showNewPassword() ? 'profile.security.hidePassword' : 'profile.security.showPassword') | translate"
+                    [attr.aria-pressed]="showNewPassword()"
+                    (click)="showNewPassword.update(v => !v)"
+                  >
+                    @if (showNewPassword()) {
+                      <svg viewBox="0 0 20 20" aria-hidden="true">
+                        <path d="M2.5 2.5 17.5 17.5M8.2 8.3a2.5 2.5 0 0 0 3.5 3.5M5.2 5.4C3.5 6.6 2.3 8.2 1.8 10c1.4 4.1 5 6.5 8.2 6.5 1.5 0 3-.4 4.3-1.2M9.5 3.5c3.4-.2 6.9 2.2 8.7 6.5-.5 1.4-1.3 2.7-2.4 3.7" />
+                      </svg>
+                    } @else {
+                      <svg viewBox="0 0 20 20" aria-hidden="true">
+                        <path d="M1.8 10c1.5-4.2 5.1-6.5 8.2-6.5s6.7 2.3 8.2 6.5c-1.5 4.2-5.1 6.5-8.2 6.5S3.3 14.2 1.8 10Z" />
+                        <circle cx="10" cy="10" r="2.6" />
+                      </svg>
+                    }
+                  </button>
+                </div>
+
+                @if (newPassword().length > 0) {
+                  <div class="profile-strength-meter">
+                    <div class="profile-strength-track">
+                      <div
+                        class="profile-strength-fill"
+                        [attr.data-tone]="passwordStrengthTone()"
+                        [style.width.%]="passwordStrength()"
+                      ></div>
+                    </div>
+                    <span class="profile-strength-label" [attr.data-tone]="passwordStrengthTone()">
+                      {{ passwordStrengthKey() | translate }}
+                    </span>
+                  </div>
+                }
+                @if (newPassword().length > 0 && newPassword().length < 8) {
+                  <small class="profile-field-error">{{ 'profile.security.passwordMinLength' | translate }}</small>
+                }
+              </div>
+
+              <div class="profile-field">
+                <label for="profile-confirm-password">{{ 'profile.security.confirmPasswordLabel' | translate }}</label>
+                <div class="profile-password-wrap">
+                  <input
+                    id="profile-confirm-password"
+                    name="confirmPassword"
+                    autocomplete="new-password"
+                    [type]="showConfirmPassword() ? 'text' : 'password'"
+                    [ngModel]="confirmPassword()"
+                    (ngModelChange)="confirmPassword.set($event)"
+                    [placeholder]="'profile.security.confirmPasswordPlaceholder' | translate"
+                  />
+                  <button
+                    type="button"
+                    class="profile-password-toggle"
+                    [attr.aria-label]="(showConfirmPassword() ? 'profile.security.hidePassword' : 'profile.security.showPassword') | translate"
+                    [attr.aria-pressed]="showConfirmPassword()"
+                    (click)="showConfirmPassword.update(v => !v)"
+                  >
+                    @if (showConfirmPassword()) {
+                      <svg viewBox="0 0 20 20" aria-hidden="true">
+                        <path d="M2.5 2.5 17.5 17.5M8.2 8.3a2.5 2.5 0 0 0 3.5 3.5M5.2 5.4C3.5 6.6 2.3 8.2 1.8 10c1.4 4.1 5 6.5 8.2 6.5 1.5 0 3-.4 4.3-1.2M9.5 3.5c3.4-.2 6.9 2.2 8.7 6.5-.5 1.4-1.3 2.7-2.4 3.7" />
+                      </svg>
+                    } @else {
+                      <svg viewBox="0 0 20 20" aria-hidden="true">
+                        <path d="M1.8 10c1.5-4.2 5.1-6.5 8.2-6.5s6.7 2.3 8.2 6.5c-1.5 4.2-5.1 6.5-8.2 6.5S3.3 14.2 1.8 10Z" />
+                        <circle cx="10" cy="10" r="2.6" />
+                      </svg>
+                    }
+                  </button>
+                </div>
+                @if (confirmPassword().length > 0 && newPassword() !== confirmPassword()) {
+                  <small class="profile-field-error">{{ 'profile.security.passwordMismatch' | translate }}</small>
+                }
+              </div>
+            </div>
+
+            @if (passwordError()) {
+              <p class="profile-field-error" role="alert">{{ passwordError() }}</p>
+            }
+
+            <footer class="profile-card-footer">
+              @if (passwordSaved()) {
+                <span class="profile-save-indicator" role="status">
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="m4.5 10.5 3.5 3.5 7.5-7.5" />
+                  </svg>
+                  {{ 'profile.security.updated' | translate }}
+                </span>
+              }
+              <button
+                type="submit"
+                class="profile-primary-btn"
+                [disabled]="!canChangePassword()"
+              >
+                @if (savingPassword()) {
+                  <span class="profile-btn-spinner" aria-hidden="true"></span>
+                }
+                {{ (savingPassword() ? 'profile.security.updating' : 'profile.security.updateButton') | translate }}
+              </button>
+            </footer>
+          </form>
+        </article>
+      </div>
+
+      <!-- Columna lateral: Información de la cuenta -->
+      <aside class="profile-side-column">
+        <article class="profile-card" aria-labelledby="account-meta-heading">
+          <div class="profile-section-heading">
+            <span class="profile-section-icon" aria-hidden="true">
+              <svg viewBox="0 0 20 20">
+                <rect x="3" y="4" width="14" height="12" rx="2" />
+                <path d="M7 8h6M7 12h4" />
+              </svg>
+            </span>
+            <div>
+              <h2 id="account-meta-heading">{{ 'profile.account.title' | translate }}</h2>
+              <p>{{ 'profile.account.subtitle' | translate }}</p>
+            </div>
+          </div>
+
+          <dl class="profile-meta-list">
+            <div class="profile-meta-item">
+              <dt>{{ 'profile.account.memberSince' | translate }}</dt>
+              <dd>{{ formattedMemberSince() }}</dd>
+            </div>
+            <div class="profile-meta-item">
+              <dt>{{ 'profile.account.dateBirth' | translate }}</dt>
+              <dd>{{ formattedDateBirth() }}</dd>
+            </div>
+          </dl>
+
+          <hr class="profile-divider" />
+
+          <!-- CopyInput estilo Zenith UI -->
+          <div class="profile-copy-group">
+            <div class="profile-copy-field">
+              <label for="profile-user-code">{{ 'profile.account.userId' | translate }}</label>
+              <div class="profile-copy-box">
+                <input
+                  id="profile-user-code"
+                  type="text"
+                  readonly
+                  [value]="currentProfile.userCode"
+                />
+                <button
+                  type="button"
+                  class="profile-copy-btn"
+                  [class.copied]="copiedField() === 'userCode'"
+                  (click)="copyIdentifier('userCode', currentProfile.userCode)"
+                >
+                  {{ (copiedField() === 'userCode' ? 'profile.account.copied' : 'profile.account.copy') | translate }}
+                </button>
+              </div>
+            </div>
+
+            <div class="profile-copy-field">
+              <label for="profile-code-id">{{ 'profile.account.profileId' | translate }}</label>
+              <div class="profile-copy-box">
+                <input
+                  id="profile-code-id"
+                  type="text"
+                  readonly
+                  [value]="currentProfile.profileCode"
+                />
+                <button
+                  type="button"
+                  class="profile-copy-btn"
+                  [class.copied]="copiedField() === 'profileCode'"
+                  (click)="copyIdentifier('profileCode', currentProfile.profileCode)"
+                >
+                  {{ (copiedField() === 'profileCode' ? 'profile.account.copied' : 'profile.account.copy') | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+      </aside>
+    </div>
+  }
+</section>

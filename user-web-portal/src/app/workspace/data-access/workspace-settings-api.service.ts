@@ -9,7 +9,7 @@ export class WorkspaceSettingsApiService {
   private readonly http = inject(HttpClient);
   private readonly endpoint = `${environment.apiUrl}/workspace`;
 
-  updateWorkspace(code: string, payload: { title: string; description: string; color: string }): Observable<WorkspaceDetailApiResponse> {
+  updateWorkspace(code: string, payload: { title: string; description: string; color: string; status?: 1 | 2 | 3 }): Observable<WorkspaceDetailApiResponse> {
     return this.http.patch<WorkspaceDetailApiResponse>(`${this.endpoint}/${code}`, payload);
   }
 

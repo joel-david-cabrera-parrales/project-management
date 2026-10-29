@@ -12,13 +12,28 @@
 .workspace-settings-form input { width: 100%; border: 1px solid var(--border-default); border-radius: 0.55rem; background: var(--bg-base); padding: 0.6rem 0.7rem; color: var(--text-primary); font: inherit; font-size: 0.75rem; }
 .workspace-settings-form input:focus { border-color: var(--accent); outline: 2px solid var(--accent-alpha); }
 .workspace-settings-form input:disabled { cursor: not-allowed; opacity: 0.7; }
-.settings-color-field { border: 0; padding: 0.2rem 0 0; }
-.settings-color-field legend { margin-bottom: 0.6rem; }
+.settings-color-field, .settings-status-field { border: 0; padding: 0.2rem 0 0; }
+.settings-color-field legend, .settings-status-field legend { margin-top: 0.45rem; margin-bottom: 0.6rem; color: var(--text-secondary); font-size: 0.72rem; font-weight: 700; }
 .settings-color-options { display: flex; flex-wrap: wrap; gap: 0.65rem; }
 .settings-color-choice { width: 1.65rem; height: 1.65rem; border: 2px solid var(--bg-raised); border-radius: 50%; cursor: pointer; box-shadow: 0 0 0 1px var(--border-default); }
 .settings-color-choice.selected { outline: 2px solid var(--text-primary); outline-offset: 2px; }
 .settings-color-choice:disabled { cursor: not-allowed; opacity: 0.6; }
+.settings-status-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; }
+.settings-status-choice { display: flex; align-items: flex-start; gap: 0.55rem; border: 1px solid var(--border-default); border-radius: 0.6rem; background: var(--bg-base); padding: 0.65rem 0.75rem; color: var(--text-primary); cursor: pointer; text-align: left; transition: border-color 140ms ease, background-color 140ms ease; }
+.settings-status-choice:hover:not(:disabled) { border-color: var(--accent); background: var(--bg-hover); }
+.settings-status-choice.selected { border-color: var(--accent); background: color-mix(in srgb, var(--accent-alpha) 45%, var(--bg-base)); box-shadow: 0 0 0 2px var(--accent-alpha); }
+.settings-status-choice:disabled { cursor: not-allowed; opacity: 0.65; }
+.settings-status-dot { width: 0.5rem; height: 0.5rem; flex: 0 0 auto; margin-top: 0.28rem; border-radius: 50%; background: var(--text-tertiary); }
+.status-choice-active .settings-status-dot { background: #16a34a; }
+.status-choice-closed .settings-status-dot { background: #d97706; }
+.status-choice-archived .settings-status-dot { background: var(--text-tertiary); }
+.settings-status-copy { display: grid; gap: 0.15rem; min-width: 0; }
+.settings-status-copy strong { color: var(--text-primary); font-size: 0.73rem; font-weight: 750; }
+.settings-status-copy small { color: var(--text-tertiary); font-size: 0.64rem; line-height: 1.35; }
 .settings-form-actions { display: flex; justify-content: flex-end; margin-top: 0.7rem; }
+.detail-primary-button { display: inline-flex; min-height: 2.35rem; align-items: center; justify-content: center; gap: 0.4rem; border: 1px solid transparent; border-radius: 0.55rem; background: var(--accent); padding: 0.5rem 0.9rem; color: #fff; cursor: pointer; font: inherit; font-size: 0.73rem; font-weight: 700; transition: background-color 140ms ease, opacity 140ms ease; }
+.detail-primary-button:hover:not(:disabled) { background: var(--accent-hover); }
+.detail-primary-button:disabled { cursor: not-allowed; opacity: 0.55; }
 .settings-readonly-note, .settings-error, .settings-help-error { color: var(--text-tertiary); font-size: 0.7rem; }
 .settings-error, .settings-help-error { color: var(--danger); }
 .settings-danger-zone { display: flex; max-width: 48rem; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1rem; border: 1px solid rgb(220 38 38 / 18%); border-radius: 0.8rem; background: color-mix(in srgb, var(--danger-alpha) 28%, var(--bg-raised)); padding: 1rem 1.2rem; }
@@ -26,4 +41,4 @@
 .settings-danger-zone p { margin-top: 0.2rem; color: var(--text-tertiary); font-size: 0.68rem; }
 .settings-delete-button { min-height: 2.25rem; flex: 0 0 auto; border: 1px solid var(--danger); border-radius: 0.5rem; background: transparent; padding: 0.45rem 0.7rem; color: var(--danger); cursor: pointer; font: inherit; font-size: 0.68rem; font-weight: 700; }
 .settings-delete-button:hover { background: var(--danger-alpha); }
-@media (max-width: 620px) { .settings-danger-zone { align-items: flex-start; flex-direction: column; } }
+@media (max-width: 620px) { .settings-danger-zone { align-items: flex-start; flex-direction: column; } .settings-status-options { grid-template-columns: 1fr; } }

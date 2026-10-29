@@ -9,7 +9,9 @@ export class TranslationService {
   private readonly http = inject(HttpClient);
 
   // Expose current language and translation map as signals
-  public currentLang = signal<'es' | 'en'>('es');
+  public currentLang = signal<'es' | 'en'>(
+    typeof localStorage !== 'undefined' && localStorage.getItem('app-lang') === 'en' ? 'en' : 'es'
+  );
   private translations = signal<Record<string, any>>({});
 
   /**
@@ -23,6 +25,7 @@ export class TranslationService {
       );
       this.translations.set(data);
       this.currentLang.set(lang);
+      if (typeof localStorage !== 'undefined') localStorage.setItem('app-lang', lang);
     } catch (error) {
       console.error(`Error loading translations for language: ${lang}`, error);
     }

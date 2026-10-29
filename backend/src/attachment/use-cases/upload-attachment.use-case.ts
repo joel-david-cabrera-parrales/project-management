@@ -29,6 +29,7 @@ export class UploadAttachmentUseCaseImp implements UploadAttachmentUseCase {
       relations: { taskList: { board: { workspace: true } } },
     });
     if (!task) throw new NotFoundException('Task not found');
+    if (task.taskList.board.workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
 
     const user = await this.userRepository.findOneBy({ id: userId, isAvailable: true });
     if (!user) throw new NotFoundException('User not found');

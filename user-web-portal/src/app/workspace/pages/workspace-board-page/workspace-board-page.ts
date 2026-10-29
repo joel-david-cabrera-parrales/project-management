@@ -45,8 +45,8 @@ export class WorkspaceBoardPage {
     return this.translation.translate('workspace.detail.boardNumber', { number: this.selectedBoardNumber() });
   });
   readonly taskLists = computed(() => this.selectedBoard()?.taskList.filter((list) => list.isAvailable) ?? []);
-  readonly canManageTasks = computed(() => ['owner', 'member'].includes(this.store.workspace()?.roleMember ?? ''));
-  readonly canDeleteTasks = this.store.isOwner;
+  readonly canManageTasks = computed(() => this.store.isActive() && ['owner', 'member'].includes(this.store.workspace()?.roleMember ?? ''));
+  readonly canDeleteTasks = computed(() => this.store.isActive() && this.store.isOwner());
   readonly editingBoardTitle = signal(false);
   readonly boardTitleDraft = signal('');
   readonly boardTitleInput = viewChild<ElementRef<HTMLInputElement>>('boardTitleInput');

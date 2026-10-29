@@ -50,26 +50,42 @@
     "cannotUndo": "Esta acción no se puede deshacer"
   },
   "settings": {
+    "eyebrow": "Preferencias",
     "title": "Configuración",
-    "subtitle": "Personaliza tu experiencia en la aplicación",
+    "subtitle": "Personaliza la apariencia, el idioma y las alertas de tu cuenta.",
+    "loadError": "No se pudo cargar tu configuración. Inténtalo de nuevo.",
+    "saveError": "No se pudo guardar el cambio. Inténtalo de nuevo.",
+    "saved": "Preferencias actualizadas",
+    "selected": "Seleccionado",
+    "defaultOption": "Disponible",
+    "activeCount": "{{count}} activas",
     "tabs": {
+      "label": "Secciones de configuración",
       "appearance": "Apariencia",
       "notifications": "Notificaciones"
     },
     "appearance": {
-      "themeTitle": "Tema",
-      "themeSubtitle": "Elige entre el modo claro y oscuro",
+      "themeTitle": "Tema de la interfaz",
+      "themeSubtitle": "Elige entre el esquema de colores claro y oscuro",
       "darkMode": "Modo oscuro",
-      "darkModeDesc": "Cambiar a un esquema de colores oscuros",
-      "langTitle": "Idioma",
-      "langSubtitle": "Selecciona tu idioma preferido",
-      "esDesc": "Idioma por defecto",
-      "enDesc": "Idioma secundario"
+      "darkModeDesc": "Reduce el brillo de la pantalla en entornos con poca luz",
+      "lightOptionTitle": "Modo claro",
+      "lightOptionHint": "Superficies claras de alto contraste para uso diurno",
+      "darkOptionTitle": "Modo oscuro",
+      "darkOptionHint": "Tonos oscuros suaves para sesiones prolongadas",
+      "langTitle": "Idioma de la aplicación",
+      "langSubtitle": "Selecciona el idioma en el que se mostrará la interfaz",
+      "esTitle": "Español",
+      "esDesc": "Interfaz completa en español",
+      "enTitle": "English",
+      "enDesc": "Full interface in English"
     },
     "notifications": {
-      "title": "Notificaciones por Correo",
-      "subtitle": "Elige qué actividades activan las alertas por correo electrónico",
-      "footer": "La configuración de notificaciones se aplica a todos tus espacios de trabajo",
+      "title": "Notificaciones por correo",
+      "subtitle": "Elige qué actividades activan alertas por correo electrónico",
+      "footer": "La configuración de notificaciones se aplica a todos tus espacios de trabajo.",
+      "enableAll": "Activar todas",
+      "disableAll": "Desactivar todas",
       "list": {
         "newMember": {
           "label": "Nuevo miembro se une",
@@ -77,21 +93,35 @@
         },
         "taskAssigned": {
           "label": "Tarea asignada",
-          "description": "Cuando se te asigna una tarea"
+          "description": "Cuando se te asigna una tarea en un tablero"
         },
         "taskCompleted": {
           "label": "Tarea completada",
-          "description": "Cuando se completa una tarea que sigues"
+          "description": "Cuando se marca como completada una tarea en la que participas"
         },
         "commentMentioned": {
           "label": "Mención en comentario",
-          "description": "Cuando alguien te menciona en un comentario"
+          "description": "Cuando alguien te menciona directamente en un comentario"
         },
         "dailyDigest": {
           "label": "Resumen diario",
-          "description": "Un resumen diario de la actividad en los espacios de trabajo"
+          "description": "Un resumen diario con la actividad de tus espacios de trabajo"
         }
       }
+    },
+    "demo": {
+      "eyebrow": "Preferencias",
+      "title": "Configuración",
+      "subtitle": "Un espacio inicial para las preferencias de tu cuenta.",
+      "preview": "Vista previa",
+      "languageTitle": "Idioma de la aplicación",
+      "languageDescription": "Cambia el idioma usado en la interfaz.",
+      "changeLanguage": "Cambiar idioma",
+      "appearanceTitle": "Apariencia",
+      "appearanceDescription": "Cambia entre el tema claro y oscuro.",
+      "notificationsTitle": "Notifications",
+      "notificationsDescription": "Administra cómo y cuándo recibes avisos.",
+      "comingSoon": "Próximamente"
     }
   },
   "notifications": {
@@ -291,7 +321,10 @@
     "status": {
       "active": "Activos",
       "closed": "Cerrados",
-      "archived": "Archivados"
+      "archived": "Archivados",
+      "closedReadOnlyBanner": "Este espacio de trabajo está cerrado y es de solo lectura.",
+      "archivedReadOnlyBanner": "Este espacio de trabajo está archivado y es de solo lectura.",
+      "manageInSettings": "Cambiar estado en Configuración"
     },
     "detail": {
       "back": "Volver a mis espacios",
@@ -476,6 +509,10 @@
       "nameLabel": "Nombre del espacio",
       "descPlaceholder": "Descripción",
       "colorLabel": "Color",
+      "statusLabel": "Estado del espacio",
+      "statusActiveDesc": "Permite crear y editar contenido.",
+      "statusClosedDesc": "Solo lectura; oculto de los espacios activos.",
+      "statusArchivedDesc": "Solo lectura; guardado como historial.",
       "saveButton": "Guardar cambios",
       "saving": "Guardando...",
       "saved": "Configuración del espacio actualizada",
@@ -586,6 +623,78 @@
     }
   },
   "profile": {
+    "eyebrow": "Cuenta personal",
+    "title": "Tu perfil",
+    "subtitle": "Administra tu información personal, foto de perfil y seguridad de acceso.",
+    "loadError": "No se pudo cargar la información de tu perfil.",
+    "retry": "Intentar de nuevo",
+    "verified": "Verificado",
+    "activeAccount": "Cuenta activa",
+    "photo": {
+      "change": "Cambiar foto",
+      "uploading": "Subiendo foto...",
+      "hint": "JPG, PNG, WEBP o GIF · Máx. 5 MB",
+      "invalidType": "Formato no permitido. Usa imágenes JPG, PNG, WEBP o GIF.",
+      "tooLarge": "La imagen supera el tamaño máximo de 5 MB.",
+      "uploadSuccess": "Foto de perfil actualizada",
+      "uploadError": "No se pudo subir la foto de perfil."
+    },
+    "personal": {
+      "title": "Información personal",
+      "subtitle": "Estos datos se muestran a tus compañeros en los espacios de trabajo.",
+      "firstNameLabel": "Primer nombre",
+      "firstNamePlaceholder": "Ej. Juan",
+      "secondNameLabel": "Segundo nombre",
+      "secondNamePlaceholder": "Opcional",
+      "firstSurnameLabel": "Primer apellido",
+      "firstSurnamePlaceholder": "Ej. Pérez",
+      "secondSurnameLabel": "Segundo apellido",
+      "secondSurnamePlaceholder": "Opcional",
+      "emailLabel": "Correo electrónico",
+      "emailHint": "El correo principal está vinculado a tu cuenta y no puede editarse.",
+      "phoneLabel": "Teléfono(s)",
+      "phonePlaceholder": "+505 8888 8888",
+      "phoneHint": "Puedes separar varios números con comas.",
+      "requiredNames": "El primer nombre y el primer apellido son obligatorios.",
+      "saveButton": "Guardar cambios",
+      "saving": "Guardando...",
+      "saved": "Datos personales actualizados",
+      "saveError": "No se pudieron guardar los cambios del perfil."
+    },
+    "security": {
+      "title": "Cambiar contraseña",
+      "subtitle": "Protege tu cuenta utilizando una contraseña única y segura.",
+      "currentPasswordLabel": "Contraseña actual",
+      "currentPasswordPlaceholder": "Ingresa tu contraseña actual",
+      "newPasswordLabel": "Nueva contraseña",
+      "newPasswordPlaceholder": "Mínimo 8 caracteres",
+      "confirmPasswordLabel": "Confirmar nueva contraseña",
+      "confirmPasswordPlaceholder": "Repite la nueva contraseña",
+      "showPassword": "Mostrar contraseña",
+      "hidePassword": "Ocultar contraseña",
+      "passwordMinLength": "La nueva contraseña debe tener al menos 8 caracteres.",
+      "passwordMismatch": "Las contraseñas no coinciden.",
+      "updateButton": "Actualizar contraseña",
+      "updating": "Actualizando...",
+      "updated": "Contraseña actualizada correctamente",
+      "updateError": "No se pudo actualizar la contraseña. Verifica tu contraseña actual.",
+      "strength": {
+        "weak": "Débil",
+        "fair": "Regular",
+        "good": "Buena",
+        "strong": "Fuerte"
+      }
+    },
+    "account": {
+      "title": "Información de la cuenta",
+      "subtitle": "Detalles de registro e identificadores asociados a tu perfil.",
+      "memberSince": "Miembro desde",
+      "dateBirth": "Fecha de nacimiento",
+      "userId": "ID de usuario",
+      "profileId": "ID de perfil",
+      "copy": "Copiar",
+      "copied": "Copiado"
+    },
     "demo": {
       "eyebrow": "Cuenta",
       "title": "Tu perfil",
@@ -595,22 +704,6 @@
       "emailLabel": "Correo electrónico",
       "nameLabel": "Nombre",
       "accountLabel": "Cuenta creada"
-    }
-  },
-  "settings": {
-    "demo": {
-      "eyebrow": "Preferencias",
-      "title": "Configuración",
-      "subtitle": "Un espacio inicial para las preferencias de tu cuenta.",
-      "preview": "Vista previa",
-      "languageTitle": "Idioma de la aplicación",
-      "languageDescription": "Cambia el idioma usado en la interfaz.",
-      "changeLanguage": "Cambiar idioma",
-      "appearanceTitle": "Apariencia",
-      "appearanceDescription": "Cambia entre el tema claro y oscuro.",
-      "notificationsTitle": "Notificaciones",
-      "notificationsDescription": "Administra cómo y cuándo recibes avisos.",
-      "comingSoon": "Próximamente"
     }
   }
 }

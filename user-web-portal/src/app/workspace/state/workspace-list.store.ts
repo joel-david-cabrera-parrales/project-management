@@ -47,4 +47,28 @@ export class WorkspaceListStore {
       }),
     );
   }
+
+  upsertFromDetail(detail: { code: string; name: string; description: string; color: string; status: number }): void {
+    const initials = detail.name
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join('');
+    this.workspaces.update((items) =>
+      items.map((item) =>
+        item.code === detail.code
+          ? {
+              ...item,
+              name: detail.name,
+              initials,
+              description: detail.description,
+              color: detail.color,
+              status: (detail.status as 1 | 2 | 3) || 1,
+            }
+          : item,
+      ),
+    );
+  }
 }

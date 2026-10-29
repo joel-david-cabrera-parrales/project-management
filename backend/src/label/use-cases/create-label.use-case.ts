@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Label } from '../entities/label.entity';
@@ -20,6 +20,7 @@ export class CreateLabelUseCaseImp implements CreateLabelUseCase {
   async execute(dto: CreateLabelDto, userId: number): Promise<Label> {
     const workspace = await this.workspaceRepository.findOneBy({ code: dto.workspaceCode });
     if (!workspace) throw new NotFoundException('Workspace not found');
+    if (workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
     await this.authorizeWorkspaceMembership.execute(workspace.code, userId, ['owner', 'member']);
     const label = this.labelRepository.create({ name: dto.name, color: dto.color, workspace });
     return this.labelRepository.save(label);

@@ -1,0 +1,333 @@
+<section class="settings-page" aria-labelledby="settings-page-title">
+  <header class="settings-page-header">
+    <div>
+      <a class="settings-back-link" routerLink="/workspace">
+        <svg viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M12.5 4.5 7 10l5.5 5.5M7.5 10H17" />
+        </svg>
+        <span>{{ 'workspace.detail.back' | translate }}</span>
+      </a>
+      <p class="settings-eyebrow">{{ 'settings.eyebrow' | translate }}</p>
+      <h1 id="settings-page-title">{{ 'settings.title' | translate }}</h1>
+      <p class="settings-subtitle">{{ 'settings.subtitle' | translate }}</p>
+    </div>
+
+    @if (saving()) {
+      <span class="settings-saving-pill" role="status" aria-live="polite">
+        <span class="settings-spinner" aria-hidden="true"></span>
+        {{ 'common.saving' | translate }}
+      </span>
+    }
+  </header>
+
+  @if (loadError()) {
+    <div class="settings-alert-banner" role="alert">
+      <span>{{ 'settings.loadError' | translate }}</span>
+      <button type="button" class="settings-retry-btn" (click)="loadSettings()">
+        {{ 'workspace.list.retry' | translate }}
+      </button>
+    </div>
+  }
+
+  <!-- Barra de pestañas estilo Zenith UI (Tabs) -->
+  <div
+    class="settings-tablist"
+    role="tablist"
+    [attr.aria-label]="'settings.tabs.label' | translate"
+  >
+    <button
+      id="settings-tab-appearance"
+      type="button"
+      role="tab"
+      class="settings-tab-button"
+      [class.active]="activeTab() === 'appearance'"
+      [attr.aria-selected]="activeTab() === 'appearance'"
+      aria-controls="settings-panel-appearance"
+      [tabIndex]="activeTab() === 'appearance' ? 0 : -1"
+      (click)="selectTab('appearance')"
+      (keydown)="onTabKeydown($event, 'appearance')"
+    >
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <circle cx="10" cy="10" r="3.4" />
+        <path d="M10 2.2v1.8M10 16v1.8M2.2 10H4m12 0h1.8M4.5 4.5l1.3 1.3m8.4 8.4 1.3 1.3m0-11-1.3 1.3m-8.4 8.4-1.3 1.3" />
+      </svg>
+      <span>{{ 'settings.tabs.appearance' | translate }}</span>
+    </button>
+
+    <button
+      id="settings-tab-notifications"
+      type="button"
+      role="tab"
+      class="settings-tab-button"
+      [class.active]="activeTab() === 'notifications'"
+      [attr.aria-selected]="activeTab() === 'notifications'"
+      aria-controls="settings-panel-notifications"
+      [tabIndex]="activeTab() === 'notifications' ? 0 : -1"
+      (click)="selectTab('notifications')"
+      (keydown)="onTabKeydown($event, 'notifications')"
+    >
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M15 8a5 5 0 0 0-10 0c0 5.4-1.8 5.6-1.8 7h13.6c0-1.4-1.8-1.6-1.8-7ZM8.3 17.5h3.4" />
+      </svg>
+      <span>{{ 'settings.tabs.notifications' | translate }}</span>
+      <span class="settings-tab-badge">
+        {{ activeNotificationsCount() }}/{{ notificationKeys.length }}
+      </span>
+    </button>
+  </div>
+
+  <!-- Panel 1: Apariencia e Idioma -->
+  @if (activeTab() === 'appearance') {
+    <div
+      id="settings-panel-appearance"
+      role="tabpanel"
+      aria-labelledby="settings-tab-appearance"
+      class="settings-tabpanel"
+    >
+      <!-- Tarjeta de Tema -->
+      <article class="settings-card" aria-labelledby="theme-card-heading">
+        <div class="settings-card-header">
+          <div class="settings-card-title-group">
+            <span class="settings-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 20 20">
+                <path d="M16.4 12.2A7 7 0 0 1 7.8 3.6a7.2 7.2 0 1 0 8.6 8.6Z" />
+              </svg>
+            </span>
+            <div>
+              <h2 id="theme-card-heading">{{ 'settings.appearance.themeTitle' | translate }}</h2>
+              <p>{{ 'settings.appearance.themeSubtitle' | translate }}</p>
+            </div>
+          </div>
+          <span class="settings-card-tag">THEME_MODE</span>
+        </div>
+
+        <!-- Switch rápido de modo oscuro (estilo Zenith Switch) -->
+        <div class="settings-switch-row">
+          <div class="settings-switch-copy">
+            <strong>{{ 'settings.appearance.darkMode' | translate }}</strong>
+            <span>{{ 'settings.appearance.darkModeDesc' | translate }}</span>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            class="zenith-switch"
+            [class.checked]="currentTheme() === 'dark'"
+            [attr.aria-checked]="currentTheme() === 'dark'"
+            [attr.aria-label]="'settings.appearance.darkMode' | translate"
+            [disabled]="saving()"
+            (click)="toggleThemeSwitch()"
+          >
+            <span class="zenith-switch-thumb" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <!-- SelectableOptions estilo Zenith UI con mini-preview de interfaz -->
+        <div
+          class="settings-options-grid"
+          role="radiogroup"
+          [attr.aria-label]="'settings.appearance.themeTitle' | translate"
+        >
+          <button
+            type="button"
+            role="radio"
+            class="settings-option-card"
+            [class.selected]="currentTheme() === 'light'"
+            [attr.aria-checked]="currentTheme() === 'light'"
+            [disabled]="saving()"
+            (click)="selectTheme('light')"
+          >
+            <div class="theme-preview theme-preview-light" aria-hidden="true">
+              <div class="theme-preview-topbar">
+                <span class="theme-preview-dot"></span>
+                <span class="theme-preview-bar"></span>
+              </div>
+              <div class="theme-preview-body">
+                <div class="theme-preview-col"></div>
+                <div class="theme-preview-col"></div>
+              </div>
+            </div>
+            <div class="settings-option-footer">
+              <span class="settings-option-radio" aria-hidden="true">
+                @if (currentTheme() === 'light') {
+                  <svg viewBox="0 0 20 20"><path d="m5 10.2 3.2 3.2 6.8-6.8" /></svg>
+                }
+              </span>
+              <span class="settings-option-copy">
+                <strong>{{ 'settings.appearance.lightOptionTitle' | translate }}</strong>
+                <small>{{ 'settings.appearance.lightOptionHint' | translate }}</small>
+              </span>
+              <span class="settings-option-state">
+                {{ (currentTheme() === 'light' ? 'settings.selected' : 'settings.defaultOption') | translate }}
+              </span>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            role="radio"
+            class="settings-option-card"
+            [class.selected]="currentTheme() === 'dark'"
+            [attr.aria-checked]="currentTheme() === 'dark'"
+            [disabled]="saving()"
+            (click)="selectTheme('dark')"
+          >
+            <div class="theme-preview theme-preview-dark" aria-hidden="true">
+              <div class="theme-preview-topbar">
+                <span class="theme-preview-dot"></span>
+                <span class="theme-preview-bar"></span>
+              </div>
+              <div class="theme-preview-body">
+                <div class="theme-preview-col"></div>
+                <div class="theme-preview-col"></div>
+              </div>
+            </div>
+            <div class="settings-option-footer">
+              <span class="settings-option-radio" aria-hidden="true">
+                @if (currentTheme() === 'dark') {
+                  <svg viewBox="0 0 20 20"><path d="m5 10.2 3.2 3.2 6.8-6.8" /></svg>
+                }
+              </span>
+              <span class="settings-option-copy">
+                <strong>{{ 'settings.appearance.darkOptionTitle' | translate }}</strong>
+                <small>{{ 'settings.appearance.darkOptionHint' | translate }}</small>
+              </span>
+              <span class="settings-option-state">
+                {{ (currentTheme() === 'dark' ? 'settings.selected' : 'settings.defaultOption') | translate }}
+              </span>
+            </div>
+          </button>
+        </div>
+      </article>
+
+      <!-- Tarjeta de Idioma -->
+      <article class="settings-card" aria-labelledby="language-card-heading">
+        <div class="settings-card-header">
+          <div class="settings-card-title-group">
+            <span class="settings-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 20 20">
+                <circle cx="10" cy="10" r="7.5" />
+                <path d="M2.5 10h15M10 2.5c2 2.2 3 4.8 3 7.5s-1 5.3-3 7.5c-2-2.2-3-4.8-3-7.5s1-5.3 3-7.5Z" />
+              </svg>
+            </span>
+            <div>
+              <h2 id="language-card-heading">{{ 'settings.appearance.langTitle' | translate }}</h2>
+              <p>{{ 'settings.appearance.langSubtitle' | translate }}</p>
+            </div>
+          </div>
+          <span class="settings-card-tag">LOCALE</span>
+        </div>
+
+        <div
+          class="settings-lang-list"
+          role="radiogroup"
+          [attr.aria-label]="'settings.appearance.langTitle' | translate"
+        >
+          <button
+            type="button"
+            role="radio"
+            class="settings-lang-option"
+            [class.selected]="currentLanguage() === 'es'"
+            [attr.aria-checked]="currentLanguage() === 'es'"
+            [disabled]="saving()"
+            (click)="selectLanguage('es')"
+          >
+            <span class="settings-lang-badge">ES</span>
+            <span class="settings-option-copy">
+              <strong>{{ 'settings.appearance.esTitle' | translate }}</strong>
+              <small>{{ 'settings.appearance.esDesc' | translate }}</small>
+            </span>
+            <span class="settings-option-radio" aria-hidden="true">
+              @if (currentLanguage() === 'es') {
+                <svg viewBox="0 0 20 20"><path d="m5 10.2 3.2 3.2 6.8-6.8" /></svg>
+              }
+            </span>
+          </button>
+
+          <button
+            type="button"
+            role="radio"
+            class="settings-lang-option"
+            [class.selected]="currentLanguage() === 'en'"
+            [attr.aria-checked]="currentLanguage() === 'en'"
+            [disabled]="saving()"
+            (click)="selectLanguage('en')"
+          >
+            <span class="settings-lang-badge settings-lang-badge-en">EN</span>
+            <span class="settings-option-copy">
+              <strong>{{ 'settings.appearance.enTitle' | translate }}</strong>
+              <small>{{ 'settings.appearance.enDesc' | translate }}</small>
+            </span>
+            <span class="settings-option-radio" aria-hidden="true">
+              @if (currentLanguage() === 'en') {
+                <svg viewBox="0 0 20 20"><path d="m5 10.2 3.2 3.2 6.8-6.8" /></svg>
+              }
+            </span>
+          </button>
+        </div>
+      </article>
+    </div>
+  }
+
+  <!-- Panel 2: Notificaciones por Correo -->
+  @if (activeTab() === 'notifications') {
+    <div
+      id="settings-panel-notifications"
+      role="tabpanel"
+      aria-labelledby="settings-tab-notifications"
+      class="settings-tabpanel"
+    >
+      <article class="settings-card" aria-labelledby="notifications-card-heading">
+        <div class="settings-card-header">
+          <div class="settings-card-title-group">
+            <span class="settings-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 20 20">
+                <rect x="2.5" y="4.5" width="15" height="11" rx="2" />
+                <path d="m3 6 7 4.8L17 6" />
+              </svg>
+            </span>
+            <div>
+              <h2 id="notifications-card-heading">{{ 'settings.notifications.title' | translate }}</h2>
+              <p>{{ 'settings.notifications.subtitle' | translate }}</p>
+            </div>
+          </div>
+          <span class="settings-card-tag">
+            {{ 'settings.activeCount' | translate: { count: activeNotificationsCount() } }}
+          </span>
+        </div>
+
+        <div class="settings-notification-list">
+          @for (key of notificationKeys; track key) {
+            <div class="settings-notification-row">
+              <div class="settings-switch-copy">
+                <strong [id]="'notif-label-' + key">
+                  {{ ('settings.notifications.list.' + key + '.label') | translate }}
+                </strong>
+                <span [id]="'notif-desc-' + key">
+                  {{ ('settings.notifications.list.' + key + '.description') | translate }}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                role="switch"
+                class="zenith-switch"
+                [class.checked]="isNotificationEnabled(key)"
+                [attr.aria-checked]="isNotificationEnabled(key)"
+                [attr.aria-labelledby]="'notif-label-' + key"
+                [attr.aria-describedby]="'notif-desc-' + key"
+                [disabled]="saving()"
+                (click)="toggleNotification(key)"
+              >
+                <span class="zenith-switch-thumb" aria-hidden="true"></span>
+              </button>
+            </div>
+          }
+        </div>
+
+        <footer class="settings-notifications-footer">
+          <p>{{ 'settings.notifications.footer' | translate }}</p>
+        </footer>
+      </article>
+    </div>
+  }
+</section>

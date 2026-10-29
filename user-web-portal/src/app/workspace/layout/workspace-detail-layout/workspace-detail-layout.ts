@@ -1,5 +1,5 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { distinctUntilChanged, filter, map } from 'rxjs';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
@@ -9,7 +9,7 @@ import { WorkspaceDetailStore } from '../../state/workspace-detail.store';
 
 @Component({
   selector: 'app-workspace-detail-layout',
-  imports: [RouterOutlet, TranslatePipe, WorkspaceSidebar, WorkspaceTopbar],
+  imports: [RouterOutlet, RouterLink, TranslatePipe, WorkspaceSidebar, WorkspaceTopbar],
   templateUrl: './workspace-detail-layout.html',
   styleUrl: './workspace-detail-layout.css',
 })
@@ -20,6 +20,12 @@ export class WorkspaceDetailLayout {
   readonly store = inject(WorkspaceDetailStore);
   readonly collapsed = signal(false);
   readonly mobileSidebarOpen = signal(false);
+  readonly statusBannerKey = computed(() => {
+    const status = this.store.workspace()?.status;
+    if (status === 2) return 'workspace.status.closedReadOnlyBanner';
+    if (status === 3) return 'workspace.status.archivedReadOnlyBanner';
+    return null;
+  });
 
   constructor() {
     this.route.paramMap

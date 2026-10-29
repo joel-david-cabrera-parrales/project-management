@@ -2,8 +2,6 @@ import { Routes } from '@angular/router';
 import { NotFound } from './shared/pages/not-found/not-found';
 import { authGuard } from './shared/guards/auth-guard';
 import { AppShellLayout } from './shared/layouts/app-shell-layout/app-shell-layout';
-import { ProfileDemoPage } from './profile/pages/profile-demo-page/profile-demo-page';
-import { SettingsDemoPage } from './settings/pages/settings-demo-page/settings-demo-page';
 
 export const routes: Routes = [
   {
@@ -28,11 +26,13 @@ export const routes: Routes = [
       },
       {
         path: 'profile',
-        component: ProfileDemoPage,
+        loadComponent: () =>
+          import('./profile/pages/profile-page/profile-page').then((m) => m.ProfilePage),
       },
       {
         path: 'settings',
-        component: SettingsDemoPage,
+        loadComponent: () =>
+          import('./settings/pages/settings-page/settings-page').then((m) => m.SettingsPage),
       },
     ],
   },

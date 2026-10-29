@@ -37,6 +37,27 @@
         </div>
       </fieldset>
 
+      <fieldset class="settings-status-field" [disabled]="!store.isOwner()">
+        <legend>{{ 'workspace.settings.statusLabel' | translate }}</legend>
+        <div class="settings-status-options">
+          @for (item of statuses; track item.value) {
+            <button class="settings-status-choice" type="button"
+              [class.selected]="status() === item.value"
+              [class.status-choice-active]="item.value === 1"
+              [class.status-choice-closed]="item.value === 2"
+              [class.status-choice-archived]="item.value === 3"
+              [attr.aria-pressed]="status() === item.value"
+              (click)="status.set(item.value)">
+              <span class="settings-status-dot" aria-hidden="true"></span>
+              <span class="settings-status-copy">
+                <strong>{{ item.labelKey | translate }}</strong>
+                <small>{{ item.descKey | translate }}</small>
+              </span>
+            </button>
+          }
+        </div>
+      </fieldset>
+
       @if (saveError()) { <p class="settings-error" role="alert">{{ 'workspace.settings.saveError' | translate }}</p> }
       @if (store.isOwner()) {
         <footer class="settings-form-actions">

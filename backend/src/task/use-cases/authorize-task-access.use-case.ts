@@ -30,6 +30,10 @@ export class AuthorizeTaskAccessUseCaseImp implements AuthorizeTaskAccessUseCase
       throw new ForbiddenException('Task does not belong to the requested workspace');
     }
 
+    if (allowedRoles?.length && task.taskList.board.workspace.status !== undefined && task.taskList.board.workspace.status !== 1) {
+      throw new ForbiddenException('Workspace is not active');
+    }
+
     await this.authorizeWorkspaceMembership.execute(workspaceCode, userId, allowedRoles);
     return task;
   }

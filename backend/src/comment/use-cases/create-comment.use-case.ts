@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Comment } from '../entities/comment.entity';
@@ -29,6 +29,7 @@ export class CreateCommentUseCaseImp implements CreateCommentUseCase {
       relations: { taskList: { board: { workspace: true } } },
     });
     if (!task) throw new NotFoundException('Task not found');
+    if (task.taskList.board.workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
 
     const workspaceId = task.taskList.board.workspace.id;
     const member = await this.workspaceMemberRepository.findOne({

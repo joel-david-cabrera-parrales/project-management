@@ -22,6 +22,7 @@ export class DeleteLabelUseCaseImp implements DeleteLabelUseCase {
     if (!label) throw new NotFoundException('Label not found');
     if (label.workspace.code !== workspaceCode)
       throw new ForbiddenException('Label does not belong to the requested workspace');
+    if (label.workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
     await this.authorizeWorkspaceMembership.execute(label.workspace.code, userId, ['owner']);
 
     label.isAvailable = false;

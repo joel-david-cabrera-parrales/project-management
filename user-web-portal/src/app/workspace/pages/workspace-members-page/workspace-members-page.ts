@@ -33,7 +33,7 @@ export class WorkspaceMembersPage implements OnInit {
   readonly searchQuery = signal('');
   readonly filteredMembers = computed(() => this.filterPeople(this.members()));
   readonly filteredInvitations = computed(() => this.filterPeople(this.invitations()));
-  readonly isOwner = this.store.isOwner;
+  readonly isOwner = computed(() => this.store.isOwner() && this.store.isActive());
   readonly invitations = signal<WorkspaceInvitation[]>([]);
   readonly invitationsLoading = signal(false);
   readonly invitationsError = signal(false);

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthenticatedUserDto } from 'src/auth/dto/authenticated-user.dto';
 import { EntityType } from 'src/common/enums/entity-type.enum';
@@ -36,6 +36,7 @@ export class WorkspaceInvitationService {
   async sendWorkspaceInvitation(dto: SendInvitationToJoinToWorkspaceDto, user: AuthenticatedUserDto) {
     const senderUser = await this.authService.isValidUser(user.code);
     const workspace = await this.workspaceService.findOneBySearchTerm(dto.workspaceCode, senderUser);
+    if (workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
     const useCase = await this.sendInvitationToJoinToWorkspaceUseCase.execute(workspace, dto);
     await this.workspaceHistory.sendWorkspaceInvitation(senderUser, workspace, workspace.code, EntityType.WORKSPACE);
 
@@ -62,6 +63,7 @@ export class WorkspaceInvitationService {
   async resendWorkspaceInvitation(dto: SendInvitationToJoinToWorkspaceDto, user: AuthenticatedUserDto) {
     const senderUser = await this.authService.isValidUser(user.code);
     const workspace = await this.workspaceService.findOneBySearchTerm(dto.workspaceCode, senderUser);
+    if (workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
     const invitedUser = await this.authService.existCredential(dto.invitedEmail);
 
     await this.invitationRepository.update(

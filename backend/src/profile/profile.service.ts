@@ -41,8 +41,10 @@ export class ProfileService {
     return result;
   }
 
-  updateMe(userCode: string, dto: UpdateProfileDto) {
-    return this.updateMyProfileUseCase.execute(userCode, dto);
+  async updateMe(userCode: string, dto: UpdateProfileDto) {
+    const result = await this.updateMyProfileUseCase.execute(userCode, dto);
+    result.photo = toPhotoUrl(result.photo, result.profileCode);
+    return result;
   }
 
   async uploadPhoto(file: Express.Multer.File, userCode: string) {

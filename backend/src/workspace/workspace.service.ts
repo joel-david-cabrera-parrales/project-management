@@ -67,6 +67,11 @@ export class WorkspaceService {
     const user = await this.authService.isValidUser(updatedBy.code);
     const workspace = await this.findOneBySearchTerm(id, updatedBy);
 
+    const nextStatus = updateWorkspaceDto.status ?? workspace.status;
+    if (workspace.status !== 1 && nextStatus !== 1 && updateWorkspaceDto.status === undefined) {
+      throw new ForbiddenException('Workspace is read-only unless active');
+    }
+
     // Proceso de actualización
     this.workspaceRepository.merge(workspace, updateWorkspaceDto);
     workspace.updatedAt = new Date();
@@ -110,6 +115,7 @@ export class WorkspaceService {
     const workspace = await this.workspaceRepository.findOneBy({ code: dto.workspaceCode });
     if (!workspace) throw new NotFoundException('Workspace not found');
     if (!workspace.isAvailable) throw new NotFoundException('Workspace not available');
+    if (workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
 
     // Proceso de añadir un miembro a un workspace
     const useCase = await this.addMemberToWorkspaceUseCase.execute(dto, user, workspace);
@@ -125,6 +131,7 @@ export class WorkspaceService {
     const workspace = await this.workspaceRepository.findOneBy({ code: workspaceCode });
     if (!workspace) throw new NotFoundException('Workspace not found');
     if (!workspace.isAvailable) throw new NotFoundException('Workspace not available');
+    if (workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
 
     await this.removeMemberUseCase.execute(workspace.id, memberId, validUser);
     await this.workspaceHistory.memberRemoved(validUser, workspace, workspace.code, EntityType.WORKSPACE_MEMBER);
@@ -134,6 +141,7 @@ export class WorkspaceService {
   async updateMemberRole(workspaceCode: string, memberId: number, roleMember: 'member' | 'viewer') {
     const workspace = await this.workspaceRepository.findOneBy({ code: workspaceCode, isAvailable: true });
     if (!workspace) throw new NotFoundException('Workspace not found');
+    if (workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
 
     const member = await this.workspaceMemberRepository.findOne({
       where: { id: memberId, workspace: { id: workspace.id }, isAvailable: true },
@@ -156,6 +164,7 @@ export class WorkspaceService {
     // Validacion de datos
     await this.authService.isValidUser(user.code);
     const workspace = await this.findOneBySearchTerm(workspaceCode, user);
+    if (workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
 
     // Proceso de actualización
     const board = await this.boardRepository.findOne({ where: { code: boardCode } });
@@ -169,6 +178,7 @@ export class WorkspaceService {
   async updateBoardTitle(boardCode: string, workspaceCode: string, title: string) {
     const workspace = await this.workspaceRepository.findOneBy({ code: workspaceCode, isAvailable: true });
     if (!workspace) throw new NotFoundException('Workspace not found');
+    if (workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
 
     const board = await this.boardRepository.findOne({
       where: { code: boardCode, isAvailable: true },

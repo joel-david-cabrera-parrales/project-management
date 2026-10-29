@@ -1,10 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { StoredUserProfile } from '../../authentication/models/authentication.models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StorageService {
+  private readonly _profile = signal<StoredUserProfile | null>(this.readStoredProfile());
+  readonly profile = this._profile.asReadonly();
+
   setToken(token: string): void {
     localStorage.setItem('token', token);
   }
@@ -27,22 +30,20 @@ export class StorageService {
 
   setProfile(profile: StoredUserProfile): void {
     localStorage.setItem('profile', JSON.stringify(profile));
+    this._profile.set(profile);
   }
 
   getProfile(): StoredUserProfile | null {
-    const profile = localStorage.getItem('profile');
-    if (!profile) return null;
-
-    try {
-      return JSON.parse(profile) as StoredUserProfile;
-    } catch {
-      localStorage.removeItem('profile');
-      return null;
+    const stored = this.readStoredProfile();
+    if (this._profile() !== stored) {
+      this._profile.set(stored);
     }
+    return stored;
   }
 
   removeProfile(): void {
     localStorage.removeItem('profile');
+    this._profile.set(null);
   }
 
   setRefreshToken(token: string): void {
@@ -60,6 +61,20 @@ export class StorageService {
     localStorage.removeItem('userCode');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('profile');
+    this._profile.set(null);
+  }
+
+  private readStoredProfile(): StoredUserProfile | null {
+    if (typeof localStorage === 'undefined') return null;
+    const profile = localStorage.getItem('profile');
+    if (!profile) return null;
+
+    try {
+      return JSON.parse(profile) as StoredUserProfile;
+    } catch {
+      localStorage.removeItem('profile');
+      return null;
+    }
   }
 
   isTokenExpired(): boolean {

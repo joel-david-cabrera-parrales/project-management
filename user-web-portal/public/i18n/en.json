@@ -50,26 +50,42 @@
     "cannotUndo": "This action cannot be undone"
   },
   "settings": {
+    "eyebrow": "Preferences",
     "title": "Settings",
-    "subtitle": "Customize your app experience",
+    "subtitle": "Customize the appearance, language, and alerts for your account.",
+    "loadError": "Your settings could not be loaded. Please try again.",
+    "saveError": "Your change could not be saved. Please try again.",
+    "saved": "Preferences updated",
+    "selected": "Selected",
+    "defaultOption": "Available",
+    "activeCount": "{{count}} active",
     "tabs": {
+      "label": "Settings sections",
       "appearance": "Appearance",
       "notifications": "Notifications"
     },
     "appearance": {
-      "themeTitle": "Theme",
-      "themeSubtitle": "Choose between light and dark mode",
+      "themeTitle": "Interface theme",
+      "themeSubtitle": "Choose between light and dark color schemes",
       "darkMode": "Dark mode",
-      "darkModeDesc": "Switch to a dark color scheme",
-      "langTitle": "Language",
-      "langSubtitle": "Select your preferred language",
-      "esDesc": "Default language",
-      "enDesc": "Secondary language"
+      "darkModeDesc": "Reduce screen glare in low-light environments",
+      "lightOptionTitle": "Light mode",
+      "lightOptionHint": "High-contrast light surfaces for daytime use",
+      "darkOptionTitle": "Dark mode",
+      "darkOptionHint": "Soft dark tones for extended work sessions",
+      "langTitle": "Application language",
+      "langSubtitle": "Select the language displayed across the interface",
+      "esTitle": "Español",
+      "esDesc": "Full interface in Spanish",
+      "enTitle": "English",
+      "enDesc": "Full interface in English"
     },
     "notifications": {
-      "title": "Email Notifications",
+      "title": "Email notifications",
       "subtitle": "Choose which activities trigger email alerts",
-      "footer": "Notification settings apply to all your workspaces",
+      "footer": "Notification settings apply across all your workspaces.",
+      "enableAll": "Enable all",
+      "disableAll": "Disable all",
       "list": {
         "newMember": {
           "label": "New member joins",
@@ -77,21 +93,35 @@
         },
         "taskAssigned": {
           "label": "Task assigned",
-          "description": "When a task is assigned to you"
+          "description": "When a task on a board is assigned to you"
         },
         "taskCompleted": {
           "label": "Task completed",
-          "description": "When a task you follow is completed"
+          "description": "When a task you participate in is marked as completed"
         },
         "commentMentioned": {
           "label": "Comment mention",
-          "description": "When someone mentions you in a comment"
+          "description": "When someone mentions you directly in a comment"
         },
         "dailyDigest": {
           "label": "Daily digest",
-          "description": "A daily summary of activity across workspaces"
+          "description": "A daily summary of activity across your workspaces"
         }
       }
+    },
+    "demo": {
+      "eyebrow": "Preferences",
+      "title": "Settings",
+      "subtitle": "An initial home for your account preferences.",
+      "preview": "Preview",
+      "languageTitle": "Application language",
+      "languageDescription": "Change the language used in the interface.",
+      "changeLanguage": "Change language",
+      "appearanceTitle": "Appearance",
+      "appearanceDescription": "Switch between the light and dark themes.",
+      "notificationsTitle": "Notifications",
+      "notificationsDescription": "Manage how and when you receive updates.",
+      "comingSoon": "Coming soon"
     }
   },
   "notifications": {
@@ -291,7 +321,10 @@
     "status": {
       "active": "Active",
       "closed": "Closed",
-      "archived": "Archived"
+      "archived": "Archived",
+      "closedReadOnlyBanner": "This workspace is closed and in read-only mode.",
+      "archivedReadOnlyBanner": "This workspace is archived and in read-only mode.",
+      "manageInSettings": "Change status in Settings"
     },
     "detail": {
       "back": "Back to my workspaces",
@@ -476,6 +509,10 @@
       "nameLabel": "Workspace name",
       "descPlaceholder": "Description",
       "colorLabel": "Color",
+      "statusLabel": "Workspace status",
+      "statusActiveDesc": "Allows creating and editing content.",
+      "statusClosedDesc": "Read-only; hidden from active workspaces.",
+      "statusArchivedDesc": "Read-only; stored for reference.",
       "saveButton": "Save changes",
       "saving": "Saving...",
       "saved": "Workspace settings updated",
@@ -586,6 +623,78 @@
     }
   },
   "profile": {
+    "eyebrow": "Personal account",
+    "title": "Your profile",
+    "subtitle": "Manage your personal information, profile photo, and account security.",
+    "loadError": "Your profile information could not be loaded.",
+    "retry": "Try again",
+    "verified": "Verified",
+    "activeAccount": "Active account",
+    "photo": {
+      "change": "Change photo",
+      "uploading": "Uploading photo...",
+      "hint": "JPG, PNG, WEBP, or GIF · Max 5 MB",
+      "invalidType": "Unsupported file type. Use JPG, PNG, WEBP, or GIF images.",
+      "tooLarge": "Image exceeds the 5 MB maximum size.",
+      "uploadSuccess": "Profile photo updated",
+      "uploadError": "Profile photo could not be uploaded."
+    },
+    "personal": {
+      "title": "Personal information",
+      "subtitle": "This information is visible to your teammates across workspaces.",
+      "firstNameLabel": "First name",
+      "firstNamePlaceholder": "e.g. John",
+      "secondNameLabel": "Middle name",
+      "secondNamePlaceholder": "Optional",
+      "firstSurnameLabel": "Last name",
+      "firstSurnamePlaceholder": "e.g. Doe",
+      "secondSurnameLabel": "Second last name",
+      "secondSurnamePlaceholder": "Optional",
+      "emailLabel": "Email address",
+      "emailHint": "Your primary email is linked to your account and cannot be edited.",
+      "phoneLabel": "Phone number(s)",
+      "phonePlaceholder": "+1 555 234 5678",
+      "phoneHint": "You can separate multiple numbers with commas.",
+      "requiredNames": "First name and last name are required.",
+      "saveButton": "Save changes",
+      "saving": "Saving...",
+      "saved": "Personal information updated",
+      "saveError": "Profile changes could not be saved."
+    },
+    "security": {
+      "title": "Change password",
+      "subtitle": "Keep your account safe by using a strong, unique password.",
+      "currentPasswordLabel": "Current password",
+      "currentPasswordPlaceholder": "Enter your current password",
+      "newPasswordLabel": "New password",
+      "newPasswordPlaceholder": "At least 8 characters",
+      "confirmPasswordLabel": "Confirm new password",
+      "confirmPasswordPlaceholder": "Repeat your new password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "passwordMinLength": "New password must be at least 8 characters.",
+      "passwordMismatch": "Passwords do not match.",
+      "updateButton": "Update password",
+      "updating": "Updating...",
+      "updated": "Password updated successfully",
+      "updateError": "Password could not be updated. Please check your current password.",
+      "strength": {
+        "weak": "Weak",
+        "fair": "Fair",
+        "good": "Good",
+        "strong": "Strong"
+      }
+    },
+    "account": {
+      "title": "Account information",
+      "subtitle": "Registration details and identifiers associated with your profile.",
+      "memberSince": "Member since",
+      "dateBirth": "Date of birth",
+      "userId": "User ID",
+      "profileId": "Profile ID",
+      "copy": "Copy",
+      "copied": "Copied"
+    },
     "demo": {
       "eyebrow": "Account",
       "title": "Your profile",
@@ -595,22 +704,6 @@
       "emailLabel": "Email address",
       "nameLabel": "Name",
       "accountLabel": "Account created"
-    }
-  },
-  "settings": {
-    "demo": {
-      "eyebrow": "Preferences",
-      "title": "Settings",
-      "subtitle": "An initial home for your account preferences.",
-      "preview": "Preview",
-      "languageTitle": "Application language",
-      "languageDescription": "Change the language used in the interface.",
-      "changeLanguage": "Change language",
-      "appearanceTitle": "Appearance",
-      "appearanceDescription": "Switch between the light and dark themes.",
-      "notificationsTitle": "Notifications",
-      "notificationsDescription": "Manage how and when you receive updates.",
-      "comingSoon": "Coming soon"
     }
   }
 }

@@ -55,8 +55,8 @@ export class WorkspaceTaskDrawer {
   readonly showLabelOptions = signal(false);
   readonly selectedMemberIds = signal<number[]>([]);
   readonly availableMembers = computed(() => this.detailStore.workspace()?.members ?? []);
-  readonly canRemoveAssociations = this.detailStore.isOwner;
-  readonly canManageAttachments = computed(() => ['owner', 'member'].includes(this.detailStore.workspace()?.roleMember ?? ''));
+  readonly canRemoveAssociations = computed(() => this.detailStore.isActive() && this.detailStore.isOwner());
+  readonly canManageAttachments = computed(() => this.detailStore.isActive() && ['owner', 'member'].includes(this.detailStore.workspace()?.roleMember ?? ''));
 
   // Queued files while creating a task
   readonly pendingFiles = signal<PendingTaskFile[]>([]);

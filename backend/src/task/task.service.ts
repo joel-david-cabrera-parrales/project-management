@@ -46,8 +46,10 @@ export class TaskService {
           workspace: { code: createTaskDto.workspaceCode },
         },
       },
+      relations: { board: { workspace: true } },
     });
     if (!taskList) throw new NotFoundException('Task list no encontrado');
+    if (taskList.board.workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
 
     const { taskListId, workspaceCode, boardCode, ...task } = createTaskDto;
     void taskListId;

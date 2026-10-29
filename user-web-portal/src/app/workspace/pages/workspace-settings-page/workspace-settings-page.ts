@@ -9,7 +9,9 @@ import { WorkspaceConfirmDialog } from '../../components/workspace-confirm-dialo
 import { WorkspaceSettingsApiService } from '../../data-access/workspace-settings-api.service';
 import { WorkspaceDetailMapper } from '../../models/workspace-detail.mapper';
 import { WorkspaceDetailStore } from '../../state/workspace-detail.store';
+import { WorkspaceListStore } from '../../state/workspace-list.store';
 import { WorkspaceRichTextEditor } from '../../components/workspace-rich-text-editor/workspace-rich-text-editor';
+import { WorkspaceStatus } from '../../models/workspace-list.models';
 
 const PRESET_COLORS = ['#2563eb', '#0f766e', '#7c3aed', '#c2410c', '#be185d', '#475569'];
 
@@ -24,13 +26,20 @@ export class WorkspaceSettingsPage {
   private readonly api = inject(WorkspaceSettingsApiService);
   private readonly router = inject(Router);
   private readonly notification = inject(NotificationService);
+  private readonly listStore = inject(WorkspaceListStore);
   readonly store = inject(WorkspaceDetailStore);
 
   readonly colors = PRESET_COLORS;
+  readonly statuses: Array<{ value: WorkspaceStatus; labelKey: string; descKey: string }> = [
+    { value: 1, labelKey: 'workspace.status.active', descKey: 'workspace.settings.statusActiveDesc' },
+    { value: 2, labelKey: 'workspace.status.closed', descKey: 'workspace.settings.statusClosedDesc' },
+    { value: 3, labelKey: 'workspace.status.archived', descKey: 'workspace.settings.statusArchivedDesc' },
+  ];
   readonly title = signal('');
   readonly description = signal('');
   readonly descriptionOverLimit = computed(() => this.plainTextLength(this.description()) > 500);
   readonly color = signal(PRESET_COLORS[0]);
+  readonly status = signal<WorkspaceStatus>(1);
   readonly saving = signal(false);
   readonly saveError = signal(false);
   readonly confirmDeleteOpen = signal(false);
@@ -44,6 +53,7 @@ export class WorkspaceSettingsPage {
       this.title.set(workspace.name);
       this.description.set(workspace.description);
       this.color.set(workspace.color);
+      this.status.set((workspace.status as WorkspaceStatus) || 1);
     });
   }
 
@@ -53,11 +63,18 @@ export class WorkspaceSettingsPage {
     if (!workspace || !this.store.isOwner() || title.length < 5 || this.descriptionOverLimit() || this.saving()) return;
     this.saving.set(true);
     this.saveError.set(false);
-    this.api.updateWorkspace(workspace.code, { title, description: this.description().trim(), color: this.color() })
+    this.api.updateWorkspace(workspace.code, {
+      title,
+      description: this.description().trim(),
+      color: this.color(),
+      status: this.status(),
+    })
       .pipe(finalize(() => this.saving.set(false)), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
-          this.store.setWorkspace(WorkspaceDetailMapper.toWorkspaceDetail(response));
+          const updated = WorkspaceDetailMapper.toWorkspaceDetail(response);
+          this.store.setWorkspace(updated);
+          this.listStore.upsertFromDetail(updated);
           this.notification.success('workspace.settings.saved');
         },
         error: () => this.saveError.set(true),

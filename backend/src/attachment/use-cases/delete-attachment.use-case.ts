@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Attachment } from '../entities/attachment.entity';
@@ -21,6 +21,7 @@ export class DeleteAttachmentUseCaseImp implements DeleteAttachmentUseCase {
       relations: { task: { taskList: { board: { workspace: true } } } },
     });
     if (!attachment) throw new NotFoundException('Attachment not found');
+    if (attachment.task.taskList.board.workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
     await this.authorizeWorkspaceMembership.execute(attachment.task.taskList.board.workspace.code, userId, [
       'owner',
       'member',

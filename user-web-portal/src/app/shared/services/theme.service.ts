@@ -9,10 +9,14 @@ export class ThemeService {
   }
 
   toggle(): void {
-    const next = !this.isDark();
-    this.isDark.set(next);
-    this.apply(next);
-    if (typeof localStorage !== 'undefined') localStorage.setItem('app-theme', next ? 'dark' : 'light');
+    this.setTheme(this.isDark() ? 'light' : 'dark');
+  }
+
+  setTheme(theme: 'light' | 'dark'): void {
+    const dark = theme === 'dark';
+    this.isDark.set(dark);
+    this.apply(dark);
+    if (typeof localStorage !== 'undefined') localStorage.setItem('app-theme', theme);
   }
 
   private apply(dark: boolean): void {

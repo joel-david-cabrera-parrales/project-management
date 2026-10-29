@@ -65,8 +65,8 @@ export class WorkspaceTaskActivity {
   readonly mentionFilter = signal('');
 
   readonly currentMemberId = computed(() => this.detailStore.workspace()?.workspaceMemberId ?? null);
-  readonly canComment = computed(() => this.detailStore.workspace()?.roleMember !== 'viewer');
-  readonly canManageAttachments = computed(() => ['owner', 'member'].includes(this.detailStore.workspace()?.roleMember ?? ''));
+  readonly canComment = computed(() => this.detailStore.isActive() && this.detailStore.workspace()?.roleMember !== 'viewer');
+  readonly canManageAttachments = computed(() => this.detailStore.isActive() && ['owner', 'member'].includes(this.detailStore.workspace()?.roleMember ?? ''));
 
   readonly mentionCandidates = computed<WorkspaceDetailMember[]>(() => {
     const workspaceMembers = this.detailStore.workspace()?.members ?? [];
@@ -380,7 +380,7 @@ export class WorkspaceTaskActivity {
   }
 
   canDeleteComment(comment: WorkspaceTaskComment): boolean {
-    return comment.author.id === this.currentMemberId() || this.detailStore.isOwner();
+    return this.detailStore.isActive() && (comment.author.id === this.currentMemberId() || this.detailStore.isOwner());
   }
 
   fileExt(fileName: string): string {

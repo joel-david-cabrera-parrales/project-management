@@ -22,6 +22,7 @@ export class UpdateLabelUseCaseImp implements UpdateLabelUseCase {
     if (!label) throw new NotFoundException('Label not found');
     if (dto.workspaceCode && dto.workspaceCode !== label.workspace.code)
       throw new ForbiddenException('Label does not belong to the requested workspace');
+    if (label.workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
     await this.authorizeWorkspaceMembership.execute(label.workspace.code, userId, ['owner', 'member']);
 
     if (dto.name !== undefined) label.name = dto.name;

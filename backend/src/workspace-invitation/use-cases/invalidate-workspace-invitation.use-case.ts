@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuthorizeWorkspaceMembershipUseCase } from 'src/common/classes/authorize-workspace-membership.class';
@@ -19,6 +19,7 @@ export class InvalidateWorkspaceInvitationUseCaseImp implements InvalidateWorksp
       relations: { workspace: true },
     });
     if (!invitation) throw new NotFoundException('Invitation not found');
+    if (invitation.workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
     await this.authorizeWorkspaceMembership.execute(invitation.workspace.code, userId, ['owner']);
     invitation.isAvailable = false;
     await this.invitationRepository.save(invitation);

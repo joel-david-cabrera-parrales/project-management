@@ -27,6 +27,18 @@
           <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
           {{ store.workspace()!.name }}
         </button>
+        @if (statusBannerKey(); as bannerKey) {
+          <div class="workspace-readonly-banner" [class.banner-closed]="store.workspace()!.status === 2"
+            [class.banner-archived]="store.workspace()!.status === 3" role="status">
+            <span class="workspace-readonly-dot" aria-hidden="true"></span>
+            <span>{{ bannerKey | translate }}</span>
+            @if (store.isOwner()) {
+              <a [routerLink]="['/workspace', store.workspace()!.code, 'settings']">
+                {{ 'workspace.status.manageInSettings' | translate }}
+              </a>
+            }
+          </div>
+        }
         <router-outlet />
       </main>
     </div>

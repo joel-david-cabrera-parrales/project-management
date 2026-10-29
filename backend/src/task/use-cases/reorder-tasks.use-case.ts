@@ -25,6 +25,7 @@ export class ReorderTasksUseCaseImp implements ReorderTasksUseCase {
     if (!list) throw new NotFoundException('Task list not found');
     if (list.board.workspace.code !== workspaceCode)
       throw new ForbiddenException('Task list does not belong to the requested workspace');
+    if (list.board.workspace.status !== 1) throw new ForbiddenException('Workspace is not active');
     await this.authorizeWorkspaceMembership.execute(workspaceCode, userId, ['owner', 'member']);
     if (dto.taskIds.length === 0) return;
 
