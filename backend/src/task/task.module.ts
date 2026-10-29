@@ -26,6 +26,7 @@ import { LabelModule } from 'src/label/label.module';
 import { CommonModule } from 'src/common/common.module';
 import { AuthorizeTaskAccessUseCase } from './classes/authorize-task-access.class';
 import { AuthorizeTaskAccessUseCaseImp } from './use-cases/authorize-task-access.use-case';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   controllers: [TaskController],
@@ -68,6 +69,7 @@ import { AuthorizeTaskAccessUseCaseImp } from './use-cases/authorize-task-access
     AuthModule,
     LabelModule,
     CommonModule,
+    NotificationModule,
   ],
   exports: [
     TypeOrmModule,

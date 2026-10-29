@@ -1,8 +1,8 @@
-import { Component, computed, DestroyRef, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, DestroyRef, effect, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize, forkJoin, map, Observable } from 'rxjs';
+import { distinctUntilChanged, finalize, forkJoin, map, Observable } from 'rxjs';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { NotificationService } from '../../../shared/services/notification.service';
 import { TranslationService } from '../../../shared/services/translation.service';
@@ -22,6 +22,7 @@ import { WorkspaceDetailStore } from '../../state/workspace-detail.store';
 })
 export class WorkspaceBoardPage {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly detailApi = inject(WorkspaceDetailApiService);
   private readonly taskApi = inject(WorkspaceTasksApiService);
@@ -29,6 +30,7 @@ export class WorkspaceBoardPage {
   private readonly translation = inject(TranslationService);
   readonly store = inject(WorkspaceDetailStore);
   readonly boardCode = signal<string | null>(null);
+  private readonly notificationTaskCode = signal<string | null>(null);
   readonly selectedBoard = computed(() => {
     const boards = this.store.workspace()?.boards ?? [];
     const code = this.boardCode();
@@ -62,6 +64,7 @@ export class WorkspaceBoardPage {
   readonly newListTitle = signal('');
   readonly deleteListTarget = signal<{ id: number; title: string } | null>(null);
   private editRequestVersion = 0;
+  private deepLinkedTask: string | null = null;
 
   constructor() {
     this.route.paramMap
@@ -70,6 +73,41 @@ export class WorkspaceBoardPage {
         this.editingBoardTitle.set(false);
         this.boardCode.set(code);
       });
+
+    this.route.queryParamMap
+      .pipe(map((params) => params.get('task')), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+      .subscribe((taskCode) => this.notificationTaskCode.set(taskCode));
+
+    effect(() => {
+      const workspace = this.store.workspace();
+      const taskCode = this.notificationTaskCode();
+      if (!taskCode) {
+        this.deepLinkedTask = null;
+        return;
+      }
+      if (!workspace || this.deepLinkedTask === taskCode) return;
+
+      const selectedBoardCode = this.boardCode();
+      const boards = selectedBoardCode
+        ? [...workspace.boards.filter((board) => board.code === selectedBoardCode), ...workspace.boards.filter((board) => board.code !== selectedBoardCode)]
+        : workspace.boards;
+      for (const board of boards) {
+        for (const list of board.taskList) {
+          const task = list.tasks.find((item) => item.code === taskCode);
+          if (!task) continue;
+          this.deepLinkedTask = taskCode;
+          this.boardCode.set(board.code);
+          this.openEditTask({ task, list });
+          void this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { task: null, comment: null },
+            queryParamsHandling: 'merge',
+            replaceUrl: true,
+          });
+          return;
+        }
+      }
+    });
   }
 
   startEditBoardTitle(): void {

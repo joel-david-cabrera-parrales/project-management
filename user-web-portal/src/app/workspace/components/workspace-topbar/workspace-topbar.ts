@@ -8,12 +8,14 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { TranslationService } from '../../../shared/services/translation.service';
 import { ThemeService } from '../../../shared/services/theme.service';
 import { WorkspaceListStore } from '../../state/workspace-list.store';
+import { NotificationCenterService } from '../../../shared/services/notification-center.service';
+import { NotificationCenterPanel } from '../../../shared/components/notification-center-panel/notification-center-panel';
 
 type TopbarPopover = 'navigation' | 'apps' | 'search' | 'help' | 'notifications' | 'profile' | null;
 
 @Component({
   selector: 'app-workspace-topbar',
-  imports: [RouterLink, TranslatePipe, UpperCasePipe],
+  imports: [RouterLink, TranslatePipe, UpperCasePipe, NotificationCenterPanel],
   templateUrl: './workspace-topbar.html',
   styleUrl: './workspace-topbar.css',
 })
@@ -25,6 +27,7 @@ export class WorkspaceTopbar {
   readonly translation = inject(TranslationService);
   readonly theme = inject(ThemeService);
   readonly store = inject(WorkspaceListStore);
+  readonly notificationCenter = inject(NotificationCenterService);
 
   readonly activePopover = signal<TopbarPopover>(null);
   readonly showWorkspaceSearch = signal(false);
@@ -80,6 +83,7 @@ export class WorkspaceTopbar {
   }
 
   logout(): void {
+    this.notificationCenter.disconnect();
     this.storage.removeAll();
     this.closePopover();
     void this.router.navigateByUrl('/auth/signin');

@@ -1,0 +1,31 @@
+:host { position: absolute; z-index: 55; top: calc(100% + 0.5rem); right: 0.35rem; width: min(26rem, calc(100vw - 1rem)); }
+.notification-panel { overflow: hidden; border: 1px solid var(--border-default); border-radius: 0.9rem; background: var(--bg-raised); color: var(--text-primary); box-shadow: 0 20px 55px rgb(15 23 42 / 18%); }
+.notification-panel-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; border-bottom: 1px solid var(--border-subtle); padding: 0.9rem 1rem; }
+.notification-panel-header h2 { margin: 0; font-size: 0.84rem; font-weight: 800; }
+.notification-panel-header p { margin: 0.2rem 0 0; color: var(--text-tertiary); font-size: 0.67rem; }
+.notification-panel-mark-all, .notification-panel-footer button { border: 0; background: transparent; color: var(--accent); cursor: pointer; font: inherit; font-size: 0.65rem; font-weight: 750; }
+.notification-panel-mark-all:disabled, .notification-panel-footer button:disabled { cursor: default; opacity: 0.45; }
+.notification-panel-list { max-height: min(27rem, calc(100vh - 10rem)); overflow: auto; padding: 0.35rem; }
+.notification-row { position: relative; display: flex; align-items: flex-start; gap: 0.2rem; border-radius: 0.6rem; padding: 0.45rem; }
+.notification-row:hover { background: var(--bg-base); }
+.notification-row-unread { background: color-mix(in srgb, var(--accent-alpha) 48%, transparent); }
+.notification-row-open { display: flex; min-width: 0; flex: 1; align-items: flex-start; gap: 0.65rem; border: 0; background: transparent; padding: 0.2rem; color: inherit; cursor: pointer; text-align: left; }
+.notification-avatar { display: grid; width: 2.25rem; height: 2.25rem; flex: 0 0 auto; overflow: hidden; place-items: center; border-radius: 0.7rem; background: var(--accent-alpha); color: var(--accent); font-size: 0.75rem; font-weight: 800; }
+.notification-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.notification-type-icon { font-size: 1rem; }
+.notification-row-copy { display: grid; min-width: 0; flex: 1; gap: 0.22rem; }
+.notification-row-meta { display: flex; justify-content: space-between; gap: 0.5rem; }
+.notification-row-meta strong { overflow: hidden; font-size: 0.7rem; text-overflow: ellipsis; white-space: nowrap; }
+.notification-row-meta time { flex: 0 0 auto; color: var(--text-tertiary); font-size: 0.6rem; }
+.notification-row-message { display: -webkit-box; overflow: hidden; color: var(--text-secondary); font-size: 0.66rem; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.notification-row-type { color: var(--text-tertiary); font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.notification-unread-dot { width: 0.4rem; height: 0.4rem; flex: 0 0 auto; align-self: center; border-radius: 50%; background: var(--accent); }
+.notification-delete { display: grid; width: 1.7rem; height: 1.7rem; flex: 0 0 auto; place-items: center; border: 0; border-radius: 0.4rem; background: transparent; color: var(--text-tertiary); cursor: pointer; opacity: 0; }
+.notification-row:hover .notification-delete, .notification-delete:focus-visible { opacity: 1; }
+.notification-delete:hover { background: var(--danger-alpha, rgb(239 68 68 / 10%)); color: var(--danger); }
+.notification-delete svg { width: 0.9rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.4; }
+.notification-panel-state, .notification-panel-empty { display: grid; min-height: 10rem; place-content: center; justify-items: center; gap: 0.4rem; padding: 1.4rem; text-align: center; }
+.notification-panel-state, .notification-panel-empty > span:last-child { color: var(--text-tertiary); font-size: 0.68rem; }
+.notification-panel-empty strong { font-size: 0.76rem; }
+.notification-empty-icon { display: grid; width: 2.1rem; height: 2.1rem; margin-bottom: 0.25rem; place-items: center; border-radius: 50%; background: var(--accent-alpha); color: var(--accent); font-weight: 800; }
+.notification-panel-footer { display: grid; place-items: center; border-top: 1px solid var(--border-subtle); padding: 0.7rem; }

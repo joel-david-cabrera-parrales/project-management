@@ -14,6 +14,7 @@ import { GetWorkspaceInvitationUseCase } from './classes/get-workspace-invitatio
 import { GetWorkspaceInvitationUseCaseImp } from './use-cases/get-workspace-invitation.use-case';
 import { InvalidateWorkspaceInvitationUseCase } from './classes/invalidate-workspace-invitation.class';
 import { InvalidateWorkspaceInvitationUseCaseImp } from './use-cases/invalidate-workspace-invitation.use-case';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   controllers: [WorkspaceInvitationController],
@@ -24,7 +25,7 @@ import { InvalidateWorkspaceInvitationUseCaseImp } from './use-cases/invalidate-
     { provide: GetWorkspaceInvitationUseCase, useClass: GetWorkspaceInvitationUseCaseImp },
     { provide: InvalidateWorkspaceInvitationUseCase, useClass: InvalidateWorkspaceInvitationUseCaseImp },
   ],
-  imports: [TypeOrmModule.forFeature([WorkspaceInvitation]), CommonModule, AuthModule, WorkspaceModule],
+  imports: [TypeOrmModule.forFeature([WorkspaceInvitation]), CommonModule, AuthModule, WorkspaceModule, NotificationModule],
   exports: [TypeOrmModule],
 })
 export class WorkspaceInvitationModule {}

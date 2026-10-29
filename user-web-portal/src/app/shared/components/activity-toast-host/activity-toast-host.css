@@ -1,0 +1,17 @@
+.activity-toast-stack { position: fixed; z-index: 1000; top: 4.6rem; right: 1rem; display: grid; width: min(25rem, calc(100vw - 2rem)); gap: 0.65rem; pointer-events: none; }
+.activity-toast { display: grid; grid-template-columns: 2.65rem minmax(0, 1fr) 1.5rem; align-items: start; gap: 0.7rem; border: 1px solid var(--border-default); border-radius: 0.9rem; background: var(--bg-raised); padding: 0.8rem; color: var(--text-primary); box-shadow: 0 18px 48px rgb(15 23 42 / 18%); pointer-events: auto; animation: activity-toast-enter 240ms cubic-bezier(.2,.8,.2,1); }
+.activity-toast-unread { border-left: 3px solid var(--accent); }
+.activity-toast-avatar { display: grid; width: 2.65rem; height: 2.65rem; overflow: hidden; place-items: center; border-radius: 0.75rem; background: var(--accent-alpha); color: var(--accent); font-size: 0.78rem; font-weight: 800; }
+.activity-toast-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.activity-toast-avatar svg { width: 1.15rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
+.activity-toast-content { display: grid; min-width: 0; gap: 0.28rem; border: 0; background: transparent; padding: 0; color: inherit; cursor: pointer; text-align: left; }
+.activity-toast-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
+.activity-toast-heading strong { overflow: hidden; font-size: 0.76rem; text-overflow: ellipsis; white-space: nowrap; }
+.activity-toast-heading time { flex: 0 0 auto; color: var(--text-tertiary); font-size: 0.63rem; }
+.activity-toast-message { display: -webkit-box; overflow: hidden; color: var(--text-secondary); font-size: 0.7rem; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.activity-toast-action { color: var(--accent); font-size: 0.67rem; font-weight: 750; }
+.activity-toast-close { display: grid; width: 1.45rem; height: 1.45rem; place-items: center; border: 0; border-radius: 0.35rem; background: transparent; color: var(--text-tertiary); cursor: pointer; }
+.activity-toast-close:hover { background: var(--bg-base); color: var(--text-primary); }
+.activity-toast-close svg { width: 0.85rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-width: 1.7; }
+@keyframes activity-toast-enter { from { opacity: 0; transform: translateY(-0.5rem) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .activity-toast { animation: none; } }

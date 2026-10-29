@@ -173,7 +173,7 @@ export class TaskService {
   async assignMember(taskId: number, dto: AssignMemberDto, userId: number, workspaceCode: string) {
     await this.authorizeTaskAccess.execute(taskId, userId, ['owner', 'member'], workspaceCode);
     await this.assignMemberUseCase.execute(taskId, dto);
-    this.sendTaskAssignedEmailUseCase.execute(dto.workspaceMemberId, taskId).catch(() => {});
+    this.sendTaskAssignedEmailUseCase.execute(dto.workspaceMemberId, taskId, userId).catch(() => {});
     return this.findOne(taskId);
   }
 

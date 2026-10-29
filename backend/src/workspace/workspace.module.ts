@@ -35,6 +35,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { TaskListModule } from 'src/task-list/task-list.module';
 import { TaskModule } from 'src/task/task.module';
 import { CommonModule } from 'src/common/common.module';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   controllers: [WorkspaceController],
@@ -92,6 +93,7 @@ import { CommonModule } from 'src/common/common.module';
     TaskListModule,
     TaskModule,
     CommonModule,
+    NotificationModule,
   ],
   exports: [
     CreateWorkspaceHistoryUseCase,

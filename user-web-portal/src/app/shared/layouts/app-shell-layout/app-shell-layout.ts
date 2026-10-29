@@ -6,6 +6,7 @@ import { WorkspaceCreateModal } from '../../../workspace/components/workspace-cr
 import { WorkspaceTopbar } from '../../../workspace/components/workspace-topbar/workspace-topbar';
 import { WorkspaceListStore } from '../../../workspace/state/workspace-list.store';
 import { TranslationService } from '../../services/translation.service';
+import { NotificationCenterService } from '../../services/notification-center.service';
 
 @Component({
   selector: 'app-shell-layout',
@@ -19,9 +20,11 @@ export class AppShellLayout {
   readonly workspaceStore = inject(WorkspaceListStore);
   readonly isWorkspaceDetail = signal(false);
   private readonly translation = inject(TranslationService);
+  private readonly notificationCenter = inject(NotificationCenterService);
 
   constructor() {
     void this.translation.setLanguage(this.translation.currentLang());
+    this.notificationCenter.start();
     this.syncDetailLayout();
     this.router.events
       .pipe(
@@ -34,6 +37,10 @@ export class AppShellLayout {
 
   onWorkspaceCreated(): void {
     void this.router.navigateByUrl('/workspace');
+  }
+
+  ngOnDestroy(): void {
+    this.notificationCenter.disconnect();
   }
 
   private syncDetailLayout(): void {

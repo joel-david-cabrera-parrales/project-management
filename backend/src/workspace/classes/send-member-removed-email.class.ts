@@ -1,3 +1,3 @@
 export abstract class SendMemberRemovedEmailUseCase {
-  abstract execute(memberId: number): Promise<void>;
+  abstract execute(memberId: number, removedByUserId?: number): Promise<void>;
 }

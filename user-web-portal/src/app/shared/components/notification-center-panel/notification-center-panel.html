@@ -1,0 +1,72 @@
+<section class="notification-panel" aria-labelledby="notification-panel-title">
+  <header class="notification-panel-header">
+    <div>
+      <h2 id="notification-panel-title">{{ 'notificationCenter.title' | translate }}</h2>
+      <p>{{ 'notificationCenter.unreadCount' | translate:{ count: center.unreadCount() } }}</p>
+    </div>
+    <button type="button" class="notification-panel-mark-all" [disabled]="center.unreadCount() === 0"
+      (click)="markAllRead()">{{ 'notificationCenter.markAllRead' | translate }}</button>
+  </header>
+
+  @if (center.loading() && center.notifications().length === 0) {
+    <div class="notification-panel-state">{{ 'notificationCenter.loading' | translate }}</div>
+  } @else if (center.loadError() && center.notifications().length === 0) {
+    <div class="notification-panel-empty">
+      <strong>{{ 'notificationCenter.loadError' | translate }}</strong>
+      <button type="button" class="notification-panel-mark-all" (click)="retry()">{{ 'notificationCenter.retry' | translate }}</button>
+    </div>
+  } @else if (center.notifications().length === 0) {
+    <div class="notification-panel-empty">
+      <span class="notification-empty-icon" aria-hidden="true">✓</span>
+      <strong>{{ 'notificationCenter.emptyTitle' | translate }}</strong>
+      <span>{{ 'notificationCenter.emptyDescription' | translate }}</span>
+    </div>
+  } @else {
+    <div class="notification-panel-list">
+      @for (notification of center.notifications(); track notification.id) {
+        <article class="notification-row" [class.notification-row-unread]="!notification.read">
+          <button type="button" class="notification-row-open" (click)="open(notification)">
+            <span class="notification-avatar">
+              @if (notification.data?.actor?.photoUrl; as photoUrl) {
+                <img [src]="photoUrl" [alt]="notification.data?.actor?.name ?? ''" />
+              } @else if (notification.data?.actor?.initials; as initials) {
+                <span>{{ initials }}</span>
+              } @else {
+                <span class="notification-type-icon" aria-hidden="true">
+                  @switch (notification.type) {
+                    @case ('task_assigned') { ↗ }
+                    @case ('task_completed') { ✓ }
+                    @case ('comment_mention') { @ }
+                    @case ('new_member') { + }
+                    @case ('member_removed') { − }
+                    @case ('workspace_invitation') { ✉ }
+                  }
+                </span>
+              }
+            </span>
+            <span class="notification-row-copy">
+              <span class="notification-row-meta">
+                <strong>{{ notification.title }}</strong>
+                <time>{{ relativeTime(notification.createdAt) }}</time>
+              </span>
+              <span class="notification-row-message">{{ notification.message }}</span>
+              <span class="notification-row-type">{{ typeLabel(notification.type) | translate }}</span>
+            </span>
+            @if (!notification.read) { <span class="notification-unread-dot" aria-label="Unread"></span> }
+          </button>
+          <button type="button" class="notification-delete" [attr.aria-label]="'notificationCenter.delete' | translate"
+            [title]="'notificationCenter.delete' | translate" (click)="remove($event, notification)">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6h12M8 6V4h4v2m-6 0 .7 10h6.6L14 6M8.5 9v4m3-4v4" /></svg>
+          </button>
+        </article>
+      }
+    </div>
+    @if (center.hasMore()) {
+      <footer class="notification-panel-footer">
+        <button type="button" [disabled]="center.loadingMore()" (click)="loadMore()">
+          {{ (center.loadingMore() ? 'notificationCenter.loading' : 'notificationCenter.loadMore') | translate }}
+        </button>
+      </footer>
+    }
+  }
+</section>

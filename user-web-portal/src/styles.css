@@ -4,6 +4,9 @@
 /* Dark mode by class on <html>, not by prefers-color-scheme */
 @custom-variant dark (&:where(.dark, .dark *));
 
+.topbar-notifications-button { position: relative; }
+.topbar-notification-badge { position: absolute; top: 0; right: 0; min-width: 1rem; border: 2px solid var(--bg-raised); border-radius: 1rem; background: var(--danger); padding: 0 0.17rem; color: white; font-size: 0.52rem; font-weight: 800; text-align: center; }
+
 /* Tiptap mounts ProseMirror into a dynamic node, so these editor rules must be global. */
 .workspace-rich-text-surface,
 .workspace-rich-text-surface:focus,

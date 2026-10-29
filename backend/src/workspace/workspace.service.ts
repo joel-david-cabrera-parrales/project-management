@@ -135,7 +135,7 @@ export class WorkspaceService {
 
     await this.removeMemberUseCase.execute(workspace.id, memberId, validUser);
     await this.workspaceHistory.memberRemoved(validUser, workspace, workspace.code, EntityType.WORKSPACE_MEMBER);
-    this.sendMemberRemovedEmailUseCase.execute(memberId).catch(() => {});
+    this.sendMemberRemovedEmailUseCase.execute(memberId, validUser.id).catch(() => {});
   }
 
   async updateMemberRole(workspaceCode: string, memberId: number, roleMember: 'member' | 'viewer') {

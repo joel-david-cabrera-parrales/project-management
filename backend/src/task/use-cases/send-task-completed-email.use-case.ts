@@ -8,6 +8,9 @@ import { UserSettings } from 'src/profile/interfaces/settings.interface';
 import { Task } from '../entities/task.entity';
 import { SendTaskCompletedEmailUseCase } from '../classes/send-task-completed-email.class';
 import { taskCompletedTemplate, TaskCompletedData } from '../templates/task-completed.template';
+import { NotificationService } from 'src/notification/notification.service';
+import { NotificationType } from 'src/notification/notification.types';
+import { toPhotoUrl } from 'src/common/helpers/photo-url.helper';
 
 @Injectable()
 export class SendTaskCompletedEmailUseCaseImp implements SendTaskCompletedEmailUseCase {
@@ -18,6 +21,7 @@ export class SendTaskCompletedEmailUseCaseImp implements SendTaskCompletedEmailU
     private readonly userRepo: Repository<UserProfile>,
     private readonly authService: AuthService,
     private readonly mailerService: MailerService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async execute(taskId: number, completedByCode: string): Promise<void> {
@@ -35,13 +39,34 @@ export class SendTaskCompletedEmailUseCaseImp implements SendTaskCompletedEmailU
     if (!task) return;
 
     const completer = await this.authService.isValidUser(completedByCode);
+    const completerUser = await this.userRepo.findOne({ where: { code: completedByCode }, relations: { profile: true } });
     const completedByName = `${completer.firstName} ${completer.lastName}`;
     const workspace = task.taskList.board.workspace;
 
     for (const assignment of task.assignments) {
       const profile = assignment.workspaceMember.user.profile;
       const settings = profile.settings as unknown as UserSettings;
-      if (!settings.notifications.email.taskCompleted) continue;
+      await this.notificationService.create({
+        userId: assignment.workspaceMember.user.id,
+        type: NotificationType.TASK_COMPLETED,
+        title: 'Tarea completada',
+        message: `La tarea «${task.title}» fue completada por ${completedByName}.`,
+        data: {
+          taskId,
+          taskCode: task.code,
+          boardCode: task.taskList.board.code,
+          workspaceCode: workspace.code,
+          ...(completerUser?.profile ? {
+            actor: {
+              id: completerUser.id,
+              name: completedByName,
+              photoUrl: toPhotoUrl(completerUser.profile.photo, completerUser.profile.code),
+              initials: `${completerUser.profile.firstName.charAt(0)}${completerUser.profile.firstSurname.charAt(0)}`.toUpperCase(),
+            },
+          } : {}),
+        },
+      });
+      if (!settings.notifications?.email?.taskCompleted) continue;
 
       const name = `${profile.firstName} ${profile.firstSurname}`;
       const data: TaskCompletedData = {

@@ -9,6 +9,8 @@ import { WorkspaceInvitation } from '../entities/workspace-invitation.entity';
 import { InvitationTemplateData, invitationToWorkspaceTemplate } from '../templates/invitation-to-workspace.template';
 import { MailerService } from '../../common/services/mailer/mailer.service';
 import { FindOneWorkspaceUseCase } from 'src/workspace/classes/find-one-workspace.class';
+import { NotificationService } from 'src/notification/notification.service';
+import { NotificationType } from 'src/notification/notification.types';
 
 @Injectable()
 export class SendInvitationToJoinToWorkspaceUseCaseImp extends SendInvitationToJoinToWorkspaceUseCase {
@@ -18,6 +20,7 @@ export class SendInvitationToJoinToWorkspaceUseCaseImp extends SendInvitationToJ
     private readonly findoneworkspace: FindOneWorkspaceUseCase,
     private readonly authService: AuthService,
     private readonly mailService: MailerService,
+    private readonly notificationService: NotificationService,
   ) {
     super();
   }
@@ -37,6 +40,25 @@ export class SendInvitationToJoinToWorkspaceUseCaseImp extends SendInvitationToJ
     });
 
     const $invitation = await this.workspaceInvitacionRepository.save(invitation);
+
+    await this.notificationService.create({
+      userId: invitedUserProfile.id,
+      type: NotificationType.WORKSPACE_INVITATION,
+      title: 'Invitación a un workspace',
+      message: `${inviterUserProfile.firstName} ${inviterUserProfile.lastName} te invitó a «${workspace.title}».`,
+      data: {
+        workspaceId: workspace.id,
+        workspaceCode: workspace.code,
+        invitationCode: $invitation.code,
+        actorId: inviterUserProfile.id,
+        actor: {
+          id: inviterUserProfile.id,
+          name: `${inviterUserProfile.firstName} ${inviterUserProfile.lastName}`.trim(),
+          photoUrl: null,
+          initials: `${inviterUserProfile.firstName.charAt(0)}${inviterUserProfile.lastName.charAt(0)}`.toUpperCase(),
+        },
+      },
+    });
 
     // TODO: enviar con la invitación con mail service
     const iworkspace = await this.findoneworkspace.execute(workspace.code);

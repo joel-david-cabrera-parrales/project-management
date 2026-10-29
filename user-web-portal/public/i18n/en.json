@@ -167,6 +167,27 @@
     "workspaces": "Workspaces",
     "logout": "Sign out"
   },
+  "notificationCenter": {
+    "title": "Notifications",
+    "unreadCount": "{{count}} unread",
+    "markAllRead": "Mark all as read",
+    "loading": "Loading notifications...",
+    "loadError": "Notifications could not be loaded.",
+    "retry": "Try again",
+    "emptyTitle": "You're all caught up",
+    "emptyDescription": "Important activity will show up here.",
+    "open": "Open notification",
+    "delete": "Delete notification",
+    "loadMore": "Load earlier",
+    "types": {
+      "task_assigned": "Task assigned",
+      "task_completed": "Task completed",
+      "comment_mention": "Comment mention",
+      "new_member": "New member",
+      "member_removed": "Member removed",
+      "workspace_invitation": "Workspace invitation"
+    }
+  },
   "auth": {
     "brand": {
       "eyebrow": "Team task management",

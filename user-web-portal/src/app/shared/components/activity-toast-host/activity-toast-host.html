@@ -1,0 +1,29 @@
+<div class="activity-toast-stack" aria-live="polite" aria-relevant="additions">
+  @for (toast of center.activityToasts(); track toast.id) {
+    <article class="activity-toast" [class.activity-toast-unread]="!toast.notification.read">
+      <div class="activity-toast-avatar">
+        @if (toast.notification.data?.actor?.photoUrl; as photoUrl) {
+          <img [src]="photoUrl" [alt]="toast.notification.data?.actor?.name ?? ''" />
+        } @else if (toast.notification.data?.actor?.initials; as initials) {
+          <span>{{ initials }}</span>
+        } @else {
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M10 21h4" />
+          </svg>
+        }
+      </div>
+      <button class="activity-toast-content" type="button" (click)="open(toast)">
+        <span class="activity-toast-heading">
+          <strong>{{ toast.notification.title }}</strong>
+          <time>{{ relativeTime(toast.notification.createdAt) }}</time>
+        </span>
+        <span class="activity-toast-message">{{ toast.notification.message }}</span>
+        <span class="activity-toast-action">{{ 'notificationCenter.open' | translate }} <span aria-hidden="true">↗</span></span>
+      </button>
+      <button class="activity-toast-close" type="button" [attr.aria-label]="'common.close' | translate"
+        (click)="close(toast)">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15" /></svg>
+      </button>
+    </article>
+  }
+</div>

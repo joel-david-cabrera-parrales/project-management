@@ -167,6 +167,27 @@
     "workspaces": "Espacios de trabajo",
     "logout": "Cerrar sesión"
   },
+  "notificationCenter": {
+    "title": "Notificaciones",
+    "unreadCount": "{{count}} sin leer",
+    "markAllRead": "Marcar todo leído",
+    "loading": "Cargando notificaciones...",
+    "loadError": "No se pudieron cargar las notificaciones.",
+    "retry": "Reintentar",
+    "emptyTitle": "Todo al día",
+    "emptyDescription": "Cuando haya actividad importante, aparecerá aquí.",
+    "open": "Abrir notificación",
+    "delete": "Eliminar notificación",
+    "loadMore": "Cargar anteriores",
+    "types": {
+      "task_assigned": "Tarea asignada",
+      "task_completed": "Tarea completada",
+      "comment_mention": "Mención en comentario",
+      "new_member": "Nuevo miembro",
+      "member_removed": "Miembro eliminado",
+      "workspace_invitation": "Invitación a workspace"
+    }
+  },
   "auth": {
     "brand": {
       "eyebrow": "Gestión de tareas, en equipo",

@@ -8,6 +8,16 @@ export interface EmailNotifications {
 
 export interface Notifications {
   email: EmailNotifications;
+  inApp: InAppNotifications;
+}
+
+export interface InAppNotifications {
+  newMember: boolean;
+  taskAssigned: boolean;
+  taskCompleted: boolean;
+  commentMentioned: boolean;
+  memberRemoved: boolean;
+  workspaceInvitation: boolean;
 }
 
 export interface UserSettings {
@@ -26,6 +36,14 @@ export const DEFAULT_SETTINGS: UserSettings = {
       taskCompleted: false,
       commentMentioned: true,
       dailyDigest: false,
+    },
+    inApp: {
+      newMember: true,
+      taskAssigned: true,
+      taskCompleted: true,
+      commentMentioned: true,
+      memberRemoved: true,
+      workspaceInvitation: true,
     },
   },
 };

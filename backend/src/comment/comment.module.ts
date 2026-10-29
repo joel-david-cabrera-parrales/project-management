@@ -14,6 +14,7 @@ import { DeleteCommentUseCase } from './classes/delete-comment.class';
 import { DeleteCommentUseCaseImp } from './use-cases/delete-comment.use-case';
 import { SendMentionedEmailUseCase } from './classes/send-mentioned-email.class';
 import { SendMentionedEmailUseCaseImp } from './use-cases/send-mentioned-email.use-case';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   controllers: [CommentController],
@@ -29,6 +30,7 @@ import { SendMentionedEmailUseCaseImp } from './use-cases/send-mentioned-email.u
     TaskModule,
     WorkspaceModule,
     CommonModule,
+    NotificationModule,
   ],
   exports: [TypeOrmModule, CommentService],
 })

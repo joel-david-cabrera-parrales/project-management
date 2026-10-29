@@ -71,9 +71,12 @@
         [attr.aria-label]="'auth.brand.toggleLanguage' | translate">
         {{ translation.currentLang() | uppercase }}
       </button>
-      <button class="topbar-icon-button" type="button" [attr.aria-label]="'appShell.notifications' | translate"
+      <button class="topbar-icon-button topbar-notifications-button" type="button" [attr.aria-label]="'appShell.notifications' | translate"
         [attr.aria-expanded]="activePopover() === 'notifications'" (click)="togglePopover('notifications')">
         <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M15.5 8a5.5 5.5 0 0 0-11 0c0 6-2 6-2 7.5h15C17.5 14 15.5 14 15.5 8ZM8 18h4"/></svg>
+        @if (notificationCenter.unreadCount() > 0) {
+          <span class="topbar-notification-badge">{{ notificationCenter.unreadCount() > 99 ? '99+' : notificationCenter.unreadCount() }}</span>
+        }
       </button>
       <span class="topbar-divider" aria-hidden="true"></span>
       <button class="topbar-profile-button" type="button" [attr.aria-expanded]="activePopover() === 'profile'"
@@ -100,11 +103,15 @@
     </nav>
   }
 
-  @if (activePopover() === 'help' || activePopover() === 'notifications') {
+  @if (activePopover() === 'help') {
     <section class="topbar-popover topbar-message-popover" role="status">
       <strong>{{ ('appShell.' + activePopover()) | translate }}</strong>
       <p>{{ ('appShell.' + activePopover() + 'ComingSoon') | translate }}</p>
     </section>
+  }
+
+  @if (activePopover() === 'notifications') {
+    <app-notification-center-panel (closeRequested)="closePopover()" />
   }
 
   @if (activePopover() === 'profile') {

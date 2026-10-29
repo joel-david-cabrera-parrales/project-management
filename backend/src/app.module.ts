@@ -14,6 +14,8 @@ import { TaskModule } from './task/task.module';
 import { LabelModule } from './label/label.module';
 import { AttachmentModule } from './attachment/attachment.module';
 import { CommentModule } from './comment/comment.module';
+import { NotificationModule } from './notification/notification.module';
+import { CreateNotifications1761700000000 } from './database/migrations/1761700000000-CreateNotifications';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { CommentModule } from './comment/comment.module';
       password: process.env.TORM_PG_PASSWORD_DB,
       port: Number(process.env.TORM_PG_PORT),
       autoLoadEntities: true,
+      migrations: [CreateNotifications1761700000000],
+      migrationsRun: true,
       synchronize: true, // change a false on production
     }),
     MailerModule.forRoot({
@@ -58,6 +62,7 @@ import { CommentModule } from './comment/comment.module';
     LabelModule,
     AttachmentModule,
     CommentModule,
+    NotificationModule,
   ],
   controllers: [],
   providers: [
