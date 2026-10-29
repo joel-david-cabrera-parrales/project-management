@@ -1,8 +1,17 @@
 <article class="workspace-task-card" [class.workspace-task-completed]="task().completed">
   <header class="task-card-header">
-    <span class="task-state" [class.task-state-done]="task().completed">
-      <span aria-hidden="true"></span>{{ (task().completed ? 'workspace.task.statusDone' : 'workspace.task.statusOpen') | translate }}
-    </span>
+    @if (canEdit()) {
+      <button type="button" class="task-state task-state-toggle" [class.task-state-done]="task().completed"
+        [attr.aria-pressed]="task().completed"
+        [attr.aria-label]="(task().completed ? 'workspace.task.markIncomplete' : 'workspace.task.markComplete') | translate"
+        (click)="toggleCompleted.emit(task())">
+        <span aria-hidden="true"></span>{{ (task().completed ? 'workspace.task.statusDone' : 'workspace.task.statusOpen') | translate }}
+      </button>
+    } @else {
+      <span class="task-state" [class.task-state-done]="task().completed">
+        <span aria-hidden="true"></span>{{ (task().completed ? 'workspace.task.statusDone' : 'workspace.task.statusOpen') | translate }}
+      </span>
+    }
     <div class="task-card-actions">
       @if (canEdit()) {
         <button type="button" class="task-icon-action" [attr.aria-label]="'workspace.task.editNamed' | translate: { name: task().title }"

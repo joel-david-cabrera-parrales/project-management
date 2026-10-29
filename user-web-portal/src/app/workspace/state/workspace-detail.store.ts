@@ -81,6 +81,31 @@ export class WorkspaceDetailStore {
     return () => this.workspace.set(snapshot);
   }
 
+  updateTask(
+    taskId: number,
+    updates: Partial<WorkspaceDetail['boards'][number]['taskList'][number]['tasks'][number]>,
+  ): (() => void) | null {
+    const snapshot = this.workspace();
+    if (!snapshot) return null;
+
+    let found = false;
+    const boards = snapshot.boards.map((board) => ({
+      ...board,
+      taskList: board.taskList.map((list) => ({
+        ...list,
+        tasks: list.tasks.map((task) => {
+          if (task.taskId !== taskId) return task;
+          found = true;
+          return { ...task, ...updates };
+        }),
+      })),
+    }));
+
+    if (!found) return null;
+    this.workspace.set({ ...snapshot, boards });
+    return () => this.workspace.set(snapshot);
+  }
+
   createTaskList(boardCode: string, title: string): void {
     const snapshot = this.workspace();
     if (!snapshot) return;

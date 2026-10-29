@@ -133,6 +133,8 @@
     "taskCreated": "Tarea creada exitosamente",
     "taskDeleted": "Tarea eliminada exitosamente",
     "taskUpdated": "Tarea actualizada",
+    "taskMarkedCompleted": "Tarea marcada como completada",
+    "taskMarkedPending": "Tarea marcada como pendiente",
     "codeSent": "Código de verificación enviado",
     "codeVerified": "Código verificado correctamente",
     "passwordReset": "Contraseña restablecida exitosamente",

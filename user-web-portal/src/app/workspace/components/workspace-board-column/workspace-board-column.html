@@ -53,7 +53,8 @@
         [class.board-task-draggable]="canManage()">
         <div class="board-task-drag-placeholder" *cdkDragPlaceholder></div>
         <app-workspace-task-card [task]="task" [canEdit]="canManage()" [canDelete]="canDelete()"
-          (edit)="editTask.emit({ task, list: list() })" (delete)="deleteTask.emit($event)" />
+          (edit)="editTask.emit({ task, list: list() })" (delete)="deleteTask.emit($event)"
+          (toggleCompleted)="toggleTaskCompleted.emit($event)" />
       </div>
     } @empty {
       <div class="board-column-empty">

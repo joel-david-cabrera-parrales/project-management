@@ -21,5 +21,6 @@ export class WorkspaceTaskCard {
   readonly canDelete = input(false);
   readonly edit = output<WorkspaceTask>();
   readonly delete = output<WorkspaceTask>();
+  readonly toggleCompleted = output<WorkspaceTask>();
   readonly today = new Date().toISOString().slice(0, 10);
 }

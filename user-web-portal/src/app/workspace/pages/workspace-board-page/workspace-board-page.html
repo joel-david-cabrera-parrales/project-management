@@ -69,9 +69,10 @@
           [canManage]="canManageTasks()"
           [canDelete]="canDeleteTasks()"
           (createTask)="openCreateTask($event)"
-          (editTask)="openEditTask($event)"
-          (deleteTask)="confirmDeleteTask($event)"
-          (renameList)="onRenameList($event)"
+           (editTask)="openEditTask($event)"
+           (deleteTask)="confirmDeleteTask($event)"
+           (toggleTaskCompleted)="toggleTaskCompleted($event)"
+           (renameList)="onRenameList($event)"
           (deleteList)="confirmDeleteList($event)"
           (taskDropped)="onTaskDropped($event)" />
       }

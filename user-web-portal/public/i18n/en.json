@@ -133,6 +133,8 @@
     "taskCreated": "Task created successfully",
     "taskDeleted": "Task deleted successfully",
     "taskUpdated": "Task updated",
+    "taskMarkedCompleted": "Task marked as completed",
+    "taskMarkedPending": "Task marked as pending",
     "codeSent": "Verification code sent",
     "codeVerified": "Code verified successfully",
     "passwordReset": "Password reset successfully",

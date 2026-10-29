@@ -278,6 +278,26 @@ export class WorkspaceBoardPage {
     this.store.refresh();
   }
 
+  toggleTaskCompleted(task: WorkspaceTask): void {
+    const workspaceCode = this.store.workspace()?.code;
+    if (!workspaceCode || !this.canManageTasks()) return;
+
+    const completed = !task.completed;
+    const rollback = this.store.updateTask(task.taskId, { completed });
+    this.taskApi.updateTask(task.taskId, workspaceCode, { completed })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (updatedTask) => {
+          this.store.updateTask(task.taskId, { completed: updatedTask.completed });
+          this.notification.success(completed ? 'notifications.taskMarkedCompleted' : 'notifications.taskMarkedPending');
+        },
+        error: () => {
+          rollback?.();
+          this.notification.error('notifications.unexpectedError');
+        },
+      });
+  }
+
   confirmDeleteTask(task: WorkspaceTask): void {
     this.deleteError.set(false);
     this.deleteTarget.set(task);
