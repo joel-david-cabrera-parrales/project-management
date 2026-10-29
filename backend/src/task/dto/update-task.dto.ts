@@ -15,7 +15,7 @@ export class UpdateTaskDto {
   @IsString()
   @IsOptional()
   @MinLength(5)
-  @MaxLength(2000)
+  @MaxLength(25000)
   @ApiProperty({
     example: 'Descripción de la tarea',
     description: 'Descripción de la tarea',

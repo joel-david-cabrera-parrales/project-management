@@ -103,7 +103,7 @@
       <span class="invite-success-mark" aria-hidden="true">✓</span>
       <h2>{{ 'workspace.members.invitationSent' | translate }}</h2>
       <p>{{ 'workspace.members.invitationLinkDescription' | translate }}</p>
-      <div class="invite-link-box"><code>{{ invitationLink() }}</code><button type="button" (click)="copyInvitationLink()">{{ 'workspace.members.copyLink' | translate }}</button></div>
+      <div class="invite-link-box"><code>{{ invitationLink() }}</code><button type="button" [class.copied]="copySuccess()" (click)="copyInvitationLink()">{{ (copySuccess() ? 'workspace.members.copied' : 'workspace.members.copyLink') | translate }}</button></div>
       </div>
     } @else {
       <form id="workspace-invitation-form" class="invite-form" [formGroup]="inviteForm" (ngSubmit)="sendInvitation()">

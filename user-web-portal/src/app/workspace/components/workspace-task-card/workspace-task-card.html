@@ -20,7 +20,7 @@
   </header>
 
   <h3>{{ task().title }}</h3>
-  @if (task().description) { <p class="task-card-description">{{ task().description }}</p> }
+  @if (descriptionPreview()) { <p class="task-card-description">{{ descriptionPreview() }}</p> }
 
   @if (task().labels.length) {
     <div class="task-card-labels">

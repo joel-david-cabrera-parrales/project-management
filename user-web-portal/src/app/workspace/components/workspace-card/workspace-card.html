@@ -6,18 +6,16 @@
     {{ workspace().initials || 'W' }}
   </span>
 
-  <span class="workspace-card-copy">
-    <span class="workspace-card-title-row">
+  <div class="workspace-card-copy">
+    <div class="workspace-card-title-row">
       <span class="workspace-card-title">{{ workspace().name }}</span>
       <span class="workspace-status" [class.status-active]="workspace().status === 1"
         [class.status-closed]="workspace().status === 2" [class.status-archived]="workspace().status === 3">
         {{ statusKey() | translate }}
       </span>
-    </span>
-    <span class="workspace-card-description">
-      {{ workspace().description || ('workspace.list.noDescription' | translate) }}
-    </span>
-  </span>
+    </div>
+    <div class="workspace-card-description" [innerHTML]="workspace().description || ('workspace.list.noDescription' | translate)"></div>
+  </div>
 
   <span class="workspace-card-meta">
     <span>{{ 'workspace.card.boards' | translate: { count: workspace().boardCount } }}</span>

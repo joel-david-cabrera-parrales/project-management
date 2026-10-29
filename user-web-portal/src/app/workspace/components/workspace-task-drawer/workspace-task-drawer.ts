@@ -9,12 +9,13 @@ import { WorkspaceTasksApiService } from '../../data-access/workspace-tasks-api.
 import { WorkspaceLabelsApiService } from '../../data-access/workspace-labels-api.service';
 import { WorkspaceAvatar } from '../workspace-avatar/workspace-avatar';
 import { WorkspaceTaskActivity } from '../workspace-task-activity/workspace-task-activity';
+import { WorkspaceRichTextEditor } from '../workspace-rich-text-editor/workspace-rich-text-editor';
 import { WorkspaceDetailTaskList, WorkspaceLabel, WorkspaceTask } from '../../models/workspace-detail.models';
 import { WorkspaceDetailStore } from '../../state/workspace-detail.store';
 
 @Component({
   selector: 'app-workspace-task-drawer',
-  imports: [ReactiveFormsModule, TranslatePipe, WorkspaceDrawer, WorkspaceAvatar, WorkspaceTaskActivity],
+  imports: [ReactiveFormsModule, TranslatePipe, WorkspaceDrawer, WorkspaceAvatar, WorkspaceTaskActivity, WorkspaceRichTextEditor],
   templateUrl: './workspace-task-drawer.html',
   styleUrl: './workspace-task-drawer.css',
 })
@@ -24,6 +25,8 @@ export class WorkspaceTaskDrawer {
   private readonly api = inject(WorkspaceTasksApiService);
   private readonly labelsApi = inject(WorkspaceLabelsApiService);
   private readonly detailStore = inject(WorkspaceDetailStore);
+  private labelsLoadedForWorkspace: string | null = null;
+  private labelsRequestForWorkspace: string | null = null;
 
   readonly open = input(false);
   readonly workspaceCode = input.required<string>();
@@ -48,21 +51,45 @@ export class WorkspaceTaskDrawer {
 
   readonly form = this.formBuilder.nonNullable.group({
     title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(250)]],
-    description: ['', [Validators.minLength(5), Validators.maxLength(2000)]],
+    description: [''],
     dateInit: [''],
     dateEnd: [''],
   }, { validators: dateRangeValidator('dateInit', 'dateEnd') });
 
   constructor() {
+    let wasOpen = false;
+    let previousWorkspaceCode = '';
     effect(() => {
-      if (!this.open()) return;
+      const isOpen = this.open();
+      const workspaceCode = this.workspaceCode();
+      if (!isOpen) {
+        wasOpen = false;
+        return;
+      }
+      if (!wasOpen || workspaceCode !== previousWorkspaceCode) this.loadLabels(workspaceCode);
+      wasOpen = true;
+      previousWorkspaceCode = workspaceCode;
+    });
+
+    let formWasOpen = false;
+    let formTaskId: number | null = null;
+    effect(() => {
+      const isOpen = this.open();
+      if (!isOpen) {
+        formWasOpen = false;
+        return;
+      }
       const task = this.task();
+      const taskId = task?.taskId ?? null;
+      if (formWasOpen && formTaskId === taskId) return;
+      formWasOpen = true;
+      formTaskId = taskId;
+
       this.saveError.set(false);
       this.currentTask.set(task);
       this.selectedLabelIds.set(task?.labels.map((label) => label.id) ?? []);
       this.showLabelOptions.set(false);
       this.selectedMemberIds.set(task?.assignees.map((assignee) => assignee.workspaceMemberId) ?? []);
-      this.loadLabels();
       if (task) {
         this.form.reset({
           title: task.title,
@@ -141,13 +168,21 @@ export class WorkspaceTaskDrawer {
   isLabelLocked(labelId: number): boolean { return !this.canRemoveAssociations() && !!this.currentTask()?.labels.some((label) => label.id === labelId); }
   isMemberLocked(memberId: number): boolean { return !this.canRemoveAssociations() && !!this.currentTask()?.assignees.some((assignee) => assignee.workspaceMemberId === memberId); }
 
-  private loadLabels(): void {
+  private loadLabels(workspaceCode: string): void {
+    if (this.labelsLoadedForWorkspace === workspaceCode || this.labelsRequestForWorkspace === workspaceCode) return;
+    this.labelsRequestForWorkspace = workspaceCode;
     this.loadingLabels.set(true);
     this.labelLoadError.set(false);
-    this.labelsApi.getLabels(this.workspaceCode())
-      .pipe(finalize(() => this.loadingLabels.set(false)), takeUntilDestroyed(this.destroyRef))
+    this.labelsApi.getLabels(workspaceCode)
+      .pipe(finalize(() => {
+        if (this.labelsRequestForWorkspace === workspaceCode) this.labelsRequestForWorkspace = null;
+        this.loadingLabels.set(false);
+      }), takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (labels) => this.availableLabels.set(labels),
+        next: (labels) => {
+          this.labelsLoadedForWorkspace = workspaceCode;
+          this.availableLabels.set(labels);
+        },
         error: () => this.labelLoadError.set(true),
       });
   }

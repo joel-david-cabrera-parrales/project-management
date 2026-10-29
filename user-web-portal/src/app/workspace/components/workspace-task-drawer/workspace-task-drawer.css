@@ -1,9 +1,8 @@
 .task-drawer-form { display: grid; gap: 1rem; }
 .task-drawer-field { display: grid; gap: 0.45rem; }
 .task-drawer-field label { color: var(--text-secondary); font-size: 0.73rem; font-weight: 700; }
-.task-drawer-field input, .task-drawer-field textarea { width: 100%; min-height: 2.4rem; border: 1px solid var(--border-default); border-radius: 0.55rem; background: var(--bg-base); padding: 0.6rem 0.7rem; color: var(--text-primary); font: inherit; font-size: 0.75rem; }
-.task-drawer-field textarea { min-height: 6rem; resize: vertical; }
-.task-drawer-field input:focus, .task-drawer-field textarea:focus { border-color: var(--accent); outline: 2px solid var(--accent-alpha); }
+.task-drawer-field input { width: 100%; min-height: 2.4rem; border: 1px solid var(--border-default); border-radius: 0.55rem; background: var(--bg-base); padding: 0.6rem 0.7rem; color: var(--text-primary); font: inherit; font-size: 0.75rem; }
+.task-drawer-field input:focus { border-color: var(--accent); outline: 2px solid var(--accent-alpha); }
 .task-drawer-dates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; }
 .task-drawer-error { color: var(--danger); font-size: 0.7rem; }
 .task-drawer-cancel, .task-drawer-submit { min-height: 2.35rem; border: 1px solid var(--border-default); border-radius: 0.55rem; padding: 0.5rem 0.8rem; cursor: pointer; font: inherit; font-size: 0.73rem; font-weight: 700; }

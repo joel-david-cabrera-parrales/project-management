@@ -1,14 +1,25 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { catchError, map, Observable, of, tap } from 'rxjs';
-import { WorkspaceResponse } from '../../old-frontend/workspace/interfaces/workspace-response.interface';
-import { WorkspaceMapper } from '../../old-frontend/workspace/mappers/workspace.mapper';
-import { Workspace } from '../../old-frontend/workspace/models/workspace.models';
-import { NotificationService } from './notification.service';
+import { catchError, map, Observable, of } from 'rxjs';
 
-export interface GetInvitationResponse {
-  workspace: WorkspaceResponse;
+export interface InviteWorkspaceMember {
+  fullname: string;
+  photo: string | null;
+  initials: string;
+  avatarColor: string;
+}
+
+export interface InviteWorkspace {
+  code: string;
+  name: string;
+  description: string;
+  color: string;
+  members: InviteWorkspaceMember[];
+}
+
+export interface InviteDetails {
+  workspace: InviteWorkspace;
   invitationCode: string;
 }
 
@@ -18,44 +29,51 @@ export interface AcceptInvitationPayload {
   workspaceInvitationCode: string;
 }
 
+interface WorkspaceInvitationResponse {
+  invitationCode: string;
+  workspace: {
+    code: string;
+    title: string;
+    description: string;
+    color: string;
+    workspaceMembers: {
+      fullname: string;
+      photo: string | null;
+      initials: string;
+      avatarColor: string;
+    }[];
+  };
+}
+
 @Injectable({ providedIn: 'root' })
 export class InvitationService {
   private readonly baseUrl = environment.apiUrl;
   private readonly http = inject(HttpClient);
-  private readonly notification = inject(NotificationService);
 
-  getInvitation(code: string): Observable<{ workspace: Workspace; invitationCode: string } | null> {
-    return this.http.get<GetInvitationResponse>(`${this.baseUrl}/workspace-invitation/${code}`).pipe(
+  getInvitation(code: string): Observable<InviteDetails | null> {
+    return this.http.get<WorkspaceInvitationResponse>(`${this.baseUrl}/workspace-invitation/${code}`).pipe(
       map((response) => ({
-        workspace: WorkspaceMapper.toWorkspace(response.workspace),
         invitationCode: response.invitationCode,
+        workspace: {
+          code: response.workspace.code,
+          name: response.workspace.title,
+          description: response.workspace.description,
+          color: response.workspace.color,
+          members: (response.workspace.workspaceMembers ?? []).map((member) => ({
+            fullname: member.fullname,
+            photo: member.photo,
+            initials: member.initials,
+            avatarColor: member.avatarColor,
+          })),
+        },
       })),
-      catchError((error: HttpErrorResponse) => {
-        this.handleError(error);
-        return of(null);
-      }),
+      catchError(() => of(null)),
     );
   }
 
-  acceptInvitation(payload: AcceptInvitationPayload): Observable<any> {
+  acceptInvitation(payload: AcceptInvitationPayload): Observable<unknown | null> {
     return this.http.post(`${this.baseUrl}/workspace/add-member`, payload).pipe(
-      tap(() => {
-        this.notification.success('You have joined the workspace!');
-      }),
-      catchError((error: HttpErrorResponse) => {
-        this.handleError(error);
-        return of(null);
-      }),
+      catchError(() => of(null)),
     );
-  }
-
-  private handleError(error: HttpErrorResponse) {
-    if (error.status === 404) {
-      this.notification.error('Invitation not found or has expired');
-    } else if (error.status === 400 || error.status === 401) {
-      this.notification.error(error.error?.message || 'An error occurred');
-    } else {
-      this.notification.error('Unexpected error');
-    }
   }
 }

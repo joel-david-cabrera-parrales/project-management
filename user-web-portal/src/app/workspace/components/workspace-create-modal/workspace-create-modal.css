@@ -9,8 +9,7 @@
   font-weight: 700;
 }
 
-.create-field input,
-.create-field textarea {
+.create-field input {
   width: 100%;
   border: 1px solid var(--border-default);
   border-radius: 0.65rem;
@@ -21,10 +20,7 @@
   font-size: 0.85rem;
 }
 
-.create-field textarea { resize: vertical; }
-
-.create-field input:focus,
-.create-field textarea:focus {
+.create-field input:focus {
   border-color: var(--accent);
   outline: 3px solid var(--accent-alpha);
 }

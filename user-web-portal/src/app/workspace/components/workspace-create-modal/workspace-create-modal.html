@@ -13,9 +13,10 @@
     </div>
 
     <div class="create-field">
-      <label for="workspace-create-description">{{ 'common.description' | translate }}</label>
-      <textarea id="workspace-create-description" formControlName="description" rows="3" maxlength="500"
-        [placeholder]="'workspace.form.descPlaceholder' | translate"></textarea>
+      <app-workspace-rich-text-editor formControlName="description" [label]="'common.description' | translate"
+        [placeholder]="'workspace.form.descPlaceholder' | translate" [linkPrompt]="'workspace.richText.linkPrompt' | translate"
+        [minHeight]="105" [maxHeight]="500"
+        [maxLength]="500" />
     </div>
 
     <fieldset class="create-field create-color-field">

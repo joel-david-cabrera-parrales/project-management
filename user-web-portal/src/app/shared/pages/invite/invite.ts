@@ -1,12 +1,12 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { InvitationService } from '../../services/invitation.service';
-import { AuthService } from '../../../old-frontend/auth/services/auth.service';
-import { Workspace } from '../../../old-frontend/workspace/models/workspace.models';
+import { InvitationService, InviteWorkspace } from '../../services/invitation.service';
+import { StorageService } from '../../services/storage.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-invite',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslatePipe],
   templateUrl: './invite.html',
   styleUrl: './invite.css',
 })
@@ -14,14 +14,14 @@ export class Invite implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly invitationService = inject(InvitationService);
-  private readonly authService = inject(AuthService);
+  private readonly storage = inject(StorageService);
 
-  invitationCode = signal<string | null>(null);
-  workspace = signal<Workspace | null>(null);
-  loading = signal(true);
-  accepting = signal(false);
-  accepted = signal(false);
-  error = signal<string | null>(null);
+  readonly invitationCode = signal<string | null>(null);
+  readonly workspace = signal<InviteWorkspace | null>(null);
+  readonly loading = signal(true);
+  readonly accepting = signal(false);
+  readonly accepted = signal(false);
+  readonly error = signal<string | null>(null);
 
   get memberCount(): number {
     return this.workspace()?.members.length ?? 0;
@@ -38,8 +38,13 @@ export class Invite implements OnInit {
   ngOnInit(): void {
     const code = this.route.snapshot.paramMap.get('code');
     if (!code) {
-      this.error.set('Invalid invitation link');
+      this.error.set('invite.invalidLink');
       this.loading.set(false);
+      return;
+    }
+
+    if (!this.storage.isAuthenticated()) {
+      void this.router.navigate(['/auth', 'signin'], { queryParams: { returnUrl: `/invite/${code}` } });
       return;
     }
 
@@ -56,12 +61,12 @@ export class Invite implements OnInit {
           this.invitationCode.set(result.invitationCode);
           this.workspace.set(result.workspace);
         } else {
-          this.error.set('This invitation is no longer valid.');
+          this.error.set('invite.notValid');
         }
       },
       error: () => {
         this.loading.set(false);
-        this.error.set('Could not load invitation.');
+        this.error.set('invite.loadError');
       },
     });
   }
@@ -69,15 +74,15 @@ export class Invite implements OnInit {
   accept(): void {
     const ws = this.workspace();
     const code = this.invitationCode();
-    const userCode = this.authService.userCode();
+    const userCode = this.storage.getUserCode();
 
-    if (!ws || !code || !userCode) return;
+    if (!ws || !code || !userCode || this.accepting()) return;
 
     this.accepting.set(true);
     this.invitationService
       .acceptInvitation({
         newMemberCode: userCode,
-        workspaceCode: ws.id,
+        workspaceCode: ws.code,
         workspaceInvitationCode: code,
       })
       .subscribe({
@@ -86,12 +91,15 @@ export class Invite implements OnInit {
           if (result !== null) {
             this.accepted.set(true);
             setTimeout(() => {
-              this.router.navigate(['/workspace', ws.id]);
+              void this.router.navigate(['/workspace', ws.code]);
             }, 1200);
+          } else {
+            this.error.set('invite.acceptError');
           }
         },
         error: () => {
           this.accepting.set(false);
+          this.error.set('invite.acceptError');
         },
       });
   }

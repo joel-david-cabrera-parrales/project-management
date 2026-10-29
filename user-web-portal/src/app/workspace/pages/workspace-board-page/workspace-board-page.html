@@ -6,6 +6,7 @@
     </div>
   </header>
   @if (deleteError()) { <p class="board-error" role="alert">{{ 'workspace.task.deleteError' | translate }}</p> }
+  @if (loadingTaskDetails()) { <p class="board-loading" role="status">{{ 'workspace.taskForm.loadingDetails' | translate }}</p> }
   @if (!store.workspace()?.boards?.length) {
     <div class="board-empty-state"><span aria-hidden="true">▦</span><h2>{{ 'workspace.board.noBoards' | translate }}</h2></div>
   } @else if (!selectedBoard()) {

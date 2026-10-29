@@ -1,4 +1,18 @@
 {
+  "invite": {
+    "title": "You've been invited",
+    "members": "members",
+    "currentMembers": "Current members",
+    "accept": "Accept invitation",
+    "joining": "Joining workspace...",
+    "successRedirect": "You're in! Redirecting to workspace...",
+    "invalidTitle": "Invitation not found",
+    "invalidLink": "The invitation link is invalid.",
+    "notValid": "This invitation link has expired or is no longer valid. Ask the workspace owner to send a new one.",
+    "loadError": "The invitation could not be loaded. Please try again.",
+    "acceptError": "The invitation could not be accepted. Please try again.",
+    "goToWorkspaces": "Go to my workspaces"
+  },
   "common": {
     "backToHome": "Back to Home",
     "settings": "Settings",
@@ -357,6 +371,30 @@
       "noMembers": "This workspace does not have any members yet.",
       "ownerRequiredToRemove": "Only the owner can remove existing labels or assignees."
     },
+    "richText": {
+      "placeholder": "Write a description…",
+      "toolbar": "Text formatting",
+      "blockFormat": "Block format",
+      "paragraph": "Paragraph",
+      "heading": "Heading",
+      "subheading": "Subheading",
+      "bold": "Bold",
+      "italic": "Italic",
+      "underline": "Underline",
+      "strike": "Strikethrough",
+      "bulletList": "Bulleted list",
+      "orderedList": "Numbered list",
+      "quote": "Quote",
+      "link": "Insert link",
+      "unlink": "Remove link",
+      "undo": "Undo",
+      "redo": "Redo",
+      "editor": "Rich text editor",
+      "characters": "characters",
+      "maxLength": "The maximum is {{max}} characters.",
+      "minLength": "Enter at least {{min}} characters.",
+      "linkPrompt": "Enter the link URL"
+    },
     "taskList": {
       "rename": "Rename",
       "delete": "Delete list",
@@ -364,6 +402,7 @@
       "newList": "New list"
     },
     "taskForm": {
+      "loadingDetails": "Loading the latest task version…",
       "createTitle": "Create Task",
       "updateTitle": "Update Task",
       "titleMinLength": "The title must be at least 5 characters.",
@@ -449,6 +488,7 @@
       "title": "Members",
       "subtitle": "{{count}} people have access to this workspace.",
       "people": "People",
+      "searchPlaceholder": "Search members...",
       "noSearchResults": "No members match that search.",
       "addMember": "Add member",
       "pendingInvitations": "Pending Invitations",
@@ -484,6 +524,7 @@
       "actionError": "The action could not be completed. Please try again.",
       "invitationLinkDescription": "The invitation was sent by email. You can also copy the link.",
       "copyLink": "Copy link",
+      "copied": "Copied!",
       "resend": "Resend",
       "removeMemberNamed": "Remove {{name}}",
       "deleteInvitationFor": "Delete invitation for {{email}}"

@@ -3,11 +3,12 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { ModalComponent } from '../../../shared/components/modal/modal.component';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { WorkspaceRichTextEditor } from '../workspace-rich-text-editor/workspace-rich-text-editor';
 import { WorkspaceListStore } from '../../state/workspace-list.store';
 
 @Component({
   selector: 'app-workspace-create-modal',
-  imports: [ModalComponent, ReactiveFormsModule, TranslatePipe],
+  imports: [ModalComponent, ReactiveFormsModule, TranslatePipe, WorkspaceRichTextEditor],
   templateUrl: './workspace-create-modal.html',
   styleUrl: './workspace-create-modal.css',
 })
@@ -25,7 +26,7 @@ export class WorkspaceCreateModal {
 
   readonly form = this.formBuilder.nonNullable.group({
     title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
-    description: ['', Validators.maxLength(500)],
+    description: [''],
     color: ['#2563eb', Validators.required],
   });
 

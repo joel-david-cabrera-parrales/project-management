@@ -14,12 +14,10 @@
       }
     </div>
     <div class="task-drawer-field">
-      <label for="workspace-task-description">{{ 'common.description' | translate }}</label>
-      <textarea id="workspace-task-description" formControlName="description" rows="4" maxlength="2000"
-        [placeholder]="'workspace.taskForm.descPlaceholder' | translate"></textarea>
-      @if (form.controls.description.touched && form.controls.description.hasError('minlength')) {
-        <small class="task-drawer-error">{{ 'workspace.taskForm.descriptionMinLength' | translate }}</small>
-      }
+      <app-workspace-rich-text-editor formControlName="description" [label]="'common.description' | translate"
+        [placeholder]="'workspace.taskForm.descPlaceholder' | translate" [linkPrompt]="'workspace.richText.linkPrompt' | translate"
+        [minHeight]="120" [maxHeight]="500"
+        [maxLength]="2000" [minLength]="5" />
     </div>
     <div class="task-drawer-dates">
       <div class="task-drawer-field">

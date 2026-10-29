@@ -19,9 +19,11 @@
         <small class="settings-help-error">{{ 'workspace.form.nameMinLength' | translate }}</small>
       }
 
-      <label for="workspace-settings-description">{{ 'common.description' | translate }}</label>
-      <textarea id="workspace-settings-description" rows="3" maxlength="500" [value]="description()"
-        [disabled]="!store.isOwner()" (input)="description.set($any($event.target).value)"></textarea>
+      <app-workspace-rich-text-editor [ngModel]="description()" (ngModelChange)="description.set($event)"
+        [ngModelOptions]="{ standalone: true }" #descriptionControl="ngModel"
+        [label]="'common.description' | translate" [placeholder]="'workspace.form.descPlaceholder' | translate"
+        [linkPrompt]="'workspace.richText.linkPrompt' | translate"
+        [minHeight]="110" [maxHeight]="500" [maxLength]="500" [readOnly]="!store.isOwner()" />
 
       <fieldset class="settings-color-field" [disabled]="!store.isOwner()">
         <legend>{{ 'workspace.settings.colorLabel' | translate }}</legend>
@@ -38,7 +40,7 @@
       @if (saveError()) { <p class="settings-error" role="alert">{{ 'workspace.settings.saveError' | translate }}</p> }
       @if (store.isOwner()) {
         <footer class="settings-form-actions">
-          <button class="detail-primary-button" type="submit" [disabled]="saving() || title().trim().length < 5">
+          <button class="detail-primary-button" type="submit" [disabled]="saving() || title().trim().length < 5 || descriptionControl.invalid">
             {{ (saving() ? 'workspace.settings.saving' : 'workspace.settings.saveButton') | translate }}
           </button>
         </footer>

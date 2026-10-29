@@ -37,6 +37,10 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'invite/:code',
+    loadComponent: () => import('./shared/pages/invite/invite').then((m) => m.Invite),
+  },
+  {
     path: '**',
     component: NotFound,
   },

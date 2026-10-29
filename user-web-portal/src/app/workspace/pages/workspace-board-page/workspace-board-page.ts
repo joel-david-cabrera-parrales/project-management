@@ -40,9 +40,11 @@ export class WorkspaceBoardPage {
   readonly taskDrawerOpen = signal(false);
   readonly selectedList = signal<WorkspaceDetailTaskList | null>(null);
   readonly selectedTask = signal<WorkspaceTask | null>(null);
+  readonly loadingTaskDetails = signal(false);
   readonly deleteTarget = signal<WorkspaceTask | null>(null);
   readonly deletingTask = signal(false);
   readonly deleteError = signal(false);
+  private editRequestVersion = 0;
 
   constructor() {
     this.route.paramMap
@@ -51,6 +53,8 @@ export class WorkspaceBoardPage {
   }
 
   openCreateTask(list: WorkspaceDetailTaskList): void {
+    this.editRequestVersion++;
+    this.loadingTaskDetails.set(false);
     this.selectedList.set(list);
     this.selectedTask.set(null);
     this.taskDrawerOpen.set(true);
@@ -58,11 +62,31 @@ export class WorkspaceBoardPage {
 
   openEditTask(data: { task: WorkspaceTask; list: WorkspaceDetailTaskList }): void {
     this.selectedList.set(data.list);
-    this.selectedTask.set(data.task);
-    this.taskDrawerOpen.set(true);
+    const requestVersion = ++this.editRequestVersion;
+    this.loadingTaskDetails.set(true);
+
+    this.taskApi.getTask(data.task.taskId)
+      .pipe(finalize(() => {
+        if (requestVersion === this.editRequestVersion) this.loadingTaskDetails.set(false);
+      }), takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (latestTask) => {
+          if (requestVersion !== this.editRequestVersion) return;
+          this.selectedTask.set({ ...data.task, ...latestTask });
+          this.taskDrawerOpen.set(true);
+        },
+        error: () => {
+          if (requestVersion !== this.editRequestVersion) return;
+          // Keep editing available if the detail request fails; the board data is the fallback.
+          this.selectedTask.set(data.task);
+          this.taskDrawerOpen.set(true);
+        },
+      });
   }
 
   closeTaskDrawer(): void {
+    this.editRequestVersion++;
+    this.loadingTaskDetails.set(false);
     this.taskDrawerOpen.set(false);
     this.selectedList.set(null);
     this.selectedTask.set(null);

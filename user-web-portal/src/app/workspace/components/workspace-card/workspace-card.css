@@ -80,6 +80,9 @@
   -webkit-line-clamp: 2;
 }
 
+.workspace-card-description :is(p, h1, h2, h3, ul, ol, blockquote) { display: inline; margin: 0; font: inherit; }
+.workspace-card-description :is(ul, ol) { padding: 0; list-style: none; }
+
 .workspace-card-meta {
   display: flex;
   align-items: center;

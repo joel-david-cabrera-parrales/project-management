@@ -25,7 +25,11 @@ export class AuthenticationCallbackPage {
     }
 
     this.session.completeGoogleSignIn(token).subscribe({
-      next: () => void this.router.navigateByUrl('/workspace'),
+      next: () => {
+        const returnUrl = sessionStorage.getItem('authReturnUrl');
+        sessionStorage.removeItem('authReturnUrl');
+        void this.router.navigateByUrl(returnUrl && returnUrl.startsWith('/') ? returnUrl : '/workspace');
+      },
       error: () => {
         this.storage.removeAll();
         this.error.set(true);

@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
@@ -18,6 +18,7 @@ export class SigninPage {
   private readonly formBuilder = inject(FormBuilder);
   private readonly signinService = inject(SigninService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly translation = inject(TranslationService);
 
   readonly submitting = signal(false);
@@ -66,17 +67,24 @@ export class SigninPage {
       .signIn(email.trim(), password)
       .pipe(finalize(() => this.submitting.set(false)))
       .subscribe({
-        next: () => void this.router.navigateByUrl('/workspace'),
+        next: () => void this.router.navigateByUrl(this.returnUrl()),
         error: (error: unknown) => this.serverError.set(this.errorMessage(error)),
       });
   }
 
   googleSignIn(): void {
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    if (returnUrl) sessionStorage.setItem('authReturnUrl', returnUrl);
     window.location.assign(`${environment.apiUrl}/auth/google`);
   }
 
   microsoftSignIn(): void {
     window.location.assign(`${environment.apiUrl}/auth/microsoft`);
+  }
+
+  private returnUrl(): string {
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    return returnUrl && returnUrl.startsWith('/') ? returnUrl : '/workspace';
   }
 
   private errorMessage(error: unknown): string {

@@ -9,10 +9,9 @@
 .settings-panel-heading p { margin-top: 0.15rem; color: var(--text-tertiary); font-size: 0.68rem; }
 .workspace-settings-form { display: grid; gap: 0.55rem; }
 .workspace-settings-form > label, .settings-color-field legend { margin-top: 0.45rem; color: var(--text-secondary); font-size: 0.72rem; font-weight: 700; }
-.workspace-settings-form input, .workspace-settings-form textarea { width: 100%; border: 1px solid var(--border-default); border-radius: 0.55rem; background: var(--bg-base); padding: 0.6rem 0.7rem; color: var(--text-primary); font: inherit; font-size: 0.75rem; }
-.workspace-settings-form textarea { resize: vertical; }
-.workspace-settings-form input:focus, .workspace-settings-form textarea:focus { border-color: var(--accent); outline: 2px solid var(--accent-alpha); }
-.workspace-settings-form input:disabled, .workspace-settings-form textarea:disabled { cursor: not-allowed; opacity: 0.7; }
+.workspace-settings-form input { width: 100%; border: 1px solid var(--border-default); border-radius: 0.55rem; background: var(--bg-base); padding: 0.6rem 0.7rem; color: var(--text-primary); font: inherit; font-size: 0.75rem; }
+.workspace-settings-form input:focus { border-color: var(--accent); outline: 2px solid var(--accent-alpha); }
+.workspace-settings-form input:disabled { cursor: not-allowed; opacity: 0.7; }
 .settings-color-field { border: 0; padding: 0.2rem 0 0; }
 .settings-color-field legend { margin-bottom: 0.6rem; }
 .settings-color-options { display: flex; flex-wrap: wrap; gap: 0.65rem; }

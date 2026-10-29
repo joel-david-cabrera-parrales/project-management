@@ -1,0 +1,59 @@
+<div class="rich-editor-field">
+  @if (label()) { <label class="rich-editor-label">{{ label() }}</label> }
+  <div class="rich-editor-shell" [class.rich-editor-invalid]="characters() > maxLength() || (characters() > 0 && characters() < minLength())"
+    [class.rich-editor-disabled]="disabled()">
+    @if (!readOnly()) {
+    <div class="rich-editor-toolbar" role="toolbar" [attr.aria-label]="'workspace.richText.toolbar' | translate">
+      <select [attr.aria-label]="'workspace.richText.blockFormat' | translate" [disabled]="disabled() || !ready()"
+        (change)="format($any($event.target).value)">
+        <option value="paragraph">{{ 'workspace.richText.paragraph' | translate }}</option>
+        <option value="h2">{{ 'workspace.richText.heading' | translate }}</option>
+        <option value="h3">{{ 'workspace.richText.subheading' | translate }}</option>
+      </select>
+      <span class="rich-editor-divider" aria-hidden="true"></span>
+      <button type="button" [attr.aria-label]="'workspace.richText.bold' | translate" [attr.title]="'workspace.richText.bold' | translate"
+        [attr.aria-pressed]="isActive('bold')" [disabled]="disabled() || !ready()" (mousedown)="$event.preventDefault()" (click)="format('bold')"><strong>B</strong></button>
+      <button type="button" [attr.aria-label]="'workspace.richText.italic' | translate" [attr.title]="'workspace.richText.italic' | translate"
+        [attr.aria-pressed]="isActive('italic')" [disabled]="disabled() || !ready()" (mousedown)="$event.preventDefault()" (click)="format('italic')"><em>I</em></button>
+      <button type="button" [attr.aria-label]="'workspace.richText.underline' | translate" [attr.title]="'workspace.richText.underline' | translate"
+        [attr.aria-pressed]="isActive('underline')" [disabled]="disabled() || !ready()" (mousedown)="$event.preventDefault()" (click)="format('underline')"><span class="rich-underline">U</span></button>
+      <button type="button" [attr.aria-label]="'workspace.richText.strike' | translate" [attr.title]="'workspace.richText.strike' | translate"
+        [attr.aria-pressed]="isActive('strike')" [disabled]="disabled() || !ready()" (mousedown)="$event.preventDefault()" (click)="format('strike')"><s>S</s></button>
+      <span class="rich-editor-divider" aria-hidden="true"></span>
+      <button type="button" [attr.aria-label]="'workspace.richText.bulletList' | translate" [attr.title]="'workspace.richText.bulletList' | translate"
+        [attr.aria-pressed]="isActive('bulletList')" [disabled]="disabled() || !ready()" (mousedown)="$event.preventDefault()" (click)="format('bulletList')">•≡</button>
+      <button type="button" [attr.aria-label]="'workspace.richText.orderedList' | translate" [attr.title]="'workspace.richText.orderedList' | translate"
+        [attr.aria-pressed]="isActive('orderedList')" [disabled]="disabled() || !ready()" (mousedown)="$event.preventDefault()" (click)="format('orderedList')">1≡</button>
+      <button type="button" [attr.aria-label]="'workspace.richText.quote' | translate" [attr.title]="'workspace.richText.quote' | translate"
+        [attr.aria-pressed]="isActive('blockquote')" [disabled]="disabled() || !ready()" (mousedown)="$event.preventDefault()" (click)="format('blockquote')">“</button>
+      <button type="button" [attr.aria-label]="(isActive('link') ? 'workspace.richText.unlink' : 'workspace.richText.link') | translate"
+        [attr.title]="(isActive('link') ? 'workspace.richText.unlink' : 'workspace.richText.link') | translate"
+        [attr.aria-pressed]="isActive('link')" [disabled]="disabled() || !ready()" (mousedown)="$event.preventDefault()" (click)="format('link')">↗</button>
+      <span class="rich-editor-divider rich-editor-spacer" aria-hidden="true"></span>
+      <button type="button" [attr.aria-label]="'workspace.richText.undo' | translate" [attr.title]="'workspace.richText.undo' | translate"
+        [disabled]="disabled() || !ready() || !canUndo()" (mousedown)="$event.preventDefault()" (click)="format('undo')">↶</button>
+      <button type="button" [attr.aria-label]="'workspace.richText.redo' | translate" [attr.title]="'workspace.richText.redo' | translate"
+        [disabled]="disabled() || !ready() || !canRedo()" (mousedown)="$event.preventDefault()" (click)="format('redo')">↷</button>
+    </div>
+    }
+
+    <div class="rich-editor-viewport" [style.--rich-editor-min-height.px]="minHeight()"
+      [style.min-height.px]="minHeight()" [style.max-height.px]="maxHeight()"
+      [attr.aria-label]="label() || ('workspace.richText.editor' | translate)">
+      <div #editorHost class="rich-editor-host" [attr.data-placeholder]="placeholder()" [attr.aria-disabled]="disabled()"
+        [style.min-height.px]="minHeight() - 28"></div>
+    </div>
+
+    @if (showCount()) {
+      <footer class="rich-editor-footer">
+        <span>{{ characters() }} / {{ maxLength() }} {{ 'workspace.richText.characters' | translate }}</span>
+        <span class="rich-editor-format">HTML</span>
+      </footer>
+    }
+  </div>
+  @if (characters() > maxLength()) {
+    <small class="rich-editor-error" role="alert">{{ 'workspace.richText.maxLength' | translate: { max: maxLength() } }}</small>
+  } @else if (characters() > 0 && characters() < minLength()) {
+    <small class="rich-editor-error" role="alert">{{ 'workspace.richText.minLength' | translate: { min: minLength() } }}</small>
+  }
+</div>

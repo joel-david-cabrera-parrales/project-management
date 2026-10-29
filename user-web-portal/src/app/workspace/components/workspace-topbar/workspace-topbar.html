@@ -42,7 +42,7 @@
                   <span class="topbar-result-avatar" [style.background-color]="workspace.color">{{ workspace.initials || 'W' }}</span>
                   <span class="topbar-result-copy">
                     <strong>{{ workspace.name }}</strong>
-                    <small>{{ workspace.description || ('workspace.list.noDescription' | translate) }}</small>
+                    <small [innerHTML]="workspace.description || ('workspace.list.noDescription' | translate)"></small>
                   </span>
                   <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 15 15 5M6 5h9v9"/></svg>
                 </a>

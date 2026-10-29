@@ -1,19 +1,21 @@
-import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
+import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { NotificationService } from '../../../shared/services/notification.service';
 import { WorkspaceConfirmDialog } from '../../components/workspace-confirm-dialog/workspace-confirm-dialog';
 import { WorkspaceSettingsApiService } from '../../data-access/workspace-settings-api.service';
 import { WorkspaceDetailMapper } from '../../models/workspace-detail.mapper';
 import { WorkspaceDetailStore } from '../../state/workspace-detail.store';
+import { WorkspaceRichTextEditor } from '../../components/workspace-rich-text-editor/workspace-rich-text-editor';
 
 const PRESET_COLORS = ['#2563eb', '#0f766e', '#7c3aed', '#c2410c', '#be185d', '#475569'];
 
 @Component({
   selector: 'app-workspace-settings-page',
-  imports: [TranslatePipe, WorkspaceConfirmDialog],
+  imports: [FormsModule, TranslatePipe, WorkspaceConfirmDialog, WorkspaceRichTextEditor],
   templateUrl: './workspace-settings-page.html',
   styleUrl: './workspace-settings-page.css',
 })
@@ -27,6 +29,7 @@ export class WorkspaceSettingsPage {
   readonly colors = PRESET_COLORS;
   readonly title = signal('');
   readonly description = signal('');
+  readonly descriptionOverLimit = computed(() => this.plainTextLength(this.description()) > 500);
   readonly color = signal(PRESET_COLORS[0]);
   readonly saving = signal(false);
   readonly saveError = signal(false);
@@ -47,7 +50,7 @@ export class WorkspaceSettingsPage {
   save(): void {
     const workspace = this.store.workspace();
     const title = this.title().trim();
-    if (!workspace || !this.store.isOwner() || title.length < 5 || this.saving()) return;
+    if (!workspace || !this.store.isOwner() || title.length < 5 || this.descriptionOverLimit() || this.saving()) return;
     this.saving.set(true);
     this.saveError.set(false);
     this.api.updateWorkspace(workspace.code, { title, description: this.description().trim(), color: this.color() })
@@ -59,6 +62,12 @@ export class WorkspaceSettingsPage {
         },
         error: () => this.saveError.set(true),
       });
+  }
+
+  private plainTextLength(html: string): number {
+    const container = document.createElement('div');
+    container.innerHTML = html;
+    return (container.innerText || container.textContent || '').length;
   }
 
   deleteWorkspace(): void {

@@ -1,4 +1,18 @@
 {
+  "invite": {
+    "title": "Te han invitado",
+    "members": "miembros",
+    "currentMembers": "Miembros actuales",
+    "accept": "Aceptar invitación",
+    "joining": "Uniéndote al espacio...",
+    "successRedirect": "¡Listo! Redirigiendo al espacio...",
+    "invalidTitle": "Invitación no encontrada",
+    "invalidLink": "El enlace de invitación no es válido.",
+    "notValid": "Este enlace de invitación expiró o ya no es válido. Pide al propietario del espacio que envíe una nueva invitación.",
+    "loadError": "No se pudo cargar la invitación. Inténtalo de nuevo.",
+    "acceptError": "No se pudo aceptar la invitación. Inténtalo de nuevo.",
+    "goToWorkspaces": "Ir a mis espacios"
+  },
   "common": {
     "backToHome": "Volver al Inicio",
     "settings": "Configuración",
@@ -357,6 +371,30 @@
       "noMembers": "Este workspace todavía no tiene miembros.",
       "ownerRequiredToRemove": "Solo el propietario puede quitar etiquetas o encargados existentes."
     },
+    "richText": {
+      "placeholder": "Escribe una descripción…",
+      "toolbar": "Formato de texto",
+      "blockFormat": "Formato del bloque",
+      "paragraph": "Párrafo",
+      "heading": "Título",
+      "subheading": "Subtítulo",
+      "bold": "Negrita",
+      "italic": "Cursiva",
+      "underline": "Subrayado",
+      "strike": "Tachado",
+      "bulletList": "Lista con viñetas",
+      "orderedList": "Lista numerada",
+      "quote": "Cita",
+      "link": "Insertar enlace",
+      "unlink": "Quitar enlace",
+      "undo": "Deshacer",
+      "redo": "Rehacer",
+      "editor": "Editor de texto enriquecido",
+      "characters": "caracteres",
+      "maxLength": "El máximo es {{max}} caracteres.",
+      "minLength": "Escribe al menos {{min}} caracteres.",
+      "linkPrompt": "Introduce la URL del enlace"
+    },
     "taskList": {
       "rename": "Renombrar",
       "delete": "Eliminar lista",
@@ -364,6 +402,7 @@
       "newList": "Nueva lista"
     },
     "taskForm": {
+      "loadingDetails": "Cargando la última versión de la tarea…",
       "createTitle": "Crear Tarea",
       "updateTitle": "Actualizar Tarea",
       "titleMinLength": "El título debe tener al menos 5 caracteres.",
@@ -449,6 +488,7 @@
       "title": "Miembros",
       "subtitle": "{{count}} personas tienen acceso a este espacio.",
       "people": "Personas",
+      "searchPlaceholder": "Buscar miembros...",
       "noSearchResults": "No se encontraron miembros con esa búsqueda.",
       "addMember": "Añadir miembro",
       "pendingInvitations": "Invitaciones pendientes",
@@ -484,6 +524,7 @@
       "actionError": "No se pudo completar la acción. Inténtalo de nuevo.",
       "invitationLinkDescription": "La invitación se envió por correo. También puedes copiar el enlace.",
       "copyLink": "Copiar enlace",
+      "copied": "¡Copiado!",
       "resend": "Reenviar",
       "removeMemberNamed": "Eliminar a {{name}}",
       "deleteInvitationFor": "Eliminar invitación para {{email}}"

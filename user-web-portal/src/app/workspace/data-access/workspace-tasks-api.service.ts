@@ -13,6 +13,10 @@ export class WorkspaceTasksApiService {
     return this.http.post<WorkspaceTask>(this.endpoint, payload);
   }
 
+  getTask(taskId: number): Observable<WorkspaceTask> {
+    return this.http.get<WorkspaceTask>(`${this.endpoint}/${taskId}`);
+  }
+
   updateTask(taskId: number, workspaceCode: string, payload: UpdateWorkspaceTaskPayload): Observable<WorkspaceTask> {
     return this.http.patch<WorkspaceTask>(`${this.endpoint}/${taskId}`, payload, {
       params: new HttpParams().set('ws', workspaceCode),

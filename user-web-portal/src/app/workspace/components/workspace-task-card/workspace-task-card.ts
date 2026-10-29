@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { WorkspaceTask } from '../../models/workspace-detail.models';
 import { WorkspaceAvatar } from '../workspace-avatar/workspace-avatar';
@@ -12,6 +12,11 @@ import { WorkspaceAvatar } from '../workspace-avatar/workspace-avatar';
 })
 export class WorkspaceTaskCard {
   readonly task = input.required<WorkspaceTask>();
+  readonly descriptionPreview = computed(() => {
+    const description = this.task().description ?? '';
+    const document = new DOMParser().parseFromString(description, 'text/html');
+    return (document.body.textContent ?? '').replace(/\s+/g, ' ').trim();
+  });
   readonly canEdit = input(false);
   readonly canDelete = input(false);
   readonly edit = output<WorkspaceTask>();

@@ -47,5 +47,6 @@
 .invite-link-box { display: flex; width: 100%; align-items: center; gap: 0.5rem; border: 1px solid var(--border-subtle); border-radius: 0.55rem; background: var(--bg-base); padding: 0.55rem; }
 .invite-link-box code { overflow: hidden; flex: 1; color: var(--text-secondary); font-size: 0.62rem; text-overflow: ellipsis; white-space: nowrap; }
 .invite-link-box button { border: 0; background: transparent; color: var(--accent); cursor: pointer; font: inherit; font-size: 0.65rem; font-weight: 700; }
+.invite-link-box button.copied { color: #15803d; }
 .invite-done-button { margin-top: 0.4rem; }
 @media (max-width: 640px) { .detail-page-heading { align-items: flex-start; flex-direction: column; } .member-row { flex-wrap: wrap; } .member-identity { min-width: calc(100% - 3rem); } .member-row > .member-role, .member-row > .invitation-status { margin-left: 2.7rem; } }

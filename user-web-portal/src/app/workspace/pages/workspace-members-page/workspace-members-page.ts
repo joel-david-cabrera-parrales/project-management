@@ -41,6 +41,7 @@ export class WorkspaceMembersPage implements OnInit {
   readonly inviteSaving = signal(false);
   readonly inviteError = signal(false);
   readonly invitationLink = signal('');
+  readonly copySuccess = signal(false);
   readonly deleteTarget = signal<MemberDeleteTarget | null>(null);
   readonly deleting = signal(false);
   readonly actionError = signal(false);
@@ -60,6 +61,7 @@ export class WorkspaceMembersPage implements OnInit {
     this.inviteRole.set('member');
     this.inviteError.set(false);
     this.invitationLink.set('');
+    this.copySuccess.set(false);
     this.inviteOpen.set(true);
   }
 
@@ -90,6 +92,7 @@ export class WorkspaceMembersPage implements OnInit {
     }).pipe(finalize(() => this.inviteSaving.set(false)), takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         this.invitationLink.set(response.inviteLink);
+        this.store.refresh();
         this.loadInvitations();
       },
       error: () => this.inviteError.set(true),
@@ -101,6 +104,8 @@ export class WorkspaceMembersPage implements OnInit {
     if (!link || !navigator.clipboard) return;
     try {
       await navigator.clipboard.writeText(link);
+      this.copySuccess.set(true);
+      setTimeout(() => this.copySuccess.set(false), 2000);
     } catch {
       this.inviteError.set(true);
     }
