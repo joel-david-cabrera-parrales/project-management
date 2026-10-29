@@ -17,6 +17,7 @@ import { CommentModule } from './comment/comment.module';
 import { NotificationModule } from './notification/notification.module';
 import { CreateNotifications1761700000000 } from './database/migrations/1761700000000-CreateNotifications';
 import { ChatbotModule } from './chatbot/chatbot.module';
+import { CreateChatbotConversations1793300000000 } from './database/migrations/1793300000000-CreateChatbotConversations';
 
 @Module({
   imports: [
@@ -35,7 +36,7 @@ import { ChatbotModule } from './chatbot/chatbot.module';
       password: process.env.TORM_PG_PASSWORD_DB,
       port: Number(process.env.TORM_PG_PORT),
       autoLoadEntities: true,
-      migrations: [CreateNotifications1761700000000],
+      migrations: [CreateNotifications1761700000000, CreateChatbotConversations1793300000000],
       migrationsRun: true,
       synchronize: true, // change a false on production
     }),

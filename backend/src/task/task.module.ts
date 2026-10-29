@@ -72,6 +72,7 @@ import { NotificationModule } from 'src/notification/notification.module';
     NotificationModule,
   ],
   exports: [
+    TaskService,
     TypeOrmModule,
     UnassignMemberUseCase,
     AssignMemberUseCase,
