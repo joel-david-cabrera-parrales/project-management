@@ -1,189 +1,72 @@
-# Task App — Frontend (User Web Portal)
+# Task App — Frontend
 
-Angular 21 single-page application for the Task App collaborative project management platform.
+Angular 21 single-page application for the Task App platform. The active frontend is implemented with standalone components, lazy-loaded routes, Angular Signals, and feature-oriented folders. The legacy `src/app/old-frontend` tree has been removed; current code lives in `authentication`, `workspace`, `profile`, `settings`, `chatbot`, and `shared`.
 
-## Tech Stack
+## Technology
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| Angular | 21.2 | Web framework |
-| TypeScript | 5.9 | Language |
-| Tailwind CSS | 4.3 | Utility-first CSS framework |
-| Angular CDK | 21.2 | Drag & drop, overlays |
-| Angular Signals | — | State management |
-| RxJS | 7.8 | HTTP, async state |
-| Vitest | 4.x | Unit testing |
-| PostCSS | 8.x | CSS processing |
+| Technology | Use |
+|---|---|
+| Angular 21 / TypeScript 5.9 | SPA and application code |
+| Angular Signals / RxJS | Local reactive state and async streams |
+| Tailwind CSS 4 / PostCSS | Styling |
+| Angular CDK | UI utilities and drag/drop |
+| Vitest | Unit/component tests |
 
-## Architecture
-
-The application uses **standalone components** (no NgModules), **lazy-loaded routes**, and **Signal-first reactivity**.
-
-### Feature Modules (lazy-loaded)
-
-| Module | Route | Description |
-|--------|-------|-------------|
-| **Auth** | `/auth` | Login, signup, Google OAuth callback, password reset |
-| **Workspace** | `/workspace` | Workspace list, Kanban board, members, labels, settings |
-| **Profile** | `/profile` | Profile page, app settings (theme, language, notifications) |
-| **Invite** | `/invite/:code` | Public invitation acceptance page |
-
-### State Management
-
-- **Angular Signals**: Auth state, workspace list, profile, settings, notifications, language
-- **RxJS BehaviorSubject**: Active workspace, selected task (in `WorkspaceStateService`)
-- **HTTP Interceptors**: JWT attachment, 401 handling with token refresh
-
-## Quick Start
+## Run locally
 
 ```bash
-# 1. Install dependencies
 npm install
-
-# 2. Start dev server (backend must be running on :3000)
 npm start
-
-# App: http://localhost:4200
 ```
 
-## Scripts
+The frontend runs at `http://localhost:4200` and expects the API configured by `src/environments/environment.ts` (default local API: `http://localhost:3000/api/v1`). Start/configure the backend first; see [backend/README.md](../backend/README.md).
+
+## Commands
 
 | Command | Description |
-|---------|-------------|
-| `npm start` | Start dev server at `localhost:4200` |
-| `npm run build` | Production build to `dist/` |
-| `npm run watch` | Dev build with watch mode |
-| `npm test` | Run unit tests (Vitest) |
+|---|---|
+| `npm start` | Run Angular dev server |
+| `npm run build` | Build using the default production configuration |
+| `npm run watch` | Development build in watch mode |
+| `npm test -- --watch=false` | Run tests once |
 
-## Environment
+## Active features and routes
 
-Configured in `src/environments/environment.ts`:
-- `apiUrl`: `http://localhost:3000/api/v1`
-- `appName`: `Task App`
+| Route/feature | Contents |
+|---|---|
+| `/auth` | Sign in, sign up, password recovery, authentication callback |
+| `/workspace` | Workspace list, Kanban board, workspace members, labels, settings, task activity |
+| `/profile` | User profile |
+| `/settings` | Application preferences |
+| `/invite/:code` | Invitation acceptance |
+| Chatbot widget | Authenticated guided task assistant, including task cards and task actions |
+| Notification center | In-app notification list, unread state, and realtime updates |
 
-## Features
+The authenticated application shell contains the active workspace navigation (`WorkspaceTopbar` and `WorkspaceSidebar`). The removed legacy shared `top-bar` and `side-bar` components were only consumed by the removed legacy routes and are not part of the active app.
 
-### Authentication
-- Login with email/password
-- Registration with profile data
-- Google OAuth (one-click login)
-- Password reset (3-step wizard)
-- JWT auto-refresh interceptor
+## State and API access
 
-### Workspace Management
-- Create, edit, delete workspaces
-- Member management (add, remove, roles)
-- Invitation system (send by email, accept/reject)
-- Audit history of all actions
+- Feature data access is separated into API services; stores hold workspace list/detail state.
+- Authentication uses an auth guard and HTTP interceptors for bearer-token handling and authentication errors.
+- Shared services provide storage, translation, theme, notifications, and invitation support.
+- The chatbot API service uses `/chatbot/flows` and the authenticated conversation lifecycle endpoints. The notification center combines REST access with realtime server events.
 
-### Kanban Board
-- Drag & drop tasks between columns
-- Drag & drop to reorder within columns
-- Cross-column drag support
-- Optimistic UI updates
+## Project structure
 
-### Task Management
-- Create, edit, delete tasks
-- Labels (create per workspace, assign to tasks)
-- Assignees (assign workspace members)
-- File attachments (upload/download with progress)
-- Comments with @mentions and threaded replies
-- Due dates with range validation
-
-### User Profile
-- Edit name, bio, contact info
-- Change password
-- Upload profile photo (JPEG/PNG/WebP/GIF, max 5MB)
-- App settings (theme, language, notifications)
-
-### UI/UX
-- Dark/Light theme (persisted per user)
-- Spanish/English i18n (runtime, reactive)
-- Responsive design (mobile + desktop)
-- Toast notifications with i18n support
-- Loading states with spinners
-
-## Authentication Flow
-
-```
-User submits credentials
-  → AuthService.login()
-    → POST /api/v1/auth/login
-      → Returns { token, refreshToken, user }
-        → StorageService saves to localStorage
-          → loadProfile() fetches user + settings
-            → Signals populated → UI updates
-              → effect() applies theme & language
-```
-
-### Google OAuth Flow
-```
-User clicks "Sign in with Google"
-  → Redirect to backend /api/v1/auth/google
-    → Google consent screen → callback
-      → Redirect to /auth/callback?token=JWT
-        → handleGoogleCallback() parses token
-          → loadProfile() → redirect to /workspace
-```
-
-### JWT Interceptor Chain
-1. **JWT Interceptor**: Attaches `Authorization: Bearer <token>` to all requests
-2. **Auth Error Interceptor**: Catches 401, queues concurrent requests, refreshes token, retries
-
-## Internationalization
-
-- Runtime JSON-based system (not Angular AOT i18n)
-- `translate` pipe for templates: `{{ 'key' | translate }}`
-- `TranslationService.translate()` for TypeScript
-- Supports parameter interpolation: `{{param}}`
-- Reactive: language switch updates all visible text immediately
-- Files: `public/i18n/en.json`, `public/i18n/es.json`
-
-## Project Structure
-
-```
+```text
 src/app/
-├── app.ts                        # Root component
-├── app.config.ts                 # App providers
-├── app.routes.ts                 # Root routes
-│
-├── auth/                         # Authentication module
-│   ├── pages/login/              # Login page
-│   ├── pages/signup/             # Signup page
-│   ├── pages/forgot-password/    # Password reset wizard
-│   ├── pages/google-callback/    # OAuth callback handler
-│   ├── services/auth.service.ts  # Auth state & API calls
-│   └── interceptors/             # JWT & 401 interceptors
-│
-├── workspace/                    # Workspace module
-│   ├── pages/workspace-list/     # Workspace grid
-│   ├── pages/workspace-detail/   # Workspace with nested pages
-│   │   └── pages/board/          # Kanban board (drag & drop)
-│   │   ├── pages/members/        # Member management
-│   │   ├── pages/labels/         # Label management
-│   │   └── pages/settings/       # Workspace settings
-│   ├── components/               # Reusable components
-│   │   ├── task/                 # Task card
-│   │   ├── task-list/            # Kanban column
-│   │   ├── task-detail/          # Task detail modal
-│   │   ├── task-form/            # Create/edit task
-│   │   ├── task-comment-card/    # Comment display
-│   │   ├── task-attachment-card/ # Attachment display
-│   │   ├── assignee-picker/      # Member selector
-│   │   ├── workspace-card/       # Workspace card
-│   │   └── workspace-form/       # Create/edit workspace
-│   └── services/                 # Workspace services
-│
-├── profile/                      # Profile module
-│   ├── pages/profile-page/       # Profile edit + photo upload
-│   ├── pages/settings-page/      # App settings
-│   └── services/profile.service.ts
-│
-└── shared/                       # Shared module
-    ├── components/               # Top-bar, side-bar, modal, notification
-    ├── services/                 # Translation, storage, notification, invitation
-    ├── guards/                   # AuthGuard, PublicGuard
-    ├── pipes/                    # TranslatePipe
-    ├── pages/                    # Not-found, Invite
-    └── validators/               # Date range validator
+├── authentication/     Sign-in/up, recovery, callback, guards/interceptors
+├── chatbot/            Assistant API, conversation models, floating widget
+├── profile/            User profile feature
+├── settings/           Application preferences
+├── shared/             App shell, navigation, dialogs, notifications, services
+└── workspace/          Workspace, board, tasks, members, labels, activity
 ```
+
+Other useful locations: `src/environments/` for API configuration; `public/i18n/` for English and Spanish translations; `src/styles.css` for global styling.
+
+## Tests and production build
+
+Frontend tests use Angular's unit-test builder with Vitest and JSDOM. Keep component tests focused on visible behavior, and mock API dependencies rather than requiring a running backend. Before a release, run the one-shot test command and `npm run build`. Angular's production build enforces bundle and component-style budgets; resolve budget failures rather than bypassing them. The current release checklist is recorded in [backend/docs/release-readiness.md](../backend/docs/release-readiness.md).
+
+For SemVer and the Git release/tag workflow, see [the root README](../README.md#versioning-and-releases-semver).
