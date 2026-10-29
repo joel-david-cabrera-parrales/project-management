@@ -90,6 +90,7 @@ export class WorkspaceMapper {
     return {
       boardId: board.id,
       code: board.code,
+      title: board.title ?? null,
       starred: board.starred,
       taskList,
     };

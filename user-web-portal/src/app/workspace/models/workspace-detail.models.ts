@@ -55,6 +55,7 @@ export interface WorkspaceDetailTaskList {
 export interface WorkspaceDetailBoard {
   boardId: number;
   code: string;
+  title?: string | null;
   starred: boolean;
   taskList: WorkspaceDetailTaskList[];
 }
@@ -140,6 +141,19 @@ export interface UpdateWorkspaceTaskPayload {
   completed?: boolean;
   position?: number;
   taskListId?: number;
+}
+
+export interface ReorderWorkspaceTasksPayload {
+  listId: number;
+  taskIds: number[];
+}
+
+export interface WorkspaceTaskDropEvent {
+  boardCode: string;
+  sourceListId: number;
+  targetListId: number;
+  previousIndex: number;
+  currentIndex: number;
 }
 
 export interface WorkspaceTaskAttachment {

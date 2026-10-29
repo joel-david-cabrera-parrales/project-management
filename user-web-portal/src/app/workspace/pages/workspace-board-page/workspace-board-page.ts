@@ -1,27 +1,32 @@
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { finalize, map } from 'rxjs';
+import { finalize, forkJoin, map, Observable } from 'rxjs';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { NotificationService } from '../../../shared/services/notification.service';
+import { TranslationService } from '../../../shared/services/translation.service';
 import { WorkspaceConfirmDialog } from '../../components/workspace-confirm-dialog/workspace-confirm-dialog';
 import { WorkspaceBoardColumn } from '../../components/workspace-board-column/workspace-board-column';
 import { WorkspaceTaskDrawer } from '../../components/workspace-task-drawer/workspace-task-drawer';
+import { WorkspaceDetailApiService } from '../../data-access/workspace-detail-api.service';
 import { WorkspaceTasksApiService } from '../../data-access/workspace-tasks-api.service';
-import { WorkspaceDetailTaskList, WorkspaceTask } from '../../models/workspace-detail.models';
+import { WorkspaceDetailTaskList, WorkspaceTask, WorkspaceTaskDropEvent } from '../../models/workspace-detail.models';
 import { WorkspaceDetailStore } from '../../state/workspace-detail.store';
 
 @Component({
   selector: 'app-workspace-board-page',
-  imports: [RouterLink, TranslatePipe, WorkspaceBoardColumn, WorkspaceTaskDrawer, WorkspaceConfirmDialog],
+  imports: [DragDropModule, RouterLink, TranslatePipe, WorkspaceBoardColumn, WorkspaceTaskDrawer, WorkspaceConfirmDialog],
   templateUrl: './workspace-board-page.html',
   styleUrl: './workspace-board-page.css',
 })
 export class WorkspaceBoardPage {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly detailApi = inject(WorkspaceDetailApiService);
   private readonly taskApi = inject(WorkspaceTasksApiService);
   private readonly notification = inject(NotificationService);
+  private readonly translation = inject(TranslationService);
   readonly store = inject(WorkspaceDetailStore);
   readonly boardCode = signal<string | null>(null);
   readonly selectedBoard = computed(() => {
@@ -34,9 +39,17 @@ export class WorkspaceBoardPage {
     const boards = this.store.workspace()?.boards ?? [];
     return board ? boards.findIndex((item) => item.code === board.code) + 1 : 1;
   });
+  readonly boardTitle = computed(() => {
+    const customTitle = this.selectedBoard()?.title?.trim();
+    if (customTitle) return customTitle;
+    return this.translation.translate('workspace.detail.boardNumber', { number: this.selectedBoardNumber() });
+  });
   readonly taskLists = computed(() => this.selectedBoard()?.taskList.filter((list) => list.isAvailable) ?? []);
   readonly canManageTasks = computed(() => ['owner', 'member'].includes(this.store.workspace()?.roleMember ?? ''));
   readonly canDeleteTasks = this.store.isOwner;
+  readonly editingBoardTitle = signal(false);
+  readonly boardTitleDraft = signal('');
+  readonly boardTitleInput = viewChild<ElementRef<HTMLInputElement>>('boardTitleInput');
   readonly taskDrawerOpen = signal(false);
   readonly selectedList = signal<WorkspaceDetailTaskList | null>(null);
   readonly selectedTask = signal<WorkspaceTask | null>(null);
@@ -49,7 +62,61 @@ export class WorkspaceBoardPage {
   constructor() {
     this.route.paramMap
       .pipe(map((params) => params.get('boardCode')), takeUntilDestroyed(this.destroyRef))
-      .subscribe((code) => this.boardCode.set(code));
+      .subscribe((code) => {
+        this.editingBoardTitle.set(false);
+        this.boardCode.set(code);
+      });
+  }
+
+  startEditBoardTitle(): void {
+    if (!this.canManageTasks() || !this.selectedBoard()) return;
+    this.boardTitleDraft.set(this.boardTitle());
+    this.editingBoardTitle.set(true);
+    setTimeout(() => {
+      const input = this.boardTitleInput()?.nativeElement;
+      input?.focus();
+      input?.select();
+    });
+  }
+
+  cancelEditBoardTitle(): void {
+    this.editingBoardTitle.set(false);
+  }
+
+  saveBoardTitle(): void {
+    if (!this.editingBoardTitle()) return;
+    const workspaceCode = this.store.workspace()?.code;
+    const board = this.selectedBoard();
+    const nextTitle = this.boardTitleDraft().trim();
+    const currentTitle = this.boardTitle();
+    this.editingBoardTitle.set(false);
+
+    if (!workspaceCode || !board || !nextTitle || nextTitle === currentTitle) return;
+
+    const rollback = this.store.updateBoardTitle(board.code, nextTitle);
+    this.detailApi.updateBoardTitle(workspaceCode, board.code, nextTitle)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: () => {
+          rollback?.();
+          this.notification.error('notifications.unexpectedError');
+        },
+      });
+  }
+
+  onRenameList(event: { listId: number; title: string }): void {
+    const board = this.selectedBoard();
+    if (!board || !this.canManageTasks()) return;
+
+    const rollback = this.store.updateTaskListTitle(board.code, event.listId, event.title);
+    this.detailApi.updateTaskListTitle(event.listId, event.title)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: () => {
+          rollback?.();
+          this.notification.error('notifications.unexpectedError');
+        },
+      });
   }
 
   openCreateTask(list: WorkspaceDetailTaskList): void {
@@ -80,6 +147,39 @@ export class WorkspaceBoardPage {
           // Keep editing available if the detail request fails; the board data is the fallback.
           this.selectedTask.set(data.task);
           this.taskDrawerOpen.set(true);
+        },
+      });
+  }
+
+  onTaskDropped(event: WorkspaceTaskDropEvent): void {
+    const workspaceCode = this.store.workspace()?.code;
+    if (!workspaceCode || !this.canManageTasks()) return;
+
+    const optimistic = this.store.applyTaskDrop(event);
+    if (!optimistic) return;
+
+    const requests: Observable<void>[] = [
+      this.taskApi.reorderTasks(workspaceCode, {
+        listId: event.targetListId,
+        taskIds: optimistic.targetTaskIds,
+      }),
+    ];
+
+    if (event.sourceListId !== event.targetListId && optimistic.sourceTaskIds.length > 0) {
+      requests.push(
+        this.taskApi.reorderTasks(workspaceCode, {
+          listId: event.sourceListId,
+          taskIds: optimistic.sourceTaskIds,
+        }),
+      );
+    }
+
+    forkJoin(requests)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: () => {
+          optimistic.rollback();
+          this.notification.error('notifications.unexpectedError');
         },
       });
   }
@@ -119,5 +219,4 @@ export class WorkspaceBoardPage {
         error: () => this.deleteError.set(true),
       });
   }
-
 }

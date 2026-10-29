@@ -100,6 +100,7 @@ export interface TaskListResponse {
 export interface IBoard {
   boardId: number;
   code: string;
+  title?: string | null;
   starred: boolean;
   taskList: TaskListResponse[];
 }

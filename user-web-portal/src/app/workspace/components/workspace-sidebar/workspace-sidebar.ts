@@ -23,7 +23,7 @@ export class WorkspaceSidebar {
   readonly filteredBoards = computed(() => {
     const query = this.searchQuery().trim().toLocaleLowerCase();
     return this.workspace().boards
-      .map((board, index) => ({ ...board, label: this.boardLabel(index + 1) }))
+      .map((board, index) => ({ ...board, label: board.title?.trim() || this.boardLabel(index + 1) }))
       .filter((board) => !query || board.label.toLocaleLowerCase().includes(query) || board.code.toLocaleLowerCase().includes(query));
   });
 

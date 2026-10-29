@@ -2,7 +2,26 @@
   <header class="board-column-header">
     <div class="board-column-title">
       <span aria-hidden="true"></span>
-      <h2>{{ list().title }}</h2>
+      @if (editingTitle()) {
+        <input
+          #titleInput
+          class="board-column-title-input"
+          type="text"
+          maxlength="150"
+          [value]="titleDraft()"
+          [attr.aria-label]="'workspace.taskList.rename' | translate"
+          (input)="titleDraft.set($any($event.target).value)"
+          (blur)="saveTitle()"
+          (keydown.enter)="saveTitle()"
+          (keydown.escape)="cancelEditTitle()" />
+      } @else {
+        <h2
+          [class.board-column-title-editable]="canManage()"
+          [title]="list().title"
+          (dblclick)="startEditTitle()">
+          {{ list().title }}
+        </h2>
+      }
       <span class="board-column-count">{{ list().tasks.length }}</span>
     </div>
     @if (canManage()) {
@@ -12,10 +31,22 @@
       </button>
     }
   </header>
-  <div class="board-column-tasks">
+  <div class="board-column-tasks"
+    cdkDropList
+    [id]="'workspace-task-list-' + list().id"
+    [cdkDropListData]="list()"
+    [cdkDropListDisabled]="!canManage()"
+    (cdkDropListDropped)="onDrop($event)">
     @for (task of list().tasks; track task.taskId) {
-      <app-workspace-task-card [task]="task" [canEdit]="canManage()" [canDelete]="canDelete()"
-        (edit)="editTask.emit({ task, list: list() })" (delete)="deleteTask.emit($event)" />
+      <div class="board-task-drag-item"
+        cdkDrag
+        [cdkDragData]="task"
+        [cdkDragDisabled]="!canManage()"
+        [class.board-task-draggable]="canManage()">
+        <div class="board-task-drag-placeholder" *cdkDragPlaceholder></div>
+        <app-workspace-task-card [task]="task" [canEdit]="canManage()" [canDelete]="canDelete()"
+          (edit)="editTask.emit({ task, list: list() })" (delete)="deleteTask.emit($event)" />
+      </div>
     } @empty {
       <div class="board-column-empty">
         <span>{{ 'workspace.board.noTasksInColumn' | translate }}</span>

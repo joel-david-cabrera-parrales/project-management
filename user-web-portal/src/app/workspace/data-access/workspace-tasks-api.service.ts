@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CreateWorkspaceTaskPayload, UpdateWorkspaceTaskPayload, WorkspaceTask } from '../models/workspace-detail.models';
+import { CreateWorkspaceTaskPayload, ReorderWorkspaceTasksPayload, UpdateWorkspaceTaskPayload, WorkspaceTask } from '../models/workspace-detail.models';
 
 @Injectable({ providedIn: 'root' })
 export class WorkspaceTasksApiService {
@@ -49,6 +49,12 @@ export class WorkspaceTasksApiService {
 
   unassignMember(taskId: number, workspaceCode: string, assignmentId: number): Observable<WorkspaceTask> {
     return this.http.delete<WorkspaceTask>(`${this.endpoint}/${taskId}/assign/${assignmentId}`, {
+      params: new HttpParams().set('ws', workspaceCode),
+    });
+  }
+
+  reorderTasks(workspaceCode: string, payload: ReorderWorkspaceTasksPayload): Observable<void> {
+    return this.http.patch<void>(`${this.endpoint}/reorder`, payload, {
       params: new HttpParams().set('ws', workspaceCode),
     });
   }

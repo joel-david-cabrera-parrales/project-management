@@ -13,6 +13,7 @@ import {
 import { WorkspaceService } from './workspace.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
+import { UpdateBoardDto } from './dto/update-board.dto';
 import { UpdateWorkspaceMemberRoleDto } from './dto/update-workspace-member-role.dto';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { WorkspaceRoles } from 'src/auth/decorators/workspace-roles.decorator';
@@ -134,5 +135,20 @@ export class WorkspaceController {
     @GetUser() user: AuthenticatedUserDto,
   ) {
     return this.workspaceService.toggleBoardStar(boardCode, workspaceCode, user);
+  }
+
+  // Ruta para actualizar el título de un tablero
+  @Patch(':workspaceCode/boards/:boardCode')
+  @UseGuards(WorkspaceRoleGuard)
+  @WorkspaceRoles('owner', 'member')
+  @ApiOperation({ summary: 'Actualizar el título de un tablero' })
+  @ApiResponse({ status: 200, description: 'Tablero actualizado exitosamente' })
+  @ApiResponse({ status: 401, description: 'No autorizado' })
+  updateBoard(
+    @Param('boardCode', ParseUUIDPipe) boardCode: string,
+    @Param('workspaceCode', ParseUUIDPipe) workspaceCode: string,
+    @Body() dto: UpdateBoardDto,
+  ) {
+    return this.workspaceService.updateBoardTitle(boardCode, workspaceCode, dto.title);
   }
 }

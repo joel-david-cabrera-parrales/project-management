@@ -165,4 +165,20 @@ export class WorkspaceService {
     await this.boardRepository.save(board);
     return { starred: board.starred };
   }
+
+  async updateBoardTitle(boardCode: string, workspaceCode: string, title: string) {
+    const workspace = await this.workspaceRepository.findOneBy({ code: workspaceCode, isAvailable: true });
+    if (!workspace) throw new NotFoundException('Workspace not found');
+
+    const board = await this.boardRepository.findOne({
+      where: { code: boardCode, isAvailable: true },
+    });
+    if (!board || board.workspace.id !== workspace.id) {
+      throw new NotFoundException('Board not found in this workspace');
+    }
+
+    board.title = title.trim();
+    await this.boardRepository.save(board);
+    return { boardId: board.id, code: board.code, title: board.title, starred: board.starred };
+  }
 }

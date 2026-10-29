@@ -25,6 +25,9 @@ export class Board {
   @JoinColumn({ name: 'workspaceId' })
   workspace: Workspace;
 
+  @Column({ type: 'varchar', length: 150, nullable: true })
+  title?: string | null;
+
   @Column({ type: 'boolean', default: false })
   starred: boolean;
 

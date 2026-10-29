@@ -1,7 +1,28 @@
 <section class="detail-page" aria-labelledby="workspace-board-title">
   <header class="detail-page-heading">
     <div>
-      <h1 id="workspace-board-title">{{ 'workspace.detail.boardNumber' | translate: { number: selectedBoardNumber() } }}</h1>
+      @if (editingBoardTitle()) {
+        <input
+          #boardTitleInput
+          id="workspace-board-title"
+          class="board-title-input"
+          type="text"
+          maxlength="150"
+          [value]="boardTitleDraft()"
+          [attr.aria-label]="'common.rename' | translate"
+          (input)="boardTitleDraft.set($any($event.target).value)"
+          (blur)="saveBoardTitle()"
+          (keydown.enter)="saveBoardTitle()"
+          (keydown.escape)="cancelEditBoardTitle()" />
+      } @else {
+        <h1
+          id="workspace-board-title"
+          [class.board-title-editable]="canManageTasks() && !!selectedBoard()"
+          [attr.title]="canManageTasks() && selectedBoard() ? ('common.rename' | translate) : null"
+          (dblclick)="startEditBoardTitle()">
+          {{ boardTitle() }}
+        </h1>
+      }
       <p>{{ 'workspace.board.pageSubtitle' | translate: { count: taskLists().length } }}</p>
     </div>
   </header>
@@ -14,10 +35,18 @@
   } @else if (!taskLists().length) {
     <div class="board-empty-state"><span aria-hidden="true">▤</span><h2>{{ 'workspace.board.noLists' | translate }}</h2><p>{{ 'workspace.board.noListsDesc' | translate }}</p></div>
   } @else {
-    <div class="workspace-board-columns">
+    <div class="workspace-board-columns" cdkDropListGroup>
       @for (list of taskLists(); track list.id) {
-        <app-workspace-board-column [list]="list" [canManage]="canManageTasks()" [canDelete]="canDeleteTasks()"
-          (createTask)="openCreateTask($event)" (editTask)="openEditTask($event)" (deleteTask)="confirmDeleteTask($event)" />
+        <app-workspace-board-column
+          [list]="list"
+          [boardCode]="selectedBoard()!.code"
+          [canManage]="canManageTasks()"
+          [canDelete]="canDeleteTasks()"
+          (createTask)="openCreateTask($event)"
+          (editTask)="openEditTask($event)"
+          (deleteTask)="confirmDeleteTask($event)"
+          (renameList)="onRenameList($event)"
+          (taskDropped)="onTaskDropped($event)" />
       }
     </div>
   }
