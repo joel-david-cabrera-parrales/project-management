@@ -1,8 +1,12 @@
 {
   "name": "backend",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Collaborative task-management application with an Angular SPA, a NestJS REST API, and PostgreSQL.",
+  "author": "Joel Cabrera",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joel-david-cabrera-parrales/project-management"
+  },
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
