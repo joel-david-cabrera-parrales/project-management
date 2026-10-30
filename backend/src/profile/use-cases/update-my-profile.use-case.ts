@@ -21,7 +21,7 @@ export class UpdateMyProfileUseCaseImp extends UpdateMyProfileUseCase {
   async execute(userCode: string, dto: UpdateProfileDto): Promise<MyProfileResponse> {
     const user = await this.userRepo.findOne({
       where: { code: userCode },
-      relations: { profile: true },
+      relations: { profile: true, authenticationType: true },
     });
 
     if (!user) throw new NotFoundException('User not found');
@@ -39,6 +39,7 @@ export class UpdateMyProfileUseCaseImp extends UpdateMyProfileUseCase {
     return {
       userCode: user.code,
       profileCode: profile.code,
+      authenticationType: { code: user.authenticationType.code, name: user.authenticationType.name },
       firstName: profile.firstName,
       secondName: profile.secondName ?? null,
       firstSurname: profile.firstSurname,

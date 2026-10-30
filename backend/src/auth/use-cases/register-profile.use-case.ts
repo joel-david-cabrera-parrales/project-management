@@ -13,6 +13,7 @@ import { DEFAULT_SETTINGS } from 'src/profile/interfaces/settings.interface';
 import { MailerService } from 'src/common/services/mailer/mailer.service';
 import { welcomeEmailTemplate, WelcomeEmailData } from '../templates/welcome-email.template';
 import { ConfigService } from '@nestjs/config';
+import { AuthenticationTypesService } from 'src/common/authentication-types/authentication-types.service';
 
 @Injectable()
 export class RegisterProfileUseCaseImp extends RegisterProfileUseCase {
@@ -25,6 +26,7 @@ export class RegisterProfileUseCaseImp extends RegisterProfileUseCase {
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
     private readonly configService: ConfigService,
+    private readonly authenticationTypesService: AuthenticationTypesService,
   ) {
     super();
   }
@@ -37,6 +39,7 @@ export class RegisterProfileUseCaseImp extends RegisterProfileUseCase {
 
     // Creacion del perfil de usuario
     const hashedPassword = await this.hashService.hash(profile.password);
+    const authenticationType = await this.authenticationTypesService.getRequiredByCode('USER');
     let newProfile: UserProfile;
     try {
       newProfile = await this.repository.manager.transaction(async (manager) => {
@@ -50,6 +53,7 @@ export class RegisterProfileUseCaseImp extends RegisterProfileUseCase {
           username,
           password: hashedPassword,
           profile: savedProfile,
+          authenticationType,
         });
         const user = await manager.save(credential);
 

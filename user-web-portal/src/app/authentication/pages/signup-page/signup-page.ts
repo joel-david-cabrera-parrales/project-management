@@ -6,8 +6,9 @@ import { finalize } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { TranslationService } from '../../../shared/services/translation.service';
-import { SignupRequest } from '../../models/authentication.models';
+import { AuthenticationTypeCode, SignupRequest } from '../../models/authentication.models';
 import { SignupService } from '../../services/signup.service';
+import { AuthenticationTypesService } from '../../services/authentication-types.service';
 
 const passwordMatchValidator = (control: import('@angular/forms').AbstractControl) => {
   const password = control.get('password')?.value;
@@ -27,6 +28,7 @@ export class SignupPage {
   private readonly signupService = inject(SignupService);
   private readonly router = inject(Router);
   private readonly translation = inject(TranslationService);
+  private readonly authenticationTypesService = inject(AuthenticationTypesService);
 
   readonly appName = environment.appName;
   readonly submitting = signal(false);
@@ -34,6 +36,18 @@ export class SignupPage {
   readonly showConfirmPassword = signal(false);
   readonly serverError = signal<string | null>(null);
   readonly today = new Date(Date.now() - new Date().getTimezoneOffset() * 60_000).toISOString().slice(0, 10);
+  readonly availableAuthenticationTypes = signal<Set<AuthenticationTypeCode>>(new Set(['GOOGLE', 'MICROSOFT']));
+
+  constructor() {
+    this.authenticationTypesService.getTypes().subscribe({
+      next: (types) => this.availableAuthenticationTypes.set(new Set(types.map((type) => type.code))),
+      error: () => this.availableAuthenticationTypes.set(new Set(['GOOGLE', 'MICROSOFT'])),
+    });
+  }
+
+  hasAuthenticationType(type: AuthenticationTypeCode): boolean {
+    return this.availableAuthenticationTypes().has(type);
+  }
 
   readonly form = this.formBuilder.nonNullable.group(
     {

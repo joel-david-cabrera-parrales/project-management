@@ -27,6 +27,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
 import * as fs from 'fs';
 import { AuthenticateWithMicrosoftUseCase } from './classes/authenticate-with-microsoft.class';
+import { AuthenticationTypesService } from 'src/common/authentication-types/authentication-types.service';
 
 interface GoogleProfile {
   googleId: string;
@@ -57,6 +58,7 @@ export class AuthService {
     private readonly mailerService: MailerService,
     private readonly bcrypt: HashService,
     private readonly authenticateWithMicrosoftUseCase: AuthenticateWithMicrosoftUseCase,
+    private readonly authenticationTypesService: AuthenticationTypesService,
   ) {}
 
   async registerProfile(profile: CreateProfileDto) {
@@ -152,7 +154,7 @@ export class AuthService {
   async verifyResetCode(code: string): Promise<loginResponse> {
     const user = await this.repository.findOne({
       where: { resetPasswordCode: code },
-      relations: { profile: true },
+      relations: { profile: true, authenticationType: true },
     });
 
     if (!user) throw new NotFoundException('Código de verificación inválido');
@@ -164,10 +166,18 @@ export class AuthService {
 
     const refreshToken = await this.generateRefreshToken(user.code);
 
+    const authenticationType = user.authenticationType;
+    user.resetPasswordCode = undefined;
+    if (authenticationType.code !== 'USER') {
+      user.resetPasswordExpiresAt = undefined;
+    }
+    await this.repository.save(user);
+
     return {
       token,
       refreshToken,
       user: { userCode: user.code, profileCode: user.profile.code },
+      authenticationType: { code: authenticationType.code, name: authenticationType.name },
     };
   }
 
@@ -178,7 +188,7 @@ export class AuthService {
     });
 
     if (!userProfile) throw new NotFoundException('Usuario no encontrado');
-    if (userProfile.resetPasswordExpiresAt! < new Date())
+    if (!userProfile.resetPasswordExpiresAt || userProfile.resetPasswordExpiresAt < new Date())
       throw new BadRequestException('Código de verificación expirado');
 
     userProfile.password = await this.bcrypt.hash(password);
@@ -269,6 +279,7 @@ export class AuthService {
       googleId: googleProfile.googleId,
       isGoogleAccount: true,
       profile: savedProfile,
+      authenticationType: await this.authenticationTypesService.getRequiredByCode('GOOGLE'),
       isAvailable: true,
     });
 

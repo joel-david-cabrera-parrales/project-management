@@ -9,6 +9,7 @@ import { DEFAULT_SETTINGS } from 'src/profile/interfaces/settings.interface';
 import { AuthenticateWithMicrosoftUseCase, MicrosoftUserProfile } from '../classes/authenticate-with-microsoft.class';
 import { MailerService } from 'src/common/services/mailer/mailer.service';
 import { welcomeEmailTemplate } from '../templates/welcome-email.template';
+import { AuthenticationTypesService } from 'src/common/authentication-types/authentication-types.service';
 
 @Injectable()
 export class AuthenticateWithMicrosoftUseCaseImp extends AuthenticateWithMicrosoftUseCase {
@@ -18,6 +19,7 @@ export class AuthenticateWithMicrosoftUseCaseImp extends AuthenticateWithMicroso
     private readonly uuidService: UuidManager,
     private readonly configService: ConfigService,
     private readonly mailerService: MailerService,
+    private readonly authenticationTypesService: AuthenticationTypesService,
   ) {
     super();
   }
@@ -90,6 +92,7 @@ export class AuthenticateWithMicrosoftUseCaseImp extends AuthenticateWithMicroso
         password: this.uuidService.generate(),
         microsoftId: microsoftProfile.microsoftId,
         isMicrosoftAccount: true,
+        authenticationType: await this.authenticationTypesService.getRequiredByCode('MICROSOFT'),
         profile,
         isAvailable: true,
       }),

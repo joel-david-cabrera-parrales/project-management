@@ -25,6 +25,9 @@ describe('AuthenticateWithMicrosoftUseCaseImp', () => {
   const uuidService = { generate: jest.fn().mockReturnValue('generated-password') };
   const configService = { get: jest.fn((key: string) => (key === 'APP_NAME' ? 'Task App' : 'http://localhost:4200')) };
   const mailerService = { sendEmail: jest.fn().mockResolvedValue(undefined) };
+  const authenticationTypesService = {
+    getRequiredByCode: jest.fn((code: string) => Promise.resolve({ code, name: code })),
+  };
 
   let useCase: AuthenticateWithMicrosoftUseCaseImp;
 
@@ -37,6 +40,7 @@ describe('AuthenticateWithMicrosoftUseCaseImp', () => {
       uuidService as unknown as UuidManager,
       configService as unknown as ConfigService,
       mailerService as any,
+      authenticationTypesService as any,
     );
   });
 

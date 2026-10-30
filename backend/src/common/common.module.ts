@@ -8,9 +8,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { WorkspaceMember } from 'src/workspace/entities/workspace-member.entity';
 import { AuthorizeWorkspaceMembershipUseCase } from './classes/authorize-workspace-membership.class';
 import { AuthorizeWorkspaceMembershipUseCaseImp } from './use-cases/authorize-workspace-membership.use-case';
+import { AuthenticationType } from 'src/auth/entities/authentication-type.entity';
+import { AuthenticationTypesController } from './authentication-types/authentication-types.controller';
+import { AuthenticationTypesService } from './authentication-types/authentication-types.service';
 
 @Module({
+  controllers: [AuthenticationTypesController],
   providers: [
+    AuthenticationTypesService,
     MailerService,
     { provide: AuthorizeWorkspaceMembershipUseCase, useClass: AuthorizeWorkspaceMembershipUseCaseImp },
     {
@@ -22,7 +27,7 @@ import { AuthorizeWorkspaceMembershipUseCaseImp } from './use-cases/authorize-wo
       useClass: UuidService,
     },
   ],
-  imports: [TypeOrmModule.forFeature([WorkspaceMember])],
-  exports: [HashService, UuidManager, MailerService, AuthorizeWorkspaceMembershipUseCase],
+  imports: [TypeOrmModule.forFeature([WorkspaceMember, AuthenticationType])],
+  exports: [HashService, UuidManager, MailerService, AuthorizeWorkspaceMembershipUseCase, AuthenticationTypesService],
 })
 export class CommonModule {}

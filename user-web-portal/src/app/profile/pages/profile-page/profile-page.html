@@ -245,6 +245,7 @@
           </form>
         </article>
 
+        @if (profile()?.authenticationType?.code === 'USER') {
         <!-- Tarjeta 2: Seguridad y Contraseña -->
         <article class="profile-card" aria-labelledby="security-heading">
           <div class="profile-section-heading">
@@ -409,6 +410,7 @@
             </footer>
           </form>
         </article>
+        }
       </div>
 
       <!-- Columna lateral: Información de la cuenta -->

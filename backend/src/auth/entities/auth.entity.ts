@@ -4,6 +4,7 @@ import {
   Entity,
   Generated,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -14,6 +15,7 @@ import { WorkspaceInvitation } from 'src/workspace-invitation/entities/workspace
 import { WorkspaceHistory } from 'src/workspace/entities/workspace-history.entity';
 import { WorkspaceMember } from 'src/workspace/entities/workspace-member.entity';
 import { Workspace } from 'src/workspace/entities/workspace.entity';
+import { AuthenticationType } from './authentication-type.entity';
 
 @Entity({ schema: 'auth' })
 export class UserProfile {
@@ -27,6 +29,13 @@ export class UserProfile {
   })
   @JoinColumn({ name: 'profileId' })
   profile: Profile;
+
+  @ManyToOne(() => AuthenticationType, (authenticationType) => authenticationType.credentials, {
+    nullable: false,
+    onDelete: 'RESTRICT',
+  })
+  @JoinColumn({ name: 'authenticationTypeId' })
+  authenticationType: AuthenticationType;
 
   @Column('uuid', { unique: true, name: 'userCode' })
   @Generated('uuid')

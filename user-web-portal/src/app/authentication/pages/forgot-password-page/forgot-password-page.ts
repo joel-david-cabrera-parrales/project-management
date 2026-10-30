@@ -19,17 +19,23 @@ export class ForgotPasswordPage {
   private readonly translation = inject(TranslationService);
   private readonly notification = inject(NotificationService);
 
-  readonly step = signal<1 | 2>(1);
+  readonly step = signal<1 | 2 | 3>(1);
   readonly email = signal('');
   readonly code = signal('');
+  readonly newPassword = signal('');
+  readonly confirmPassword = signal('');
+  readonly showNewPassword = signal(false);
+  readonly showConfirmPassword = signal(false);
   readonly sending = signal(false);
   readonly verifying = signal(false);
+  readonly resetting = signal(false);
   readonly emailError = signal<string | null>(null);
   readonly codeError = signal<string | null>(null);
+  readonly passwordError = signal<string | null>(null);
   readonly serverError = signal<string | null>(null);
 
   get stepPercent(): number {
-    return this.step() * 50;
+    return (this.step() / 3) * 100;
   }
 
   get isValidEmail(): boolean {
@@ -38,6 +44,10 @@ export class ForgotPasswordPage {
 
   get isValidCode(): boolean {
     return /^\d{3}-\d{3}-\d{3}$/.test(this.code());
+  }
+
+  get passwordsMatch(): boolean {
+    return this.newPassword().length > 0 && this.newPassword() === this.confirmPassword();
   }
 
   requestCode(): void {
@@ -92,7 +102,12 @@ export class ForgotPasswordPage {
       .verifyCode(this.email(), this.code())
       .pipe(finalize(() => this.verifying.set(false)))
       .subscribe({
-        next: () => {
+        next: ({ authenticationTypeCode }) => {
+          if (authenticationTypeCode === 'USER') {
+            this.step.set(3);
+            return;
+          }
+
           this.notification.success('notifications.codeVerified');
           void this.router.navigateByUrl('/workspace');
         },
@@ -108,6 +123,30 @@ export class ForgotPasswordPage {
       .pipe(finalize(() => this.sending.set(false)))
       .subscribe({
         next: () => this.notification.success('notifications.codeSent'),
+        error: (error: unknown) => this.serverError.set(this.errorMessage(error)),
+      });
+  }
+
+  resetPassword(): void {
+    this.passwordError.set(null);
+    if (this.newPassword().length < 8) {
+      this.passwordError.set('auth.forgotPassword.errors.passwordTooShort');
+      return;
+    }
+    if (!this.passwordsMatch) {
+      this.passwordError.set('auth.forgotPassword.errors.passwordMismatch');
+      return;
+    }
+
+    this.resetting.set(true);
+    this.forgotPasswordService
+      .resetPassword(this.newPassword())
+      .pipe(finalize(() => this.resetting.set(false)))
+      .subscribe({
+        next: () => {
+          this.notification.success('notifications.passwordReset');
+          void this.router.navigateByUrl('/workspace');
+        },
         error: (error: unknown) => this.serverError.set(this.errorMessage(error)),
       });
   }

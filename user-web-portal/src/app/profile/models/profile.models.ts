@@ -1,6 +1,10 @@
 export interface UserProfileResponse {
   userCode: string;
   profileCode: string;
+  authenticationType?: {
+    code: 'USER' | 'GOOGLE' | 'MICROSOFT';
+    name: string;
+  };
   firstName: string;
   secondName: string | null;
   firstSurname: string;

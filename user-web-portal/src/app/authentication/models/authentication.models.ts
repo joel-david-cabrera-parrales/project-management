@@ -10,6 +10,18 @@ export interface AuthenticationResponse {
   token: string;
   refreshToken: string;
   user: AuthenticationUser;
+  authenticationType?: {
+    code: AuthenticationTypeCode;
+    name: string;
+  };
+}
+
+export type AuthenticationTypeCode = 'USER' | 'GOOGLE' | 'MICROSOFT';
+
+export interface AuthenticationType {
+  id: number;
+  code: AuthenticationTypeCode;
+  name: string;
 }
 
 export interface StoredUserProfile {

@@ -86,20 +86,38 @@
 }
 
 .auth-password-wrapper input {
-  padding-right: 4rem !important;
+  padding-right: 3rem !important;
 }
 
 .auth-password-toggle {
   position: absolute;
   top: 50%;
-  right: 0.55rem;
+  right: 0.45rem;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
   transform: translateY(-50%);
   border: 0;
+  border-radius: 0.45rem;
   background: transparent;
   color: var(--accent);
   cursor: pointer;
-  font-size: 0.64rem;
-  font-weight: 750;
+}
+
+.auth-password-toggle svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.auth-password-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 .auth-field-error,
