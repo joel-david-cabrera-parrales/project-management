@@ -4,8 +4,9 @@ import { Repository } from 'typeorm';
 import { Attachment } from '../entities/attachment.entity';
 import { DeleteAttachmentUseCase } from '../classes/delete-attachment.class';
 import { AuthorizeWorkspaceMembershipUseCase } from 'src/common/classes/authorize-workspace-membership.class';
+import { S3Service } from 'src/common/services/s3/s3.service';
+import { existsSync, unlinkSync } from 'fs';
 import * as path from 'path';
-import * as fs from 'fs';
 
 @Injectable()
 export class DeleteAttachmentUseCaseImp implements DeleteAttachmentUseCase {
@@ -13,6 +14,7 @@ export class DeleteAttachmentUseCaseImp implements DeleteAttachmentUseCase {
     @InjectRepository(Attachment)
     private readonly attachmentRepository: Repository<Attachment>,
     private readonly authorizeWorkspaceMembership: AuthorizeWorkspaceMembershipUseCase,
+    private readonly s3Service: S3Service,
   ) {}
 
   async execute(code: string, userId: number): Promise<Attachment> {
@@ -30,9 +32,11 @@ export class DeleteAttachmentUseCaseImp implements DeleteAttachmentUseCase {
     attachment.isAvailable = false;
     const saved = await this.attachmentRepository.save(attachment);
 
-    const filePath = path.join(process.cwd(), 'uploads', 'attachments', attachment.storedName);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    if (attachment.storedName.includes('/')) {
+      await this.s3Service.deleteObject(attachment.storedName);
+    } else {
+      const legacyPath = path.join(process.cwd(), 'uploads', 'attachments', attachment.storedName);
+      if (existsSync(legacyPath)) unlinkSync(legacyPath);
     }
 
     return saved;

@@ -6,9 +6,8 @@ import { Task } from 'src/task/entities/task.entity';
 import { UserProfile } from 'src/auth/entities/auth.entity';
 import { WorkspaceMember } from 'src/workspace/entities/workspace-member.entity';
 import { UploadAttachmentUseCase } from '../classes/upload-attachment.class';
-import * as path from 'path';
-import * as fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
+import { S3Service } from 'src/common/services/s3/s3.service';
 
 @Injectable()
 export class UploadAttachmentUseCaseImp implements UploadAttachmentUseCase {
@@ -21,6 +20,7 @@ export class UploadAttachmentUseCaseImp implements UploadAttachmentUseCase {
     private readonly userRepository: Repository<UserProfile>,
     @InjectRepository(WorkspaceMember)
     private readonly workspaceMemberRepository: Repository<WorkspaceMember>,
+    private readonly s3Service: S3Service,
   ) {}
 
   async execute(file: Express.Multer.File, taskCode: string, userId: number): Promise<Attachment> {
@@ -40,23 +40,22 @@ export class UploadAttachmentUseCaseImp implements UploadAttachmentUseCase {
     });
     if (!membership) throw new ForbiddenException('You are not a member of this workspace');
 
-    const ext = path.extname(file.originalname);
-    const storedName = `${uuidv4()}${ext}`;
-    const uploadDir = path.join(process.cwd(), 'uploads', 'attachments');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    const filePath = path.join(uploadDir, storedName);
-    fs.writeFileSync(filePath, file.buffer);
+    const storedName = `attachments/${task.code}/${uuidv4()}`;
+    await this.s3Service.putObject(storedName, file.buffer, file.mimetype);
 
     const attachment = this.attachmentRepository.create({
       fileName: file.originalname,
-      storedName,
+      storedName, // Clave S3, no nombre/ruta local
       mimeType: file.mimetype,
       fileSize: file.size,
       task,
       uploadedBy: user,
     });
-    return this.attachmentRepository.save(attachment);
+    try {
+      return await this.attachmentRepository.save(attachment);
+    } catch (error) {
+      await this.s3Service.deleteObject(storedName).catch(() => undefined);
+      throw error;
+    }
   }
 }

@@ -24,10 +24,9 @@ import { HashService } from 'src/common/classes/hash-service.class';
 import { loginResponse } from 'src/common/responses';
 import { AuthenticatedUserDto } from './dto/authenticated-user.dto';
 import { v4 as uuidv4 } from 'uuid';
-import * as path from 'path';
-import * as fs from 'fs';
 import { AuthenticateWithMicrosoftUseCase } from './classes/authenticate-with-microsoft.class';
 import { AuthenticationTypesService } from 'src/common/authentication-types/authentication-types.service';
+import { S3Service } from 'src/common/services/s3/s3.service';
 
 interface GoogleProfile {
   googleId: string;
@@ -59,6 +58,7 @@ export class AuthService {
     private readonly bcrypt: HashService,
     private readonly authenticateWithMicrosoftUseCase: AuthenticateWithMicrosoftUseCase,
     private readonly authenticationTypesService: AuthenticationTypesService,
+    private readonly s3Service: S3Service,
   ) {}
 
   async registerProfile(profile: CreateProfileDto) {
@@ -322,14 +322,9 @@ export class AuthService {
       };
       const ext = extMap[contentType] || '.jpg';
 
-      const storedName = `${uuidv4()}${ext}`;
-      const uploadDir = path.join(process.cwd(), 'uploads', 'profiles');
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-      }
-
-      fs.writeFileSync(path.join(uploadDir, storedName), buffer);
-      return storedName;
+      const key = `profiles/${uuidv4()}${ext}`;
+      await this.s3Service.putObject(key, buffer, contentType);
+      return key;
     } catch {
       return null;
     }

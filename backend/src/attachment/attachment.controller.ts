@@ -17,10 +17,10 @@ import { ApiOperation, ApiResponse, ApiConsumes, ApiBody } from '@nestjs/swagger
 import { AttachmentResponse } from 'src/common/responses';
 import { AuthGuard } from '@nestjs/passport';
 import type { Response } from 'express';
-import { createReadStream } from 'fs';
-import * as path from 'path';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { AuthenticatedUserDto } from 'src/auth/dto/authenticated-user.dto';
+import { createReadStream, existsSync } from 'fs';
+import * as path from 'path';
 
 @Controller('attachment')
 @UseGuards(AuthGuard('jwt'))
@@ -30,7 +30,7 @@ export class AttachmentController {
   @Post('upload/:taskCode')
   @UseInterceptors(
     FileInterceptor('file', {
-      limits: { fileSize: 10 * 1024 * 1024 },
+      limits: { fileSize: 100 * 1024 * 1024 },
       fileFilter: (_req, file, cb) => {
         const allowed = [
           'application/pdf',
@@ -78,12 +78,17 @@ export class AttachmentController {
   @ApiOperation({ summary: 'Download/serve an attachment file' })
   async getFile(@Param('code') code: string, @Res() res: Response, @GetUser() user: AuthenticatedUserDto) {
     const attachment = await this.attachmentService.getFileInfo(code, user.id);
-    const filePath = path.join(process.cwd(), 'uploads', 'attachments', attachment.storedName);
     res.setHeader('Content-Type', attachment.mimeType);
     res.setHeader('Content-Disposition', `inline; filename="${attachment.fileName}"`);
     res.setHeader('Content-Length', attachment.fileSize);
-    const stream = createReadStream(filePath);
-    stream.pipe(res);
+    const legacyPath = path.join(process.cwd(), 'uploads', 'attachments', attachment.storedName);
+    if (!attachment.storedName.includes('/') && !existsSync(legacyPath)) {
+      throw new BadRequestException('Attachment file not found');
+    }
+    const body = attachment.storedName.includes('/')
+      ? (await this.attachmentService.getObject(attachment.storedName)).body
+      : createReadStream(legacyPath);
+    body.pipe(res);
   }
 
   @Delete(':code')

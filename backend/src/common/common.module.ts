@@ -11,11 +11,14 @@ import { AuthorizeWorkspaceMembershipUseCaseImp } from './use-cases/authorize-wo
 import { AuthenticationType } from 'src/auth/entities/authentication-type.entity';
 import { AuthenticationTypesController } from './authentication-types/authentication-types.controller';
 import { AuthenticationTypesService } from './authentication-types/authentication-types.service';
+import { S3Service } from './services/s3/s3.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   controllers: [AuthenticationTypesController],
   providers: [
     AuthenticationTypesService,
+    S3Service,
     MailerService,
     { provide: AuthorizeWorkspaceMembershipUseCase, useClass: AuthorizeWorkspaceMembershipUseCaseImp },
     {
@@ -27,7 +30,7 @@ import { AuthenticationTypesService } from './authentication-types/authenticatio
       useClass: UuidService,
     },
   ],
-  imports: [TypeOrmModule.forFeature([WorkspaceMember, AuthenticationType])],
-  exports: [HashService, UuidManager, MailerService, AuthorizeWorkspaceMembershipUseCase, AuthenticationTypesService],
+  imports: [TypeOrmModule.forFeature([WorkspaceMember, AuthenticationType]), ConfigModule],
+  exports: [HashService, UuidManager, MailerService, AuthorizeWorkspaceMembershipUseCase, AuthenticationTypesService, S3Service],
 })
 export class CommonModule {}
