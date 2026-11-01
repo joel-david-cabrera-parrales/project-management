@@ -17,6 +17,7 @@ import { GetSettingsUseCaseImp } from './use-cases/get-settings.use-case';
 import { UpdateSettingsUseCase } from './classes/update-settings.class';
 import { UpdateSettingsUseCaseImp } from './use-cases/update-settings.use-case';
 import { ConfigModule } from '@nestjs/config';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   providers: [
@@ -28,7 +29,7 @@ import { ConfigModule } from '@nestjs/config';
     { provide: UpdateSettingsUseCase, useClass: UpdateSettingsUseCaseImp },
   ],
   controllers: [ProfileController, ProfilePhotoController],
-  imports: [TypeOrmModule.forFeature([Profile, UserProfile]), AuthModule, ConfigModule],
+  imports: [TypeOrmModule.forFeature([Profile, UserProfile]), AuthModule, ConfigModule, CommonModule],
   exports: [TypeOrmModule],
 })
 export class ProfileModule {}

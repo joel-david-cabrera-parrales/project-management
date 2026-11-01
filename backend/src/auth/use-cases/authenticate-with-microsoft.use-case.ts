@@ -10,6 +10,7 @@ import { AuthenticateWithMicrosoftUseCase, MicrosoftUserProfile } from '../class
 import { MailerService } from 'src/common/services/mailer/mailer.service';
 import { welcomeEmailTemplate } from '../templates/welcome-email.template';
 import { AuthenticationTypesService } from 'src/common/authentication-types/authentication-types.service';
+import { S3Service } from 'src/common/services/s3/s3.service';
 
 @Injectable()
 export class AuthenticateWithMicrosoftUseCaseImp extends AuthenticateWithMicrosoftUseCase {
@@ -20,6 +21,7 @@ export class AuthenticateWithMicrosoftUseCaseImp extends AuthenticateWithMicroso
     private readonly configService: ConfigService,
     private readonly mailerService: MailerService,
     private readonly authenticationTypesService: AuthenticationTypesService,
+    private readonly s3Service: S3Service,
   ) {
     super();
   }
@@ -80,7 +82,7 @@ export class AuthenticateWithMicrosoftUseCaseImp extends AuthenticateWithMicroso
         email,
         phone: [],
         dateBirth: new Date(),
-        photo: microsoftProfile.picture,
+        photo: await this.storeMicrosoftPhoto(microsoftProfile.picture),
         isProfileAuthenticated: true,
         settings: DEFAULT_SETTINGS as unknown as Record<string, unknown>,
       }),
@@ -111,5 +113,25 @@ export class AuthenticateWithMicrosoftUseCaseImp extends AuthenticateWithMicroso
     this.mailerService.sendEmail(profile.email, `Bienvenido a ${appName}`, html).catch(() => {});
 
     return user;
+  }
+
+  private async storeMicrosoftPhoto(pictureUrl?: string): Promise<string | undefined> {
+    if (!pictureUrl) return undefined;
+    try {
+      const response = await fetch(pictureUrl);
+      if (!response.ok) return undefined;
+      const contentType = response.headers.get('content-type') || 'image/jpeg';
+      if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(contentType.split(';')[0])) {
+        return undefined;
+      }
+      const buffer = Buffer.from(await response.arrayBuffer());
+      if (buffer.length > 10 * 1024 * 1024) return undefined;
+      const extension = { 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp', 'image/gif': '.gif' }[contentType.split(';')[0]];
+      const key = `profiles/${this.uuidService.generate()}${extension}`;
+      await this.s3Service.putObject(key, buffer, contentType.split(';')[0]);
+      return key;
+    } catch {
+      return undefined;
+    }
   }
 }

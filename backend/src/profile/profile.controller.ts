@@ -29,7 +29,7 @@ export class ProfileController {
   @Post('photo')
   @UseInterceptors(
     FileInterceptor('file', {
-      limits: { fileSize: 5 * 1024 * 1024 },
+      limits: { fileSize: 100 * 1024 * 1024 },
       fileFilter: (_req, file, cb) => {
         const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
         if (allowed.includes(file.mimetype)) {

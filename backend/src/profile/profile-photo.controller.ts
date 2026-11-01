@@ -11,12 +11,10 @@ export class ProfilePhotoController {
   @Get(':code')
   @ApiOperation({ summary: 'Get profile photo file (public)' })
   async getPhoto(@Param('code') code: string, @Res() res: Response) {
-    const { filePath, mimeType } = await this.profileService.getPhotoFile(code);
+    const { body, mimeType } = await this.profileService.getPhotoFile(code);
     res.setHeader('Content-Type', mimeType);
     res.setHeader('Cache-Control', 'private, max-age=86400');
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-    const { createReadStream } = await import('fs');
-    const stream = createReadStream(filePath);
-    stream.pipe(res);
+    body.pipe(res);
   }
 }
