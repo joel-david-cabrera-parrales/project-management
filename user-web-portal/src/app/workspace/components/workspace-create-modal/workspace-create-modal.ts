@@ -34,7 +34,6 @@ export class WorkspaceCreateModal {
     effect(() => {
       if (this.open()) {
         this.error.set(false);
-        this.form.reset({ title: '', description: '', color: '#2563eb' });
       }
     });
   }
