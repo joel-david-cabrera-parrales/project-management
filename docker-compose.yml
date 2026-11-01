@@ -13,7 +13,7 @@ services:
     volumes:
       - ./backend/db/postgres_data:/var/lib/postgresql/data
     networks:
-      - postgres_net
+      - task_app_net
     restart: always
 
   pgadmin:
@@ -25,13 +25,33 @@ services:
     ports:
       - '8083:80'
     networks:
-      - postgres_net
+      - task_app_net
     restart: always
     volumes:
       - ./backend/db/pgadmin_data:/var/lib/pgadmin
 
+  # Servicio de AWS (S3) para gestionar documentos, fotos, entre otros archivos
+  aws-local-s3:
+    container_name: s3-local
+    image: localstack/localstack:latest
+    ports:
+      - "${AWS_STORAGE_SERVICE_PORT}:4566" # Puerto unificado de LocalStack
+    environment:
+      - LOCALSTACK_AUTH_TOKEN=${AWS_LOCAL_TOKEN}
+      - SERVICES=${AWS_STORAGE_SERVICE}
+      - AWS_DEFAULT_REGION=${AWS_REGION}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET:-app-task-bucket-local}
+    volumes:
+      - "./backend/aws/aws-s3-data:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./backend/aws/localstack-init:/etc/localstack/init/ready.d:ro"
+    networks:
+      - task_app_net
+    restart: always
+
   backend:
     depends_on:
+      - aws-local-s3
       - postgres
     env_file:
       - .env
@@ -46,9 +66,11 @@ services:
       - /app/node_modules
     environment:
       - WATCHPACK_POLLING=true
+      - AWS_S3_ENDPOINT=http://aws-local-s3:4566
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET:-app-task-bucket-local}
     command: npm run start:dev
     networks:
-      - postgres_net
+      - task_app_net
     restart: always
 
   frontend:
@@ -62,7 +84,7 @@ services:
     ports:
       - '4200:4200'
     networks:
-      - postgres_net
+      - task_app_net
     restart: always
     volumes:
       - ./user-web-portal:/app
@@ -76,6 +98,6 @@ volumes:
   pgadmin_data:
 
 networks:
-  postgres_net:
+  task_app_net:
     driver: bridge
     enable_ipv6: true

@@ -4,6 +4,7 @@ import { FindAttachmentsByTaskUseCase } from './classes/find-attachments-by-task
 import { FindAttachmentByCodeUseCase } from './classes/find-attachment-by-code.class';
 import { DeleteAttachmentUseCase } from './classes/delete-attachment.class';
 import { AttachmentResponse } from 'src/common/responses';
+import { S3Service } from 'src/common/services/s3/s3.service';
 
 @Injectable()
 export class AttachmentService {
@@ -12,6 +13,7 @@ export class AttachmentService {
     private readonly findAttachmentsByTaskUseCase: FindAttachmentsByTaskUseCase,
     private readonly findAttachmentByCodeUseCase: FindAttachmentByCodeUseCase,
     private readonly deleteAttachmentUseCase: DeleteAttachmentUseCase,
+    private readonly s3Service: S3Service,
   ) {}
 
   private mapToResponse(attachment: any): AttachmentResponse {
@@ -38,6 +40,10 @@ export class AttachmentService {
 
   async getFileInfo(code: string, userId: number) {
     return this.findAttachmentByCodeUseCase.execute(code, userId);
+  }
+
+  getObject(key: string) {
+    return this.s3Service.getObject(key);
   }
 
   async remove(code: string, userId: number): Promise<AttachmentResponse> {

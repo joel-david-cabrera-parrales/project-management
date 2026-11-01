@@ -12,8 +12,10 @@ import { Profile } from './entities/profile.entity';
 import { UserProfile } from 'src/auth/entities/auth.entity';
 import { toPhotoUrl } from '../common/helpers/photo-url.helper';
 import { v4 as uuidv4 } from 'uuid';
+import { S3Service } from 'src/common/services/s3/s3.service';
+import { createReadStream, existsSync } from 'fs';
 import * as path from 'path';
-import * as fs from 'fs';
+import { Readable } from 'stream';
 
 @Injectable()
 export class ProfileService {
@@ -27,6 +29,7 @@ export class ProfileService {
     private readonly profileRepo: Repository<Profile>,
     @InjectRepository(UserProfile)
     private readonly userRepo: Repository<UserProfile>,
+    private readonly s3Service: S3Service,
   ) {}
 
   async findOne(code: string) {
@@ -56,52 +59,53 @@ export class ProfileService {
 
     const profile = user.profile;
 
-    const ext = path.extname(file.originalname);
-    const storedName = `${uuidv4()}${ext}`;
-    const uploadDir = path.join(process.cwd(), 'uploads', 'profiles');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+    const key = `profiles/${uuidv4()}`;
+    await this.s3Service.putObject(key, file.buffer, file.mimetype);
+    const previousPhoto = profile.photo;
+    profile.photo = key;
+    try {
+      await this.profileRepo.save(profile);
+    } catch (error) {
+      await this.s3Service.deleteObject(key).catch(() => undefined);
+      throw error;
     }
-
-    if (profile.photo && !profile.photo.startsWith('http')) {
-      const oldPath = path.join(uploadDir, profile.photo);
-      if (fs.existsSync(oldPath)) {
-        fs.unlinkSync(oldPath);
+    if (previousPhoto && !previousPhoto.startsWith('http') && previousPhoto.includes('/')) {
+      await this.s3Service.deleteObject(previousPhoto).catch(() => undefined);
+    } else if (previousPhoto && !previousPhoto.startsWith('http')) {
+      const legacyPath = path.join(process.cwd(), 'uploads', 'profiles', previousPhoto);
+      if (existsSync(legacyPath)) {
+        const { unlinkSync } = await import('fs');
+        unlinkSync(legacyPath);
       }
     }
-
-    const filePath = path.join(uploadDir, storedName);
-    fs.writeFileSync(filePath, file.buffer);
-
-    profile.photo = storedName;
-    await this.profileRepo.save(profile);
 
     const result = await this.getMyProfileUseCase.execute(userCode);
     result.photo = toPhotoUrl(profile.photo, profile.code);
     return result;
   }
 
-  async getPhotoFile(code: string): Promise<{ filePath: string; mimeType: string }> {
+  async getPhotoFile(code: string): Promise<{ body: Readable; mimeType: string }> {
     const profile = await this.profileRepo.findOne({ where: { code } });
     if (!profile?.photo) throw new NotFoundException('Photo not found');
     if (profile.photo.startsWith('http')) throw new NotFoundException('Photo is external');
 
-    const uploadDir = path.join(process.cwd(), 'uploads', 'profiles');
-    const filePath = path.join(uploadDir, profile.photo);
+    if (!profile.photo.includes('/')) {
+      const legacyPath = path.join(process.cwd(), 'uploads', 'profiles', profile.photo);
+      if (!existsSync(legacyPath)) throw new NotFoundException('Photo file not found');
+      return { body: createReadStream(legacyPath), mimeType: this.getMimeType(profile.photo) };
+    }
+    const object = await this.s3Service.getObject(profile.photo).catch(() => {
+      throw new NotFoundException('Photo file not found');
+    });
 
-    if (!fs.existsSync(filePath)) throw new NotFoundException('Photo file not found');
+    return { body: object.body, mimeType: object.contentType || this.getMimeType(profile.photo) };
+  }
 
-    const ext = path.extname(profile.photo).toLowerCase();
+  private getMimeType(fileName: string): string {
     const mimeMap: Record<string, string> = {
-      '.jpg': 'image/jpeg',
-      '.jpeg': 'image/jpeg',
-      '.png': 'image/png',
-      '.webp': 'image/webp',
-      '.gif': 'image/gif',
+      '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.gif': 'image/gif',
     };
-    const mimeType = mimeMap[ext] ?? 'application/octet-stream';
-
-    return { filePath, mimeType };
+    return mimeMap[path.extname(fileName).toLowerCase()] || 'application/octet-stream';
   }
 
   getSettings(userCode: string) {
