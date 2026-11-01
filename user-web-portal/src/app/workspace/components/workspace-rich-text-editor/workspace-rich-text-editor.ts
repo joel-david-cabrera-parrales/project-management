@@ -117,10 +117,20 @@ export class WorkspaceRichTextEditor implements ControlValueAccessor, Validator,
   }
 
   writeValue(value: string | null | undefined): void {
+    // Siempre actualizar el valor interno de seguimiento
     this.value = value ?? '';
     this.characters.set(this.plainText(this.value).length);
-    if (this.editor && this.editor.getHTML() !== this.safeHtml(this.value)) {
-      this.editor.commands.setContent(this.safeHtml(this.value), false);
+
+    // Solo actualizar el contenido del editor si existe y el contenido realmente cambió
+    // Esto evita re-renderizados innecesarios y ayuda a mantener la entrada del usuario
+    // cuando el formulario cambia (ej., al abrir/resetear el modal)
+    // También arregla el bug donde se borraba el campo nombre y la descripción
+    if (this.editor) {
+      const currentHtml = this.editor.getHTML();
+      const newHtml = this.safeHtml(this.value);
+      if (currentHtml !== newHtml) {
+        this.editor.commands.setContent(newHtml, false);
+      }
     }
   }
 
