@@ -117,31 +117,3 @@ The recommended flow matches the root `docker-compose.yml`: start Docker Desktop
 The root Compose file is the normal project startup method; package scripts are also useful for running an individual service during development. See [backend/README.md](backend/README.md) for environment details.
 
 See [backend/README.md](backend/README.md) and [user-web-portal/README.md](user-web-portal/README.md) for component-specific setup, scripts, and features.
-
-## Versioning and releases (SemVer)
-
-Use Semantic Versioning in the form `MAJOR.MINOR.PATCH` (Git tags have a `v` prefix, e.g. `v1.2.3`):
-
-- **MAJOR**: incompatible API, behavior, or data-contract change.
-- **MINOR**: backward-compatible functionality.
-- **PATCH**: backward-compatible fixes and maintenance.
-
-Choose the increment relative to the latest stable tag after reviewing compatibility; do not infer it just from the branch name. If `v1.0.0` is the current release, a compatible feature would normally be `v1.1.0`, while a breaking release would be `v2.0.0`.
-
-Typical release workflow (replace the example version after deciding the increment):
-
-```bash
-git switch dev
-git pull --ff-only origin dev
-# Finish and validate the release candidate on dev, then integrate dev into main
-git switch main
-git pull --ff-only origin main
-git merge --no-ff dev
-git push origin main
-git tag -a v1.1.0 -m "Release v1.1.0"
-git push origin v1.1.0
-```
-
-For a release branch, create `release/vX.Y.Z` from the validated release candidate and merge it to `main` (and back to `dev` if release fixes were made there). Keep the tag on the exact commit published as stable. Before tagging, run the backend build/tests and frontend production build/tests, validate database migrations against the intended environment, and perform an authenticated staging smoke test. See [`backend/docs/release-readiness.md`](backend/docs/release-readiness.md) for the known release checks/blockers recorded for this project. Never commit secrets or database backups to Git.
-
-The npm `version` fields are package metadata and are currently not a substitute for the repository's release tag; update them deliberately if the team adopts synchronized package versioning.
